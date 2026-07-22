@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FullInvestigation } from "./FullInvestigation";
 
-type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive";
-type Evidence = "letter" | "draft" | "laptop" | "invoice" | "drug";
+type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive" | "guFiles" | "guWechat" | "full";
+type Evidence = "letter" | "draft" | "laptop" | "invoice" | "drug" | "betrayal" | "breakup" | "medical";
 
 const chapters = [
   ["序", "迟到的婚讯"],
@@ -40,6 +41,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [passwordHint, setPasswordHint] = useState(false);
   const [laptopOpen, setLaptopOpen] = useState(false);
+  const [device, setDevice] = useState<"shen" | "gu">("shen");
   const [weekTwo, setWeekTwo] = useState(false);
   const [showMap, setShowMap] = useState(false);
 
@@ -48,17 +50,21 @@ export default function Home() {
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        setPhase(data.phase ?? 0);
-        setSeen(data.seen ?? []);
-        setLaptopOpen(data.laptopOpen ?? false);
-        setWeekTwo(data.weekTwo ?? false);
+        const timer = window.setTimeout(() => {
+          setPhase(data.phase ?? 0);
+          setSeen(data.seen ?? []);
+          setLaptopOpen(data.laptopOpen ?? false);
+          setDevice(data.device ?? "shen");
+          setWeekTwo(data.weekTwo ?? false);
+        }, 0);
+        return () => window.clearTimeout(timer);
       } catch {}
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem("jia-prototype", JSON.stringify({ phase, seen, laptopOpen, weekTwo }));
-  }, [phase, seen, laptopOpen, weekTwo]);
+    window.localStorage.setItem("jia-prototype", JSON.stringify({ phase, seen, laptopOpen, weekTwo, device }));
+  }, [phase, seen, laptopOpen, weekTwo, device]);
 
   const addEvidence = (item: Evidence) => {
     setSeen((old) => (old.includes(item) ? old : [...old, item]));
@@ -66,11 +72,12 @@ export default function Home() {
 
   const objective = useMemo(() => {
     if (weekTwo) return "同步取得国内外证据，在转运前找到顾盼";
+    if (device === "gu") return seen.includes("drug") ? "恢复顾盼的微信聊天备份" : "调查 H.Q. 的治疗订单";
     if (laptopOpen) return "查明顾盼离开前经历了什么";
     if (phase >= 3) return "整理 B-17 寄存仓中的物品";
     if (phase >= 2) return "在72小时内前往北港寄存中心";
     return "阅读刘涵发来的消息";
-  }, [phase, laptopOpen, weekTwo]);
+  }, [phase, laptopOpen, weekTwo, device, seen]);
 
   const open = (app: AppId) => {
     setActiveApp(app);
@@ -85,7 +92,7 @@ export default function Home() {
 
   const reset = () => {
     window.localStorage.removeItem("jia-prototype");
-    setPhase(0); setSeen([]); setLaptopOpen(false); setWeekTwo(false);
+    setPhase(0); setSeen([]); setLaptopOpen(false); setWeekTwo(false); setDevice("shen");
     setActiveApp(null); setNotice(null); setPassword("");
   };
 
@@ -109,11 +116,11 @@ export default function Home() {
   }
 
   return (
-    <main className={`desktop ${weekTwo ? "week-two" : ""}`}>
-      <div className="wallpaper-mark">望</div>
+    <main className={`desktop ${weekTwo ? "week-two" : ""} ${device === "gu" ? "gu-desktop" : ""}`}>
+      <div className="wallpaper-mark">{device === "gu" ? "盼" : "望"}</div>
       <header className="system-bar">
-        <div className="brand-mark">嫁 / JIA</div>
-        <div className="chapter-label">{weekTwo ? "第二周目 · 左望右盼" : "第一周目 · 她为何离开"}</div>
+        <div className="brand-mark">{device === "gu" ? "GU PAN · LOCAL DEVICE" : "嫁 / JIA"}</div>
+        <div className="chapter-label">{weekTwo ? "第二周目 · 左望右盼" : device === "gu" ? "旧电脑 · 最后同步于 2022" : "第一周目 · 她为何离开"}</div>
         <div className="system-actions">
           <button onClick={() => setShowMap(true)}>故事图谱</button>
           <button onClick={reset}>重置</button>
@@ -130,12 +137,20 @@ export default function Home() {
       ) : (
         <>
           <section className="icon-grid" aria-label="桌面应用">
-            <DesktopIcon label="微信" symbol="聊" badge={phase === 0} onClick={() => open("wechat")} />
-            <DesktopIcon label="邮箱" symbol="邮" badge={phase >= 2} onClick={() => open("mail")} />
-            <DesktopIcon label="备忘录" symbol="记" onClick={() => open("memo")} />
-            <DesktopIcon label="B-17 寄存仓" symbol="箱" locked={phase < 3} onClick={() => phase >= 3 && open("files")} />
-            <DesktopIcon label="浏览器" symbol="网" locked={!laptopOpen} onClick={() => laptopOpen && open("browser")} />
-            <DesktopIcon label="调查档案" symbol="档" onClick={() => open("archive")} />
+            {device === "shen" ? <>
+              <DesktopIcon label="微信" symbol="聊" badge={phase === 0} onClick={() => open("wechat")} />
+              <DesktopIcon label="邮箱" symbol="邮" badge={phase >= 2} onClick={() => open("mail")} />
+              <DesktopIcon label="备忘录" symbol="记" onClick={() => open("memo")} />
+              <DesktopIcon label="B-17 寄存仓" symbol="箱" locked={phase < 3} onClick={() => phase >= 3 && open("files")} />
+              <DesktopIcon label="顾盼的旧电脑" symbol="盼" locked={!laptopOpen} onClick={() => laptopOpen && setDevice("gu")} />
+              <DesktopIcon label="调查档案" symbol="档" onClick={() => open("archive")} />
+            </> : <>
+              <DesktopIcon label="个人文件" symbol="文" onClick={() => open("guFiles")} />
+              <DesktopIcon label="浏览器" symbol="网" onClick={() => open("browser")} />
+              <DesktopIcon label="微信" symbol="聊" locked={!seen.includes("drug")} onClick={() => seen.includes("drug") && open("guWechat")} />
+              <DesktopIcon label="调查档案" symbol="档" onClick={() => open("archive")} />
+              <DesktopIcon label="返回沈望电脑" symbol="望" onClick={() => { setDevice("shen"); setActiveApp(null); }} />
+            </>}
           </section>
 
           <aside className="memo-widget">
@@ -150,8 +165,9 @@ export default function Home() {
               {seen.includes("draft") && <li>2万美元本票从未兑现</li>}
               {seen.includes("letter") && <li>郝倩隐瞒了一件无法原谅的事</li>}
               {laptopOpen && <li>顾盼保存了加密调查资料</li>}
+              {device === "gu" && <li>最后同步时间停在2022年</li>}
             </ul>
-            <blockquote>{laptopOpen ? "她试着告诉过我。是我没有让她说完。" : "她已经有新的生活了。把东西收好，就回来。"}</blockquote>
+            <blockquote>{device === "gu" ? "这不是她留给我的遗书。这是一场没有完成的调查。" : laptopOpen ? "她试着告诉过我。是我没有让她说完。" : "她已经有新的生活了。把东西收好，就回来。"}</blockquote>
           </aside>
         </>
       )}
@@ -163,7 +179,7 @@ export default function Home() {
       )}
 
       {activeApp && !weekTwo && (
-        <div className="window-shell" role="dialog" aria-modal="true">
+        <div className={`window-shell ${activeApp === "full" ? "full-window" : ""}`} role="dialog" aria-modal="true">
           <div className="window-top">
             <span>{appTitle(activeApp)}</span>
             <button aria-label="关闭窗口" onClick={() => setActiveApp(null)}>×</button>
@@ -187,8 +203,11 @@ export default function Home() {
                 }}
               />
             )}
+            {activeApp === "guFiles" && <GuFiles />}
+            {activeApp === "guWechat" && <WeChatBackup seen={seen} addEvidence={addEvidence} />}
             {activeApp === "browser" && <Browser addEvidence={addEvidence} seen={seen} />}
-            {activeApp === "archive" && <Archive seen={seen} laptopOpen={laptopOpen} onWeekTwo={() => { setWeekTwo(true); setActiveApp(null); }} />}
+            {activeApp === "archive" && <Archive seen={seen} laptopOpen={laptopOpen} onWeekTwo={() => { setWeekTwo(true); setActiveApp(null); }} onFull={()=>setActiveApp("full")} />}
+            {activeApp === "full" && <FullInvestigation onClose={()=>setActiveApp(null)} />}
           </div>
         </div>
       )}
@@ -262,24 +281,64 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
       {selected === "letter" && <article><p className="stamp">退件 · 2022</p><h2>寄件人：郝倩</h2><p>信封底部已经破损，信纸从里面滑了出来。</p><blockquote>“如果你不能原谅我，请至少知道我的痛苦……但请相信我，这并不全是我的错。”</blockquote><p>沈望听顾盼提过这个名字，但从未见过她。</p></article>}
       {selected === "draft" && <article><p className="stamp">未兑现</p><h2>USD 20,000</h2><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code><blockquote>“收下它。忘记那天晚上。这对所有人都好。”</blockquote></article>}
       {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面：今天开始，不再只是搭档。</p></article>}
-      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "欢迎回来，顾盼" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>回国材料</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>桌面里有大量加密内容。浏览器历史仍保留一笔治疗订单。</p></>}</article>}
+      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "欢迎回来，顾盼" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>回国材料</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。请关闭窗口，从桌面进入她的电脑。</p></>}</article>}
     </section>
   </div>;
 }
 
 function Browser({ addEvidence, seen }: { addEvidence: (e: Evidence) => void; seen: Evidence[] }) {
   const [query, setQuery] = useState("");
+  const [portal, setPortal] = useState(false);
+  const [patient, setPatient] = useState("");
+  const [visit, setVisit] = useState("");
+  const [access, setAccess] = useState("");
+  const [portalError, setPortalError] = useState(false);
   const found = /harbor|港湾/i.test(query);
+  const medicalOpen = patient.toUpperCase() === "GP-221109" && visit === "20221109" && access === "7304";
+  if (portal) return <div className="browser-view medical-portal"><div className="address"><span>锁</span><b>North Harbor Medical · Patient Portal</b></div>
+    {!medicalOpen ? <section className="portal-login"><p className="eyebrow">授权设备 · 历史病例</p><h2>患者门户</h2><p>请从检查单、检验条码和复诊卡中还原访问信息。</p><input placeholder="患者编号" value={patient} onChange={(e)=>setPatient(e.target.value)}/><input placeholder="就诊日期 YYYYMMDD" value={visit} onChange={(e)=>setVisit(e.target.value)}/><input placeholder="病例访问码" value={access} onChange={(e)=>setAccess(e.target.value)}/><button className="primary dark" onClick={()=>setPortalError(true)}>读取历史记录</button>{portalError && <p className="hint">信息不匹配。检查“待整理”中的文件名与条码。</p>}</section> : <section className="medical-record"><p className="stamp">患者：GU PAN · 2022.11.09</p><h2>急诊与复诊记录</h2><div className="record-row"><b>急诊描述</b><span>意识丧失、恶心、记忆缺失；患者陈述可能遭到药物控制与侵犯。</span></div><div className="record-row"><b>法医取证</b><span>已完成证据保存；扩展毒理项目另行送检。</span></div><div className="record-row alert"><b>HSV-2</b><span>阳性。建议抗病毒治疗与持续心理支持。感染可管理，检测不能判断具体感染来源与时间。</span></div><div className="record-row"><b>后续</b><span>心理咨询预约：患者取消。</span></div><button className="primary dark" onClick={()=>addEvidence("medical")}>{seen.includes("medical") ? "已归档" : "保存医疗证据"}</button></section>}
+  </div>;
   return <div className="browser-view"><div className="address"><span>⌕</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="搜索 Harborwell Behavioral Services"/></div>
-    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button></section> : <section className="search-results"><p>搜索结果</p><h2>Harborwell Behavioral Services</h2><p>提供药物依赖、戒断管理与28天住院支持的行为健康机构。出于隐私保护，公开页面不展示患者诊断。</p><div className="result-card"><b>Residential Treatment Program</b><span>药物依赖住院治疗 · 28天</span></div><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已加入备忘录" : "确认线索：H.Q.可能是郝倩"}</button></section>}
+    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button>{seen.includes("drug") && <button onClick={()=>setPortal(true)}>打开医院患者门户</button>}</section> : <section className="search-results"><p>搜索结果</p><h2>Harborwell Behavioral Services</h2><p>提供药物依赖、戒断管理与28天住院支持的行为健康机构。出于隐私保护，公开页面不展示患者诊断。</p><div className="result-card"><b>Residential Treatment Program</b><span>药物依赖住院治疗 · 28天</span></div><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已加入备忘录" : "确认线索：H.Q.可能是郝倩"}</button>{seen.includes("drug") && <button className="secondary" onClick={()=>setPortal(true)}>根据检查单进入医院患者门户</button>}</section>}
   </div>;
 }
 
-function Archive({ seen, laptopOpen, onWeekTwo }: { seen: Evidence[]; laptopOpen: boolean; onWeekTwo: () => void }) {
+function GuFiles() {
+  const [file, setFile] = useState<string | null>(null);
+  return <div className="gu-files">
+    <aside>
+      {[
+        ["回国材料", "return"], ["画", "art"], ["待整理", "todo"], ["聊天备份", "backup"],
+      ].map(([label, id]) => <button key={id} onClick={() => setFile(id)}>{label}<small>{id === "backup" ? "已加密" : "4 项"}</small></button>)}
+    </aside>
+    <section>
+      {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
+      {file === "return" && <article><p className="stamp">未完成</p><h2>回国与复学</h2><ul><li>暂停学业申请.pdf</li><li>退租确认.pdf</li><li>回国航班_未同步.pdf</li><li>复学计划_草稿.docx</li></ul><p>所有文件都显示：她计划暂时离开，而不是永远放弃学业。</p></article>}
+      {file === "art" && <article><p className="stamp">图片素材占位</p><h2>《向阳处》早期草稿</h2><div className="asset-slot">后续生成：顾盼画作 / 窗边植物 / 未完成旅行地图</div><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></article>}
+      {file === "todo" && <article><p className="stamp">17项未上传</p><h2>待整理</h2><ul><li>医院_患者编号_GP-221109.jpg</li><li>复诊卡_2022-11-09.pdf</li><li>检验条码_7304.png</li><li>HM-2217_未兑现.pdf</li><li>举报材料_03.tmp</li><li>酒吧页面缓存.dat</li></ul><p>大部分内容无法直接打开，需要从浏览器历史和聊天记录中寻找上下文。</p></article>}
+      {file === "backup" && <article><p className="stamp">WECHAT FILES</p><h2>Backup_2022</h2><p>在线登录需要手机确认。顾盼在本机留下了一份离线聊天备份。</p><div className="locked-panel">迁移密码提示：左望右盼<br/><small>完成治疗订单调查后开放恢复谜题</small></div></article>}
+    </section>
+  </div>;
+}
+
+function WeChatBackup({ seen, addEvidence }: { seen: Evidence[]; addEvidence: (e: Evidence)=>void }) {
+  const [code, setCode] = useState("");
+  const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"hq"|"sw"|"letter">("hq");
+  if (!open) return <div className="backup-view"><p className="stamp">本地备份 · Backup_2022</p><h2>迁移密码</h2><p>顾盼留下的提示只有四个字：<b>左望右盼</b></p><div className="cipher-grid"><span><b>1</b> / 7</span><span>6 / <b>0</b></span><span><b>2</b> / 9</span><span>8 / <b>1</b></span></div><p className="cipher-help">从左侧的“望”开始，再到右侧的“盼”，交替读取。</p><input value={code} onChange={(e)=>setCode(e.target.value)} maxLength={4} placeholder="四位迁移密码"/><button className="primary dark" onClick={()=>code==="1021"&&setOpen(true)}>恢复离线聊天</button>{code && code!=="1021" && <p className="hint">顺序不对。左望，右盼。</p>}</div>;
+  return <div className="wechat-backup"><aside><button className={tab==="hq"?"active":""} onClick={()=>setTab("hq")}>郝倩</button><button className={tab==="sw"?"active":""} onClick={()=>setTab("sw")}>沈望</button><button className={tab==="letter"?"active":""} onClick={()=>setTab("letter")}>分手信草稿</button></aside><section>
+    {tab==="hq" && <article><p className="stamp">2022.10.28 · 事发次日</p><h2>你怎么回到家的？</h2><div className="transcript"><p><b>顾盼：</b>昨晚到底发生了什么？我为什么会在家？</p><p><b>郝倩：</b>我提前走了。你喝多了，应该是酒吧的人送你的。</p><p><b>顾盼：</b>他们怎么知道我住在哪里？我手机有密码，也没有叫车记录。</p><p><b>顾盼：</b>门没有被撬过。除了你，还有谁有我家的钥匙？</p><p><b>郝倩：</b>我只是把地址告诉他们。我真的没有跟着去。</p></div><button className="primary dark" onClick={()=>addEvidence("betrayal")}>{seen.includes("betrayal")?"矛盾已标记":"标记证词矛盾"}</button></article>}
+    {tab==="sw" && <article><p className="stamp">语音通话 · 02分17秒</p><h2>没有说完的话</h2><div className="transcript"><p><b>顾盼：</b>昨晚在酒吧，我可能遇到了一些事……</p><p><b>沈望：</b>我早就说过那边酒吧很乱。真想去的话，至少等我过去，或者提前告诉我。</p><p><b>顾盼：</b>你说得对。是我不该去。</p></div><blockquote>未发送：我本来想告诉你，昨晚可能有人伤害了我。可是爸爸妈妈也问我为什么要去。你也这样问。</blockquote></article>}
+    {tab==="letter" && <article><p className="stamp">版本历史 · 4处异常字符</p><h2>分手信</h2><div className="breakup-letter"><p>沈望：</p><p>这段时间我想了很久。我们隔着时差，生活已经越来越不一<em>d</em>样。</p><p>我不想再等你，也不想让你<em>r</em>继续等我。</p><p>一直跑着实在太累了，我决定停下来。</p><p>请尊重我的选择，我需要安<em>u</em>静一会，不要来找我。</p><p>不是因为你做错了什么，只是我不再想和你一起计划以后。</p><p>到这里<em>g</em>吧。</p><p>顾盼</p></div><button className="primary dark" onClick={()=>addEvidence("breakup")}>{seen.includes("breakup")?"隐藏信息：DRUG":"提取异常字符"}</button></article>}
+  </section></div>;
+}
+
+function Archive({ seen, laptopOpen, onWeekTwo, onFull }: { seen: Evidence[]; laptopOpen: boolean; onWeekTwo: () => void; onFull:()=>void }) {
   return <div className="archive-view"><p className="eyebrow">调查原型 · 当前完成度</p><h2>{Math.min(100, seen.length * 16 + (laptopOpen ? 20 : 0))}%</h2><div className="progress"><i style={{ width: `${Math.min(100, seen.length * 16 + (laptopOpen ? 20 : 0))}%` }} /></div>
     <h3>一周目核心证据</h3><ul><li className={seen.includes("letter") ? "done" : ""}>郝倩的破损密信</li><li className={seen.includes("draft") ? "done" : ""}>未兑现的2万美元本票</li><li className={laptopOpen ? "done" : ""}>顾盼旧电脑</li><li className={seen.includes("drug") ? "done" : ""}>隐晦治疗订单</li></ul>
     <p className="prototype-note">文字初稿已接入完整故事骨架。后续将在这里继续加入微信备份、学生身份伪造、黑话字典、管理员后台与郝倩对质。</p>
-    {laptopOpen && seen.includes("letter") && seen.includes("draft") && <button className="primary dark" onClick={onWeekTwo}>预览第二周目双屏框架</button>}
+    {laptopOpen && seen.includes("letter") && seen.includes("draft") && <button className="primary dark" onClick={onFull}>继续完整调查</button>}
+    <button className="secondary" onClick={onWeekTwo}>预览双屏桌面框架</button>
   </div>;
 }
 
@@ -289,5 +348,5 @@ function DesktopPane({ side, name, task }: { side: string; name: string; task: s
 }
 
 function appTitle(app: AppId) {
-  return ({ wechat: "微信", mail: "邮箱", memo: "备忘录", files: "北港寄存中心 · B-17", browser: "浏览器", archive: "调查档案" })[app];
+  return ({ wechat: "微信", mail: "邮箱", memo: "备忘录", files: "北港寄存中心 · B-17", browser: "浏览器", archive: "调查档案", guFiles: "顾盼的个人文件", guWechat: "微信离线备份", full:"完整调查" })[app];
 }
