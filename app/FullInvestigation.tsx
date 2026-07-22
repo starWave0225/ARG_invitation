@@ -27,6 +27,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
   const [answer, setAnswer] = useState("");
   const [proof, setProof] = useState<number[]>([]);
   const [mementos, setMementos] = useState(1);
+  const [aidView, setAidView] = useState<"public"|"admin">("public");
   useEffect(()=>{ const n=Number(localStorage.getItem("jia-full-step")||0); const timer=window.setTimeout(()=>setStep(n),0); return ()=>window.clearTimeout(timer); },[]);
   const go=(n:number)=>{setStep(n);setAnswer("");localStorage.setItem("jia-full-step",String(n));};
   const addProof=(n:number)=>setProof(p=>p.includes(n)?p:[...p,n]);
@@ -58,9 +59,20 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button disabled={answer!=="顾盼"} onClick={()=>go(3)}>确认字典</button>
       </Scene>}
       {step===3 && <Scene eyebrow="互助会管理员后台" title="HengMu">
-        <p>置顶消息经黑话翻译后给出共享后台凭据。后台没有展示侵害视频，只保留足以举证的索引、日志和照片。</p>
-        <div className="evidence-wall"><Card title="HM-2217" text="GU PAN\n非成员 / 干扰者 / 高风险"/><Card title="营救记录" text="顾盼独自带走 H.Q.\n监控正脸已入库"/><Card title="现场照片" text="[图片素材槽]\n郝倩瘫坐在摄像机后方"/><Card title="钥匙记录" text="H.Q.随车返回\n使用备用钥匙开门"/></div>
-        <button onClick={()=>{addProof(0);addProof(1);go(4)}}>导出日志并寻找郝倩</button>
+        <div className="aid-browser">
+          <div className="aid-address"><span>↻</span><span>🔒</span><b>yuanfancommunity.org</b><small>EN　中文</small></div>
+          {aidView==="public" ? <div className="aid-public">
+            <nav><strong><i>远</i> 远帆社区互助会</strong><span>关于我们</span><span>支持项目</span><span>新生指南</span><span>活动日历</span><button>寻求帮助</button></nav>
+            <div className="aid-hero"><div><small>YUANFAN COMMUNITY SUPPORT</small><h2>异乡不必独行。</h2><p>由留学生发起的非营利互助网络，为新生提供接机、临时住宿、心理支持转介与同伴陪伴。</p><button onClick={()=>setAidView("admin")}>成员登录</button></div><div className="aid-photo"><span>远帆秋季迎新 · 2022</span></div></div>
+            <div className="aid-stats"><span><b>1,280+</b>累计服务学生</span><span><b>46</b>认证志愿者</span><span><b>24/7</b>紧急同伴热线</span><span><b>12</b>合作校园组织</span></div>
+            <section className="aid-programs"><h3>我们能提供什么</h3><div><article><b>落地安顿</b><p>接机、短期住宿信息和生活手续指引。</p></article><article><b>健康转介</b><p>连接经过审核的医疗与心理健康资源。</p></article><article><b>同伴支持</b><p>保密倾听与危机后的陪伴，不替代专业医疗。</p></article></div></section>
+            <footer>Registered Student Organization · Privacy · Safeguarding · Contact</footer>
+          </div> : <div className="aid-admin">
+            <aside><b>YF Connect</b><small>STAFF CONSOLE</small><button className="active">概览</button><button>个案队列</button><button>成员档案</button><button>车辆排班</button><button>报销与结算</button><button>文件中心</button><hr/><span>HD-ADMIN　● 在线</span></aside>
+            <section><header><div><small>CASE OPERATIONS</small><h2>个案与外联工作台</h2></div><button onClick={()=>setAidView("public")}>查看公开网站</button></header><div className="admin-alert">⚠ 共享账号已连续 917 天未更改密码　·　最后登录：2025-12-03 18:42</div><div className="admin-metrics"><span><b>18</b>进行中</span><span><b>7</b>待回访</span><span><b>4</b>高风险标记</span></div><div className="admin-table"><div className="thead"><b>个案编号</b><b>姓名</b><b>分类</b><b>最后更新</b><b>权限</b></div><div><span>HM-2217</span><strong>GU PAN</strong><span className="risk">非成员 / 高风险</span><span>2022-10-29</span><span>受限</span></div><div><span>HQ-2184</span><strong>H. Q.</strong><span>住院转介</span><span>2022-11-03</span><span>普通</span></div></div><h3>HM-2217 · 附件与行动日志</h3><div className="evidence-wall"><Card title="营救记录" text="顾盼独自带走 H.Q.\n监控正脸已入库"/><Card title="现场照片" text="[证物缩略图待补]\n郝倩位于摄像机后方"/><Card title="钥匙记录" text="H.Q.随车返回\n使用备用钥匙开门"/><Card title="外部标签" text="HengMu / 路线已建档\n等待结算"/></div></section>
+          </div>}
+        </div>
+        {aidView==="admin" && <button onClick={()=>{addProof(0);addProof(1);go(4)}}>导出日志并寻找郝倩</button>}
       </Scene>}
       {step===4 && <Scene eyebrow="郝倩 · 现在使用婚后姓名" title="她选择关门">
         <div className="dialogue"><p><b>沈望：</b>门是你打开的。你就在摄像机后面。</p><p><b>郝倩：</b>他们不让我走。我也是受害者。</p><p><b>沈望：</b>顾盼替你付了治疗费，也救过你。</p><p><b>郝倩：</b>我已经写信道歉了。她没收到，不是我的错。你为什么一定要毁掉两个活着的人？</p></div>
