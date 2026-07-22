@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source": "cast-board-v1.png",
+  "characters": [
+    { "id": "gu-pan", "name": "顾盼", "role": "女主角", "image": "/characters/gu-pan.png" },
+    { "id": "shen-wang", "name": "沈望", "role": "男主角", "image": "/characters/shen-wang.png" },
+    { "id": "liu-han", "name": "刘涵", "role": "国内调查助手", "image": "/characters/liu-han.png" },
+    { "id": "chen-fang", "name": "陈放", "role": "临川警察", "image": "/characters/chen-fang.png" },
+    { "id": "hao-qian", "name": "郝倩", "role": "顾盼的旧友", "image": "/characters/hao-qian.png" },
+    { "id": "han-duo", "name": "韩铎", "role": "关键反派", "image": "/characters/han-duo.png" },
+    { "id": "gu-jianguo", "name": "顾建国", "role": "顾盼父亲", "image": "/characters/gu-jianguo.png" },
+    { "id": "zhou-xiulan", "name": "周秀兰", "role": "顾盼母亲", "image": "/characters/zhou-xiulan.png" },
+    { "id": "gu-chengyao", "name": "顾承耀", "role": "顾盼弟弟", "image": "/characters/gu-chengyao.png" },
+    { "id": "shao-minghui", "name": "邵明辉", "role": "原婚约新郎", "image": "/characters/shao-minghui.png" },
+    { "id": "liang-yu", "name": "梁昱", "role": "冥婚对象", "image": "/characters/liang-yu.png" },
+    { "id": "hao-qian-husband", "name": "郝倩丈夫", "role": "不知情家属", "image": "/characters/hao-qian-husband.png" }
+  ]
+}
