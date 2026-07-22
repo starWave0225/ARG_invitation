@@ -3,6 +3,24 @@
 import { useEffect, useState } from "react";
 
 const evidenceNames = ["顾盼的高风险标记", "酒吧后台照片", "境外网站结算", "顾父中断报警", "恒慕转运单", "郝倩完整证词"];
+const sceneMeta = [
+  ["学生社区", "身份注册", "PORTAL"], ["微信", "韩铎朋友圈", "WECHAT"], ["CorpusLens", "黑话语料", "TERMINAL"], ["远帆后台", "HengMu", "ADMIN"],
+  ["当面对质", "郝倩", "DIALOGUE"], ["第一结局", "迟来的回望", "ENDING"], ["协作桌面", "匿名访客", "SPLIT"], ["现场勘查", "晴川公寓", "FORENSIC"],
+  ["浏览器", "原婚约", "SEARCH"], ["文档检验", "摩斯封边", "DOCUMENT"], ["企业微信", "圆满方案", "SERVICE"], ["案件系统", "接警时间轴", "POLICE"],
+  ["联合行动", "证据链", "COUNTDOWN"], ["证人讯问", "郝倩自首", "TESTIMONY"], ["未迟画廊", "向阳而生", "GALLERY"], ["梦境", "镜花水月", "DREAM"]
+];
+const portraits: Record<number, {src:string;name:string;note:string}> = {
+  1:{src:"/characters/han-duo.png",name:"韩铎",note:"远帆互助会负责人"},
+  3:{src:"/characters/gu-pan.png",name:"顾盼 / HM-2217",note:"高风险目标"},
+  4:{src:"/characters/hao-qian.png",name:"郝倩",note:"拒绝正式作证"},
+  6:{src:"/characters/liu-han.png",name:"刘涵",note:"国内调查端"},
+  8:{src:"/characters/shao-minghui.png",name:"邵明辉",note:"原婚约新郎"},
+  10:{src:"/characters/han-duo.png",name:"专属顾问：韩铎",note:"圆满方案负责人"},
+  11:{src:"/characters/chen-fang.png",name:"陈放",note:"临川公安"},
+  13:{src:"/characters/hao-qian.png",name:"郝倩",note:"关键证人"},
+  14:{src:"/characters/gu-pan.png",name:"顾盼",note:"《向阳处》作者"},
+  15:{src:"/characters/shen-wang.png",name:"沈望",note:"梦醒之后"}
+};
 
 export function FullInvestigation({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
@@ -13,9 +31,15 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
   const go=(n:number)=>{setStep(n);setAnswer("");localStorage.setItem("jia-full-step",String(n));};
   const addProof=(n:number)=>setProof(p=>p.includes(n)?p:[...p,n]);
 
-  return <div className="full-investigation">
-    <header><button onClick={onClose}>← 返回桌面</button><div><b>案件 HM-2217</b><span>{step < 5 ? "第一周目 · 国外" : "第二周目 · 左望右盼"}</span></div><small>证据 {proof.length}/6 · 信物 {mementos}/10</small></header>
-    <main>
+  const meta=sceneMeta[step];
+  const actor=portraits[step];
+  return <div className={`full-investigation step-${step}`}>
+    <header><button onClick={onClose}>← 返回桌面</button><div><b>{meta[0]}</b><span>{meta[1]} · {meta[2]}</span></div><small>证据 {proof.length}/6 · 信物 {mementos}/10</small></header>
+    <div className="investigation-layout">
+      <nav className="case-rail" aria-label="调查进度">{sceneMeta.map((item,i)=><button key={i} className={i===step?"active":i<step?"done":""} disabled={i>step} onClick={()=>i<=step&&go(i)}><b>{String(i+1).padStart(2,"0")}</b><span>{item[0]}</span></button>)}</nav>
+      <main>
+      <div className="template-chrome"><span>{meta[2]}</span><i/><i/><i/></div>
+      {actor && <aside className="actor-card"><img src={actor.src} alt={actor.name}/><div><b>{actor.name}</b><span>{actor.note}</span></div></aside>}
       {step===0 && <Scene eyebrow="远帆学生社区" title="创建一个不存在的学生">
         <p>公开名单揭示了学号结构：入学年份＋专业代码＋姓名首字母＋尚未占用的六位数字。学校旧社区只核验格式，没有连接教务系统。</p>
         <div className="source-grid"><Card title="专业目录" text="Computer Science — CS\nData Science — DS\nVisual Communication — VC"/><Card title="姓名" text="林川 / Lin Chuan\n首字母：LC"/><Card title="可用序号" text="184206 — 未占用"/></div>
@@ -100,7 +124,8 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <p>梦中的沈望在事发前一晚抵达国外，顾盼完成学业，两人在2026年结婚。钟表最终停住，顾盼让他醒来，替她去看那些没见过的地方。</p>
         <footer>死亡没有被改写。<br/>但在无人能够夺走的梦里，他们曾有过完整的一生。</footer>
       </Scene>}
-    </main>
+      </main>
+    </div>
   </div>;
 }
 
