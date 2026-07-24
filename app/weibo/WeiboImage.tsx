@@ -2,7 +2,7 @@
 
 import {useEffect,useState} from "react";
 
-type WeiboImageKind="map"|"snow"|"wedding"|"lab";
+type WeiboImageKind="map"|"snow"|"wedding"|"lab"|"photo";
 
 const imageSources:Partial<Record<WeiboImageKind,string>>={
   map:"https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1600&q=90",
@@ -10,7 +10,7 @@ const imageSources:Partial<Record<WeiboImageKind,string>>={
   lab:"/evidence/gupan-patient-portal-slip.png",
 };
 
-export default function WeiboImage({kind,label}:{kind:WeiboImageKind;label:string}){
+export default function WeiboImage({kind,label,src}:{kind:WeiboImageKind;label:string;src?:string}){
   const [open,setOpen]=useState(false);
 
   useEffect(()=>{
@@ -29,7 +29,7 @@ export default function WeiboImage({kind,label}:{kind:WeiboImageKind;label:strin
         <button type="button" className="wb-attachment wb-image-file" onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid="weibo-image-lab">
           ▧　lab_7304.png<small>本地图片 · 点击放大</small>
         </button>:
-        <button type="button" className={`wb-photo ${kind} wb-image-trigger`} onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid={`weibo-image-${kind}`}>
+        <button type="button" className={`wb-photo ${kind} wb-image-trigger`} style={src?{backgroundImage:`linear-gradient(#0001,#0005),url("${src}")`}:undefined} onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid={`weibo-image-${kind}`}>
           <span>{label}</span>
         </button>
     }
@@ -39,7 +39,7 @@ export default function WeiboImage({kind,label}:{kind:WeiboImageKind;label:strin
         <figure onClick={event=>event.stopPropagation()}>
           {kind==="wedding"?
             <div className="hq-wedding-photo wb-wedding-large">WEDDING · 2025<br/><small>婚礼照片预览</small></div>:
-            <img src={imageSources[kind]} alt={label}/>
+            <img src={src??imageSources[kind]} alt={label}/>
           }
           <figcaption>{label}</figcaption>
         </figure>
