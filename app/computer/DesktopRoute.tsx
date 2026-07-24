@@ -622,7 +622,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     刘涵:[{text:"临川今晚雾很大，桥上的灯倒是比平时好看。",time:"2025年12月1日"},{text:"旧相机修好了。试卷拍完才发现，最喜欢的还是那些没对准焦的。",time:"2025年10月9日"}],
     郝倩:[{text:"终于把婚礼照片整理完。日子会继续，过去的就留在过去吧。",time:"2025年10月18日",wedding:true},{text:"换了号码。校友请备注学校与姓名。",time:"2022年12月2日"}],
     韩铎:[
-      {text:"寂寞留学生帅哥们交朋友的群，图中自取。",time:"2022年10月20日",pinned:true,gallery:[
+      {text:"寂寞留学生帅哥们交朋友的群，图中自取。",time:"2025年11月30日",pinned:true,gallery:[
         {src:"/moments/han-duo/party-1-clean.png",alt:"酒吧聚会照片，右下角留有字母D"},
         {src:"/moments/han-duo/party-2-clean.png",alt:"卡拉OK聚会照片，右下角留有字母O"},
         {src:"/moments/han-duo/party-3-clean.png",alt:"屋顶聚会照片，右下角留有字母E"},
@@ -646,7 +646,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false)}} onKeyDown={e=>e.key==="Enter"&&searchContact()} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
       {result==="hq"&&<article className="wx-driver-result"><img src="/characters/wechat-hao-qian-wedding.png" alt="H.Q."/><span><b>H.Q.</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
       {result==="hd"&&<article className="wx-driver-result"><img src="/characters/han-duo.png" alt="韩铎"/><span><b>韩铎 · Han Duo</b><small>微信号：hd_047_abroad　地区：海外</small></span>{hdAdded?<em>已添加</em>:!hdRequest?<button onClick={()=>setHdRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>你的大学名称？</b><input value={hdAnswer} onChange={e=>{setHdAnswer(e.target.value);setHdError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHdFriend()} placeholder="输入大学名称"/><button onClick={verifyHdFriend}>提交答案</button>{hdError&&<p>回答不正确。请输入海外就读的大学名称。</p>}<em>可填写学校的中文名或英文名。</em></div>}</article>}
-      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>远帆《2022 秋季新生指南》中的临时互助群识别语是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：在远帆网站右键点击“新生指南”。</em></div>}</article>}
+      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><span className="wx-driver-question">请提供网站上的<strong>入群口令</strong></span><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入入群口令"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>入群口令不正确。群主拒绝了本次申请。</p>}<em>提示：答案在远帆网站的“成员公告”中。</em></div>}</article>}
       {!result&&query&&<p className="wx-no-result">未找到该用户。请检查完整微信号。</p>}
     </section>}
     {section==="moments"&&<section className="wx-moments"><div className="wx-moments-cover"><span><b>{momentName}</b><img alt={momentName} src={momentAvatar}/></span></div>{momentProfile?<><div className="wx-personal-moments-label"><button onClick={()=>{setMomentProfile(null);setSection("moments")}}>‹ 返回朋友圈</button><span>{momentName}的朋友圈</span></div>{personalMoments[momentName]?.length>0?personalMoments[momentName].map((item,index)=><Moment key={`${momentName}-${index}`} src={momentAvatar} name={momentName} {...item}/>):<div className="wx-empty-moments">该用户暂时没有公开动态。</div>}</>:<>{personalMoments[selfName].map((item,index)=><Moment key={`${selfName}-${index}`} src={profileData[selfName].src} name={selfName} {...item}/>)}{owner==="shen"&&hdAdded&&personalMoments.韩铎.map((item,index)=><Moment key={`韩铎-${index}`} src={profileData.韩铎.src} name="韩铎" {...item}/>) }{owner==="shen"&&added&&personalMoments.郝倩.map((item,index)=><Moment key={`郝倩-${index}`} src={profileData.郝倩.src} name="郝倩" {...item}/>)}</>}</section>}
@@ -725,6 +725,11 @@ function HaoQianConfrontation(){
   const [evidence,setEvidence]=useState<HaoQianEvidence>("none");
   const [tone,setTone]=useState<HaoQianTone>("explain");
   const [hasMedical,setHasMedical]=useState(false);
+  const [sealedEvidenceReady,setSealedEvidenceReady]=useState(false);
+  const [testimonySecured,setTestimonySecured]=useState(false);
+  const [testimonyStep,setTestimonyStep]=useState(0);
+  const [animatedTestimonyStep,setAnimatedTestimonyStep]=useState<number|null>(null);
+  const [testimonyDeliveryPending,setTestimonyDeliveryPending]=useState(false);
   const [animatedStep,setAnimatedStep]=useState<number|null>(null);
   const [deliveryPending,setDeliveryPending]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
@@ -733,6 +738,10 @@ function HaoQianConfrontation(){
       const data=JSON.parse(localStorage.getItem("jia-prototype")||"{}") as {seen?:string[]};
       setHasMedical(Array.isArray(data.seen)&&data.seen.includes("hq-treatment"));
     }catch{setHasMedical(false)}
+    const secured=localStorage.getItem("jia-hq-testimony-secured")==="true";
+    setSealedEvidenceReady(localStorage.getItem("jia-sealed-evidence-unlocked")==="true");
+    setTestimonySecured(secured);
+    setTestimonyStep(Number(localStorage.getItem("jia-hq-testimony-step")||0)||(secured?9:0));
   };
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
@@ -755,7 +764,7 @@ function HaoQianConfrontation(){
       if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:step>0?"smooth":"auto"});
     });
     return()=>window.cancelAnimationFrame(frame);
-  },[step,evidence,tone,hasMedical]);
+  },[step,evidence,tone,hasMedical,sealedEvidenceReady,testimonySecured,testimonyStep]);
   const scrollToLatest=()=>window.requestAnimationFrame(()=>{
     const panel=threadRef.current;
     if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
@@ -763,7 +772,7 @@ function HaoQianConfrontation(){
   const advance=(next:number)=>{
     localStorage.setItem("jia-hq-confront-step-v4",String(next));
     setAnimatedStep(next);
-    setDeliveryPending([1,4,5,6,8,11,12,20,30,31].includes(next));
+    setDeliveryPending([1,3,4,5,6,7,8,10,11,12,20,30,31,32].includes(next));
     setStep(next);setAnswer("");setError("");
     window.dispatchEvent(new Event("jia-progress"));
   };
@@ -806,6 +815,23 @@ function HaoQianConfrontation(){
     localStorage.setItem("jia-hq-stage","1");
     advance(32);
   };
+  const advanceTestimony=(next:number)=>{
+    if(!sealedEvidenceReady)return;
+    localStorage.setItem("jia-hq-testimony-step",String(next));
+    setAnimatedTestimonyStep(next);
+    setTestimonyDeliveryPending(true);
+    setTestimonyStep(next);
+    window.dispatchEvent(new Event("jia-progress"));
+  };
+  const finishTestimonyDelivery=(completedStep:number)=>{
+    setTestimonyDeliveryPending(false);
+    if(completedStep>=9){
+      localStorage.setItem("jia-hq-testimony-secured","true");
+      localStorage.setItem("jia-hq-stage","2");
+      setTestimonySecured(true);
+      window.dispatchEvent(new Event("jia-progress"));
+    }
+  };
   const inputStyle={width:"100%",margin:"0 0 8px",padding:"10px 12px",border:"1px solid #c4c8c5",borderRadius:"4px",background:"#fff",outline:"none"};
   const optionStyle={width:"100%",margin:"0 0 6px",padding:"10px 12px",border:"1px solid #82aa70",borderRadius:"4px",background:"#e7f4df",color:"#395b31",textAlign:"left" as const};
   const disabledOptionStyle={...optionStyle,opacity:.45,cursor:"not-allowed"};
@@ -814,32 +840,52 @@ function HaoQianConfrontation(){
   const explainHistory=medicalHistory&&tone==="explain"&&(step===12||step>=30);
   const persistHistory=medicalHistory&&tone==="persist"&&(step>=20||step>=30);
   const commonHistory=step>=30;
-  return <section className="wx-lh-dialogue wx-hq-confrontation" style={{gridTemplateRows:"50px minmax(0,1fr) auto"}}>
+  const testimonyActions=[
+    "我找到了所有的记录。你接受了对方的封口费，对吗？",
+    "但你……你们的视频都在暗网上留了备份，你知道吗？",
+    "顾盼的住址，也是你泄露出去的，是吗？",
+    "那天的聚会呢？",
+    "够了！",
+    "你并不是相信了他！那只是你的借口！",
+    "每个人都有趋利避害的本能，但你的沉默，让你成为了罪恶的帮凶。也许事情还有转变的机会，你愿意把这些告诉警方，并为顾盼出庭作证吗？",
+    "他今天不会知道，你如何保证他这一生都不知道？面对顾盼，这些年你心里没有过一丝愧疚吗？",
+    "那么罪恶就继续滋生。我已经失去了顾盼，我不希望更多的人失去他们的爱人、孩子和朋友。",
+  ];
+  return <section className={`wx-lh-dialogue wx-hq-confrontation ${testimonyStep===6?"is-breakdown":""}`} style={{gridTemplateRows:"50px minmax(0,1fr) auto"}}>
     <header><button data-profile="郝倩"><img src="/characters/wechat-hao-qian-wedding.png" alt="郝倩"/><span><b>郝倩</b><small>微信号：hqian_17</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
       <div className="wx-system">你们已经成为好友，可以开始聊天了</div>
       {step>=1&&<><WxBubble src="/characters/shen-wang.png" mine text="我是顾盼的朋友。"/><TimedMessages play={animatedStep===1} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你，你好。"/><WxBubble src="/characters/hao-qian.png" text="顾盼最近还好吗？"/></TimedMessages></>}
       {step>=2&&<WxBubble src="/characters/shen-wang.png" mine text="我……不知道她的近况。找你，是因为有些事情想向你确认。"/>}
-      {step>=3&&<><WxBubble src="/characters/shen-wang.png" mine text="那天到底发生了什么？"/><WxBubble src="/characters/hao-qian.png" text="我不明白你在说什么。"/><div className="wx-system">她没有继续回复。输入事情发生的完整日期，证明你知道自己在问什么。</div></>}
+      {step>=3&&<TimedMessages play={animatedStep===3} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="那天到底发生了什么？"/><WxBubble src="/characters/hao-qian.png" text="我不明白你在说什么。"/><div className="wx-system">她没有继续回复。输入事情发生的完整日期，证明你知道自己在问什么。</div></TimedMessages>}
       {step>=4&&<><WxBubble src="/characters/shen-wang.png" mine text="2022年10月27日。"/><TimedMessages play={animatedStep===4} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你到底是谁？"/><WxBubble src="/characters/hao-qian.png" text="你是远帆互助会的人吗？"/></TimedMessages></>}
       {step>=5&&<><WxBubble src="/characters/shen-wang.png" mine text="不。那是什么？"/><TimedMessages play={animatedStep===5} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="不……"/><WxBubble src="/characters/hao-qian.png" text="我要怎么相信你？"/></TimedMessages></>}
 
       {evidence==="letter"&&step>=6&&<><WxBubble src="/characters/shen-wang.png" mine text="我知道这封信是你写的。"/><TimedMessages play={animatedStep===6} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="信里的话已经说得很清楚了。"/><WxBubble src="/characters/hao-qian.png" text="我没有什么可以再解释的。"/></TimedMessages></>}
-      {evidence==="letter"&&step>=7&&<><WxBubble src="/characters/shen-wang.png" mine text="那些人是谁？"/><WxBubble src="/characters/hao-qian.png" text="我不知道你在说什么。"/></>}
+      {evidence==="letter"&&step>=7&&<TimedMessages play={animatedStep===7} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="那些人是谁？"/><WxBubble src="/characters/hao-qian.png" text="我不知道你在说什么。"/></TimedMessages>}
       {evidence==="letter"&&step>=8&&<><WxBubble src="/characters/shen-wang.png" mine text="是谁逼你做了伤害顾盼的事情？我只想知道到底发生了什么。"/><TimedMessages play={animatedStep===8} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你应该去问远帆的人，而不是我。"/><WxBubble src="/characters/hao-qian.png" text="不要再联系我了。"/><div className="wx-system">郝倩结束了本次对话</div></TimedMessages></>}
 
-      {medicalHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="我查到了港湾康复中心的记录。"/><div className="wx-system">沈望发送了“H.Q.康复项目摘要”</div></>}
-      {medicalHistory&&step>=11&&<><WxBubble src="/characters/shen-wang.png" mine text="我知道你的过去。"/><WxBubble src="/characters/shen-wang.png" mine text="人有犯错的权利。可贵的是面对错误的勇气。"/><TimedMessages play={animatedStep===11} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="面对错误的勇气？"/><WxBubble src="/characters/hao-qian.png" text="你说得可真轻巧。"/><WxBubble src="/characters/hao-qian.png" text="你有当过猎物吗？你爸妈有跟你说过不要在外面过夜，不要一个人走夜路，有没有跟你说过一定要带套？等你在围猎场被人当作猎物，再去探索勇气的意义吧。"/></TimedMessages></>}
+      {medicalHistory&&<TimedMessages play={animatedStep===10} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="我查到了港湾康复中心的记录。"/><div className="wx-system">沈望发送了“H.Q.康复项目摘要”</div></TimedMessages>}
+      {medicalHistory&&step>=11&&<TimedMessages play={animatedStep===11} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="我知道你的过去。"/><WxBubble src="/characters/shen-wang.png" mine text="人有犯错的权利。可贵的是面对错误的勇气。"/><WxBubble src="/characters/hao-qian.png" text="面对错误的勇气？"/><WxBubble src="/characters/hao-qian.png" text="你说得可真轻巧。"/><WxBubble src="/characters/hao-qian.png" text="你有当过猎物吗？你爸妈有跟你说过不要在外面过夜，不要一个人走夜路，有没有跟你说过一定要带套？等你在围猎场被人当作猎物，再去探索勇气的意义吧。"/></TimedMessages>}
 
-      {explainHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="不，我没有评判的资格。"/><WxBubble src="/characters/shen-wang.png" mine text="我只是希望你能把顾盼在国外发生的事情告诉我。我要的是面对真相的勇气，与其说是对你说，不如说也是对我自己说的。"/><WxBubble src="/characters/shen-wang.png" mine text="当时我没有任何渠道知道这些。但我真的很需要知道事情的原委。"/><WxBubble src="/characters/shen-wang.png" mine text="至少，能够解开我的心结。"/><TimedMessages play={animatedStep===12} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="心结？"/><WxBubble src="/characters/hao-qian.png" text="对你来说，那也许是一件没有得到答案的往事。"/><WxBubble src="/characters/hao-qian.png" text="可对我来说，是每天睡前都要祈祷不要遇见的梦魇。"/><WxBubble src="/characters/hao-qian.png" text="你想知道真相，是因为你仍挂念，对吗？"/><WxBubble src="/characters/hao-qian.png" text="可一旦说出来，会有什么后果，你有想过吗？"/><WxBubble src="/characters/hao-qian.png" text="公平和正义，与现在勉强维持的安稳生活相比，究竟哪个更重要？"/></TimedMessages></>}
-      {explainHistory&&commonHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="我没有资格替你决定。"/><WxBubble src="/characters/shen-wang.png" mine text="你可以不说那些不想说的部分，但你想想，顾盼当时把你当作了真正的朋友。她为你支付的账单，都是无声的证明。"/><TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages></>}
+      {explainHistory&&<TimedMessages play={animatedStep===12} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="不，我没有评判的资格。"/><WxBubble src="/characters/shen-wang.png" mine text="我只是希望你能把顾盼在国外发生的事情告诉我。我要的是面对真相的勇气，与其说是对你说，不如说也是对我自己说的。"/><WxBubble src="/characters/shen-wang.png" mine text="当时我没有任何渠道知道这些。但我真的很需要知道事情的原委。"/><WxBubble src="/characters/shen-wang.png" mine text="至少，能够解开我的心结。"/><WxBubble src="/characters/hao-qian.png" text="心结？"/><WxBubble src="/characters/hao-qian.png" text="对你来说，那也许是一件没有得到答案的往事。"/><WxBubble src="/characters/hao-qian.png" text="可对我来说，是每天睡前都要祈祷不要遇见的梦魇。"/><WxBubble src="/characters/hao-qian.png" text="你想知道真相，是因为你仍挂念，对吗？"/><WxBubble src="/characters/hao-qian.png" text="可一旦说出来，会有什么后果，你有想过吗？"/><WxBubble src="/characters/hao-qian.png" text="公平和正义，与现在勉强维持的安稳生活相比，究竟哪个更重要？"/></TimedMessages>}
+      {explainHistory&&commonHistory&&<TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="我没有资格替你决定。"/><WxBubble src="/characters/shen-wang.png" mine text="你可以不说那些不想说的部分，但你想想，顾盼当时把你当作了真正的朋友。她为你支付的账单，都是无声的证明。"/><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages>}
 
-      {persistHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="是的。但这跟男女没有关系。"/><WxBubble src="/characters/shen-wang.png" mine text="我认为我们还年轻。"/><WxBubble src="/characters/shen-wang.png" mine text="不管是什么困难，只要肯试一试，总会有一线机会。"/><WxBubble src="/characters/shen-wang.png" mine text="不管前方是什么，我都不允许自己再失去她一次了。"/><TimedMessages play={animatedStep===20} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你说得好像只要足够坚定，就一定能够把一个人救回来。"/><WxBubble src="/characters/hao-qian.png" text="可是人只有体面下葬，才是死亡吗？"/><WxBubble src="/characters/hao-qian.png" text="我已经死过一次了。你现在只是让我再跳回那个坑里，把土埋过头顶。"/></TimedMessages></>}
+      {persistHistory&&<TimedMessages play={animatedStep===20} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="是的。但这跟男女没有关系。"/><WxBubble src="/characters/shen-wang.png" mine text="我认为我们还年轻。"/><WxBubble src="/characters/shen-wang.png" mine text="不管是什么困难，只要肯试一试，总会有一线机会。"/><WxBubble src="/characters/shen-wang.png" mine text="不管前方是什么，我都不允许自己再失去她一次了。"/><WxBubble src="/characters/hao-qian.png" text="你说得好像只要足够坚定，就一定能够把一个人救回来。"/><WxBubble src="/characters/hao-qian.png" text="可是人只有体面下葬，才是死亡吗？"/><WxBubble src="/characters/hao-qian.png" text="我已经死过一次了。你现在只是让我再跳回那个坑里，把土埋过头顶。"/></TimedMessages>}
       {persistHistory&&step>=21&&<WxBubble src="/characters/shen-wang.png" mine text="听着，郝倩，我知道那段过去对你来说很痛苦。我猜到一定有不好的事情发生，也知道那痛苦一定蔓延到了顾盼身上。我是她当时的男朋友，但我居然什么都不知道，连她的求救都没有察觉。"/>}
-      {persistHistory&&commonHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="也许我做不到让一切回到原点，但我不能看到找到真相的机会，还继续装作什么都没有发生。"/><TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="对不起，我不知道……你是沈望，是吗？你和顾盼真的很像。"/><WxBubble src="/characters/hao-qian.png" text="明明没有人愿意帮我，她还是义无反顾。"/><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages></>}
+      {persistHistory&&commonHistory&&<TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="也许我做不到让一切回到原点，但我不能看到找到真相的机会，还继续装作什么都没有发生。"/><WxBubble src="/characters/hao-qian.png" text="对不起，我不知道……你是沈望，是吗？你和顾盼真的很像。"/><WxBubble src="/characters/hao-qian.png" text="明明没有人愿意帮我，她还是义无反顾。"/><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages>}
 
-      {step>=31&&<><WxBubble src="/characters/shen-wang.png" mine text="10月27日的聚会，是你让她去的？"/><TimedMessages play={animatedStep===31} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="不是我安排的。"/><WxBubble src="/characters/hao-qian.png" text="你要的答案都在这里。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>官方网站 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/hao-qian.png" text="我知道他们还有一个群。"/><WxBubble src="/characters/hao-qian.png" text="我只知道这么多了。"/></TimedMessages></>}
-      {step>=32&&<><WxBubble src="/characters/shen-wang.png" mine text="谢谢。"/><WxBubble src="/characters/hao-qian.png" text="祝你好运。"/><div className="wx-system">首轮对话暂时结束</div></>}
+      {step>=31&&<TimedMessages play={animatedStep===31} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="10月27日的聚会，是你让她去的？"/><WxBubble src="/characters/hao-qian.png" text="不是我安排的。"/><WxBubble src="/characters/hao-qian.png" text="你要的答案都在这里。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>官方网站 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/hao-qian.png" text="我知道他们还有一个群。"/><WxBubble src="/characters/hao-qian.png" text="我只知道这么多了。"/></TimedMessages>}
+      {step>=32&&<TimedMessages play={animatedStep===32} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="谢谢。"/><WxBubble src="/characters/hao-qian.png" text="祝你好运。"/><div className="wx-system">首轮对话暂时结束</div></TimedMessages>}
+      {step>=32&&testimonyStep>=1&&<><div className="wx-system">两组隐藏记录已并入本次对话</div><TimedMessages play={animatedTestimonyStep===1} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(1)}><WxBubble src="/characters/shen-wang.png" mine text="我找到了所有的记录。你接受了对方的封口费，对吗？"/><WxBubble src="/characters/hao-qian.png" text="……"/></TimedMessages></>}
+      {step>=32&&testimonyStep>=2&&<TimedMessages play={animatedTestimonyStep===2} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(2)}><WxBubble src="/characters/shen-wang.png" mine text="但你……你们的视频都在暗网上留了备份，你知道吗？"/><WxBubble src="/characters/hao-qian.png" text="……我，我不知道。"/></TimedMessages>}
+      {step>=32&&testimonyStep>=3&&<TimedMessages play={animatedTestimonyStep===3} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(3)}><WxBubble src="/characters/shen-wang.png" mine text="顾盼的住址，也是你泄露出去的，是吗？"/><WxBubble src="/characters/hao-qian.png" text="我没得选！"/><WxBubble src="/characters/hao-qian.png" text="那次她把我带出他们的地盘，他们就盯上了她！他们用我的照片、视频威胁我，让我继续配合。"/><WxBubble src="/characters/hao-qian.png" text="如果我不这么做……"/></TimedMessages>}
+      {step>=32&&testimonyStep>=4&&<TimedMessages play={animatedTestimonyStep===4} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(4)}><WxBubble src="/characters/shen-wang.png" mine text="那天的聚会呢？"/><WxBubble src="/characters/hao-qian.png" text="聚会……我不知道他们这么狠。"/><WxBubble src="/characters/hao-qian.png" text="他们跟我说，只是想确认顾盼有没有把我的事情说出去，想让她永远沉默。"/><div className="wx-inner-voice">沈望的手止不住地颤抖。虽然他已经在先前的记录里经历了一次心痛和震怒，但当他得知顾盼的善意换来的尽是背叛和侮辱时，他已经快要失去理智。<br/><br/>为什么？究竟是为什么？当时的自己就这样放任顾盼在罪恶的漩涡里挣扎。为什么自己身为她的男友，却没能保护她？</div><WxBubble src="/characters/hao-qian.png" text="我相信了他。"/></TimedMessages>}
+      {step>=32&&testimonyStep>=5&&<TimedMessages play={animatedTestimonyStep===5} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(5)}><WxBubble src="/characters/shen-wang.png" mine text="够了！"/></TimedMessages>}
+      {step>=32&&testimonyStep>=6&&<><div className="wx-hq-blackout" aria-hidden="true"/><TimedMessages play={animatedTestimonyStep===6} interval={850} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(6)}><WxBubble src="/characters/shen-wang.png" mine text="你并不是相信了他！那只是你的借口！"/><WxBubble src="/characters/shen-wang.png" mine text="至少，你很清楚他们都要做什么。我知道……在盼受伤害的时候，你就坐在镜头的后面！你不是什么事都做不了，你是什么事都知道！"/><WxBubble src="/characters/shen-wang.png" mine text="你怎么忍心……让你的朋友，让我的爱人，让……"/><div className="wx-inner-voice urgent">心脏像被骤然攥紧。沈望无法把那句话说完，屏幕在短暂的黑暗与颤抖中失去焦点。</div><WxBubble src="/characters/hao-qian.png" text="我……我希望我没有亲眼看见。为什么是我要经历这一切呢？如果是你，你会做得比我更好吗？也许会吧。"/></TimedMessages></>}
+      {step>=32&&testimonyStep>=7&&<TimedMessages play={animatedTestimonyStep===7} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(7)}><WxBubble src="/characters/shen-wang.png" mine text="每个人都有趋利避害的本能，但你的沉默，让你成为了罪恶的帮凶。也许事情还有转变的机会，你愿意把这些告诉警方，并为顾盼出庭作证吗？"/><WxBubble src="/characters/hao-qian.png" text="我怕。我现在好不容易才结了婚，如果让我的丈夫知道……"/></TimedMessages>}
+      {step>=32&&testimonyStep>=8&&<TimedMessages play={animatedTestimonyStep===8} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(8)}><WxBubble src="/characters/shen-wang.png" mine text="他今天不会知道，你如何保证他这一生都不知道？面对顾盼，这些年你心里没有过一丝愧疚吗？什么“我的幸福”这种话，你是如何说得出口？这个组织存在了数年，有多少女孩被他们凝视甚至伤害，你有想过吗？"/><WxBubble src="/characters/hao-qian.png" text="所以我继续沉默？"/></TimedMessages>}
+      {step>=32&&testimonyStep>=9&&<TimedMessages play={animatedTestimonyStep===9} interval={850} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(9)}><WxBubble src="/characters/shen-wang.png" mine text="那么罪恶就继续滋生。如果有一天，你、我、正在看着这些记录的人有了孩子，我们还会放心让他们独自出去读书吗？他们要如何了解这一切、保护自己？"/><WxBubble src="/characters/shen-wang.png" mine text="我已经失去了顾盼。我不希望更多的人失去他们的爱人、孩子和朋友。如果你不愿意，我会去寻找更多愿意开口的受害者。我已经掌握了这个网站的密钥，反编译也正在进行。"/><WxBubble src="/characters/hao-qian.png" text="我愿意作证。"/><WxBubble src="/characters/hao-qian.png" text="就当是为了顾盼。"/><WxBubble src="/characters/hao-qian.png" text="当年留学时，她请我吃过一顿火锅。真好吃啊……后来再也没吃过那么好吃的锅子。"/><div className="wx-system">已取得关键证人郝倩的出庭承诺</div></TimedMessages>}
     </div>
 
     {step<32&&<footer style={{maxHeight:"235px",overflowY:"auto"}}>
@@ -863,7 +909,10 @@ function HaoQianConfrontation(){
       {error&&<small style={{display:"block",marginTop:"2px",color:"#a43b3b"}}>{error}</small>}
       </>}
     </footer>}
-    {step>=32&&<footer style={{maxHeight:"190px",overflowY:"auto"}}><small>当前证据不足</small><button style={disabledOptionStyle} disabled>你愿意为顾盼作证吗？</button><span>请先继续你的调查</span><button style={backOptionStyle} onClick={resetToneChoice}>返回上一个分叉重新选择</button></footer>}
+    {step>=32&&<footer style={{maxHeight:"210px",overflowY:"auto"}}>
+      {deliveryPending||testimonyDeliveryPending?<small>对方正在输入…</small>:testimonySecured?<><small>郝倩已同意出庭作证</small></>:sealedEvidenceReady?<><small>{testimonyStep===0?"两组原始记录已经取得":"点击发送沈望的下一条消息"}</small><button style={optionStyle} onClick={()=>advanceTestimony(testimonyStep+1)}>{testimonyActions[testimonyStep]}</button></>:<><small>当前证据不足</small><button style={disabledOptionStyle} disabled>你愿意为顾盼出庭作证吗？</button><span>请先取得郝倩与顾盼的两组原始记录</span></>}
+      {!testimonySecured&&<button style={backOptionStyle} onClick={resetToneChoice}>返回上一个分叉重新选择</button>}
+    </footer>}
   </section>
 }
 
@@ -904,7 +953,32 @@ function HanDuoIdentityCheck(){
 }
 
 function OldDriverGroup(){
-  return <section className="wx-hd-check wx-yf-group wx-driver-group"><header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先学会看路书。群里不说真名，也别问车是谁的。"/><WxBubble src="/characters/hao-qian.png" text="今晚那辆“新车”状态不对，别再加油了。"/><WxBubble src="/characters/han-duo.png" text="照旧。路线发管理员，记录仪先开，结束以后统一送回车库。"/><WxBubble src="/characters/han-duo.png" text="旧记录别在这里问。回远帆网站看活动日历，圈起来的日期才算数。按活动编号1到11排列，数字是字母在字母表里的位置。"/><div className="wx-driver-code"><small>群内提示 · 仅成员可见</small><b>1 → 11</b><span>圈选日期 · A=1 / Z=26</span></div><div className="wx-group-notice dangerous"><b>群文件 · 2022-10-27_夜航路书</b><p>目标编号 HM-2217 · 集合地点与回程地址已由管理员隐藏。聊天中的“车”“加油”“记录仪”显然不是在讨论驾驶。</p></div></div></section>
+  return <section className="wx-hd-check wx-yf-group wx-driver-group">
+    <header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header>
+    <div className="wx-hd-thread">
+      <div className="wx-content-warning">⚠ 以下内容可能引起不适，请酌情观看。解密内容可以关注最下方几则。</div>
+      <div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div>
+      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="新来的先把路书背熟。别一进群就问什么车好开。"/>
+      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="昨晚那辆新车很难驾驭啊，好在我开车够稳当，油加够了，发动机熄火，谁还听它叫唤。"/>
+      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="今晚的路线摸清了。我去solo，老规矩，晚一点原片车库。"/>
+      <DriverBubble name="我是采花大盗" src="https://picsum.photos/seed/flower-thief/96/96" text="记录仪放好点，别没头没尾的不像样。上回那个蠢货只顾开车，出来连修理费都卖不上。"/>
+      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="都别在群里装纯。车已经开了，事后哭两声就说自己是受害者？修理费照旧，谁没弄干净自己倒霉。"/>
+      <DriverBubble name="我是采花大盗" src="https://picsum.photos/seed/flower-thief/96/96" text="片先发来验货。车型不够正没关系，配件顶也可以，关了灯都一个样。"/>
+      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="别他妈一看见新车就牛b。先把路线确认好，真出事了没人替你擦屁股。"/>
+      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="上次那辆很难搞啊，开一半没油了，车祸现场！还好我反应快，门一锁，外面音乐开大，哈哈，这出来读书真的值了。"/>
+      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="没油了就按回去。记录仪里能看就行。"/>
+      <DriverBubble name="我德脚你莱文" src="https://picsum.photos/seed/german-foot-lewin/96/96" text="当司机的要讲规矩，盗亦有道。车库只留编号，修理费到账就该让她们闭嘴。"/>
+      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="是“它们”，你再用什么“她”就可以退群了。"/>
+      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="看不懂的，右键点一下网站的新生指南，学习使人进步。"/>
+      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="谁三天两头更新网站啊，搜索框怎么跑下面去了，现在看个车库片子还得滚两下鼠标，纯反人类。"/>
+      <DriverBubble name="我德脚你莱文" src="https://picsum.photos/seed/german-foot-lewin/96/96" text="少他妈叽歪，群里还有好多人不知道这个事！"/>
+      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="我就他妈说，一个破日历就能猜出来密码，搞得多稀奇似的，不聊了，看今晚的路线去咯！"/>
+    </div>
+  </section>
+}
+
+function DriverBubble({name,src,text}:{name:string;src:string;text:string}){
+  return <div className="wx-driver-message"><img src={src} alt={`${name}的网络头像`}/><div><b>{name}</b><p>{text}</p></div></div>;
 }
 
 const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[

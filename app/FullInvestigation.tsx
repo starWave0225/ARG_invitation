@@ -63,7 +63,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button onClick={()=>go(4)}>打开远帆官网</button>
       </Scene>}
       {step===4 && <Scene eyebrow="远帆 · 学生网站" title="HM-2217">
-        <p>韩铎置顶朋友圈的九张照片给出老司机群入口；右键点击远帆“新生指南”会下载包含识别语的文档。加入群后，根据提示查看“活动日历”：按活动序号1至11读取圈选日期，再以A=1、Z=26换算，得到 <code>womandriver</code>。在远帆官网搜索会直接进入一个未登记的成人视频索引站。</p>
+        <p>韩铎置顶朋友圈的九张照片给出老司机群入口；远帆“成员公告”中排版异常的四个字组成入群识别语。右键点击“新生指南”会下载司机黑话词典，用来理解群聊内容。随后根据群聊提示查看“活动日历”：按活动序号1至11读取圈选日期，再以A=1、Z=26换算，得到 <code>womandriver</code>。在远帆官网搜索会直接进入一个未登记的成人视频索引站。</p>
         <div className="route-launcher"><small>yuanfancommunity.org · STUDENT ACCESS</small><h2>远帆社区互助会</h2><p>韩铎核验学生资料后，成员栏目与站内搜索会自动解锁。</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆官网 ↗</a></div>
         <p>在隐藏站输入 <code>HM-2217</code>，偷拍视频索引、事件时间、地址导出与两万美元结算标签把顾盼的遭遇拼成完整记录。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
         <button onClick={()=>{addProof(0);addProof(1);go(5)}}>结束第一周目：迟来的回望</button>
