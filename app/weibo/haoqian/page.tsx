@@ -6,7 +6,7 @@ export default function HaoQianWeibo(){
     <section className="wb-cover hq-cover"><div className="wb-profile"><img src="/characters/hao-qian.png" alt="郝倩"/><h1>H_Qian17</h1><p>@HQ_abroad　♀</p><small>生活要向前看。旧事不必反复解释。</small></div></section>
     <nav className="wb-profile-nav"><button className="active">她的主页</button><button>她的相册</button><button>赞</button><span>关注 206　粉丝 127　微博 384</span></nav>
     <div className="wb-layout hq-layout">
-      <aside><section><h3>个人资料</h3><p>所在地：海外</p><p>教育信息：Northbridge University</p><p>感情状况：已婚</p><p>曾用昵称：倩影向西</p></section><section className="hq-contact"><h3>其他账号</h3><p>微信：<b>hqian_17</b></p><small>“校友和熟人请备注姓名。”</small></section><section><a href="/weibo/gupan" target="_blank" rel="noopener noreferrer">← 返回顾盼的微博</a></section></aside>
+      <aside><section><h3>个人资料</h3><p>所在地：海外</p><p>教育信息：Northbridge University</p><p>感情状况：已婚</p><p>曾用昵称：倩影向西</p></section><section className="hq-contact"><h3>其他账号</h3><p>微信：<b>hqian_17</b></p><small>“校友和熟人请备注姓名。”</small></section></aside>
       <section className="wb-feed">
         <div className="wb-filter"><b>她的微博</b><span>按时间排序</span></div>
         <HqPost date="2025-10-18 13:26" text="终于把婚礼照片整理完。谢谢所有从不同城市赶来的朋友。日子会继续，过去的就留在过去吧。" image/>
