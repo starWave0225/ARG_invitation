@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import OpeningMusic from "./OpeningMusic";
 
 export const metadata: Metadata = {
   title: "嫁｜双周目网页调查叙事",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="zh-CN"><body>{children}</body></html>;
+  return <html lang="zh-CN"><body><OpeningMusic/>{children}</body></html>;
 }

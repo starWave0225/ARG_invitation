@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FullInvestigation } from "./FullInvestigation";
 
 type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive" | "guFiles" | "guWechat" | "full";
@@ -26,7 +27,7 @@ const chatLines = [
 ];
 
 const storyMap = [
-  { title: "第一周目 · 国外", body: "沈望在72小时内赶往北港寄存中心，取回顾盼的旧电脑、郝倩的破损密信与未兑现的2万美元本票。他从治疗订单、微信备份和留学生互助会后台，查明顾盼曾救助郝倩，也因此成为团伙目标。" },
+  { title: "第一周目 · 国外", body: "沈望在72小时内赶往海外城市 North Harbor（北港）的寄存中心，取回顾盼的旧电脑、郝倩的破损密信与艺术展合照；未兑现的2万美元本票则藏在旧电脑文件中。他从治疗订单、微信备份和留学生互助会后台，查明顾盼曾救助郝倩，也因此成为团伙目标。" },
   { title: "迟来的回望", body: "管理员后台将顾盼标记为 HM-2217。郝倩已经结婚，面对密信与照片仍拒绝作证。沈望终于知道顾盼为什么离开，却在回国后发现所谓婚礼已经完成，遗体不知所踪。" },
   { title: "第二周目 · 双线", body: "玩家保留第一周目的记忆。左侧沈望快速重取国外证据；右侧刘涵从QQ情侣空间的匿名留言、完整IP与残破地址交叉定位晴川公寓。双桌面从这里同步推进。" },
   { title: "方案变更", body: "刘涵在拘禁现场找到旧请柬。新郎邵明辉来自当地富豪家庭，原宴席已经取消。请柬二维码通向恒慕官网；撕碎变更单底部的摩斯封边给出服务码 YQ-730419。" },
@@ -34,8 +35,11 @@ const storyMap = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [started, setStarted] = useState(false);
   const [choosingMode, setChoosingMode] = useState(false);
+  const [openingPlaying, setOpeningPlaying] = useState(false);
+  const [menuReady, setMenuReady] = useState(false);
   const [gameCleared, setGameCleared] = useState(false);
   const [activeApp, setActiveApp] = useState<AppId | null>(null);
   const [phase, setPhase] = useState(0);
@@ -48,10 +52,29 @@ export default function Home() {
   const [weekTwo, setWeekTwo] = useState(false);
   const [showMap, setShowMap] = useState(false);
 
-  const startGame = (mode: GameMode) => {
-    window.localStorage.setItem("jia-game-mode", mode);
-    window.location.assign("/computer/shen");
+  const enterGame=(mode:GameMode)=>{
+    window.localStorage.setItem("jia-game-mode",mode);
+    router.push("/computer/shen");
   };
+
+  const finishOpening=()=>{
+    setOpeningPlaying(false);
+    setChoosingMode(false);
+    setMenuReady(true);
+    window.dispatchEvent(new Event("jia-opening-music-menu"));
+  };
+
+  const playOpening = () => {
+    if(openingPlaying||menuReady)return;
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      setMenuReady(true);
+      return;
+    }
+    setOpeningPlaying(true);
+    window.dispatchEvent(new Event("jia-opening-music-play"));
+  };
+
+  const startGame = (mode: GameMode) => enterGame(mode);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -93,7 +116,7 @@ export default function Home() {
     if (device === "gu") return seen.includes("drug") ? "恢复顾盼的微信聊天备份" : "调查 H.Q. 的治疗订单";
     if (laptopOpen) return "查明顾盼离开前经历了什么";
     if (phase >= 3) return "整理 B-17 寄存仓中的物品";
-    if (phase >= 2) return "在72小时内前往北港寄存中心";
+    if (phase >= 2) return "在72小时内前往海外北港寄存中心";
     return "阅读刘涵发来的消息";
   }, [phase, laptopOpen, weekTwo, device, seen]);
 
@@ -102,7 +125,7 @@ export default function Home() {
     if (app === "wechat" && phase === 0) {
       setPhase(1);
       window.setTimeout(() => {
-        setNotice("北港寄存中心：B-17 三年保管期限即将结束");
+        setNotice("North Harbor（海外）寄存中心：B-17 三年保管期限即将结束");
         setPhase(2);
       }, 900);
     }
@@ -125,16 +148,28 @@ export default function Home() {
     return (
       <main className="landing">
         <div className="grain" />
-        <section className="title-card">
+        {!menuReady&&!openingPlaying&&(
+          <button
+            type="button"
+            className="opening-gate"
+            onClick={playOpening}
+            aria-label="点击播放《嫁》游戏片头"
+          >
+            <span>嫁</span>
+            <b>点击进入</b>
+            <small>CLICK TO BEGIN · 建议使用耳机</small>
+          </button>
+        )}
+        {openingPlaying&&<OpeningSequence onSkip={finishOpening}/>}
+        {menuReady&&<section className="title-card main-menu-ready">
           <p className="eyebrow">本格网页调查叙事</p>
           <h1>嫁</h1>
-          <p className="tagline">总有人在等，总有人回头。</p>
           <div className="content-note">
             本作涉及所有违法情节均为虚构和游戏创作。<br/>
             敏感内容以文字和证据呈现，不展示、生成实际画面。
           </div>
           {!choosingMode ? <>
-            <button className="primary" onClick={() => setChoosingMode(true)}>开始游戏</button>
+            <button className="primary" onClick={()=>setChoosingMode(true)}>开始游戏</button>
             <button className="text-button" disabled={!gameCleared} title={gameCleared?"打开文字逻辑初稿":"完成真结局后解锁"} onClick={() => { if(gameCleared){setStarted(true);setShowMap(true)} }}>查看文字逻辑初稿（只在通关后可用）</button>
           </> : <section className="game-mode-select" aria-label="选择游戏模式">
             <header><button type="button" onClick={()=>setChoosingMode(false)}>← 返回</button><span>选择游戏模式</span></header>
@@ -145,7 +180,7 @@ export default function Home() {
             <p>两种模式的剧情、谜题和结局分叉完全相同。</p>
           </section>}
           <p className="desktop-note">建议使用电脑与耳机 · 进度保存在当前浏览器</p>
-        </section>
+        </section>}
       </main>
     );
   }
@@ -237,7 +272,7 @@ export default function Home() {
                 }}
               />
             )}
-            {activeApp === "guFiles" && <GuFiles />}
+            {activeApp === "guFiles" && <GuFiles addEvidence={addEvidence} />}
             {activeApp === "guWechat" && <WeChatBackup seen={seen} addEvidence={addEvidence} />}
             {activeApp === "browser" && <Browser addEvidence={addEvidence} seen={seen} />}
             {activeApp === "archive" && <Archive seen={seen} laptopOpen={laptopOpen} onWeekTwo={() => { setWeekTwo(true); setActiveApp(null); }} onFull={()=>setActiveApp("full")} />}
@@ -265,6 +300,130 @@ export default function Home() {
   );
 }
 
+function OpeningSequence({onSkip}:{onSkip:()=>void}){
+  const [titleReady,setTitleReady]=useState(false);
+
+  useEffect(()=>{
+    const timer=window.setTimeout(()=>setTitleReady(true),50600);
+    return ()=>window.clearTimeout(timer);
+  },[]);
+
+  return <section className="opening-sequence" role="dialog" aria-modal="true" aria-label="《嫁》片头演出">
+    <button type="button" className="opening-skip" onClick={onSkip}>跳过片头　↗</button>
+    <div className="opening-rule" aria-hidden="true"/>
+    <div className="opening-beat-cut" aria-hidden="true"/>
+
+    <div className="opening-scene opening-typewriter" aria-hidden="true">
+      <div className="opening-material-photo opening-material-message">
+        <img src="/memories/breakup-message-2022.png" alt=""/>
+      </div>
+      <div className="opening-keys">
+        {["0","3",":","4","2"].map((letter,index)=><span style={{"--key-index":index} as React.CSSProperties} key={`${letter}-${index}`}>{letter}</span>)}
+      </div>
+      <p>最后交谈时间</p>
+      <b>有人在凌晨告别</b>
+    </div>
+
+    <div className="opening-scene opening-pages" aria-hidden="true">
+      <div className="opening-document-cascade">
+        {[
+          "/evidence/b17-expiry-notice.png",
+          "/evidence/gupan-temporary-leave.png",
+          "/evidence/hao-qian-letter.png",
+          "/evidence/gupan-family-chat-backup.png",
+        ].map((src,index)=><img src={src} alt="" style={{"--doc-index":index} as React.CSSProperties} key={src}/>)}
+      </div>
+      <div className="opening-falling-mark">？</div>
+      <p>两段时间线　不同版本的故事　消失的爱人</p>
+    </div>
+
+    <div className="opening-scene opening-clues" aria-hidden="true">
+      <div className="opening-clue-materials">
+        <img src="/evidence/b17-inventory.png" alt=""/>
+        <img src="/evidence/bank-draft-hm-2217.png" alt=""/>
+        <img src="/evidence/hao-qian-letter.png" alt=""/>
+      </div>
+      <div className="opening-clue opening-clue-storage"><small>寄存仓</small><b>B-17</b><span>FINAL NOTICE</span></div>
+      <div className="opening-clue opening-clue-draft"><small>PAY TO</small><b>$20,000</b><span>VOID · HM-2217</span></div>
+      <div className="opening-clue opening-clue-envelope"><i>退</i><b>无人查收</b><span>RETURN TO SENDER</span></div>
+      <div className="opening-thread"/>
+      <p>每件留下的东西　都在代她说话</p>
+    </div>
+
+    <div className="opening-scene opening-generated opening-generated-evidence" aria-hidden="true">
+      <img src="/opening/evidence-table.png" alt=""/>
+      <div className="opening-generated-copy">
+        <small>ITEMS RETURNED AS-IS</small>
+        <b>遗忘在回忆的爱人</b>
+        <p>一封没有送到的信　一段无疾而终的感情</p>
+      </div>
+    </div>
+
+    <div className="opening-scene opening-generated opening-generated-memory" aria-hidden="true">
+      <img className="opening-memory-before" src="/opening/fractured-memory.png" alt=""/>
+      <img className="opening-memory-after" src="/opening/fractured-memory-neutral.png" alt=""/>
+      <div className="opening-generated-copy">
+        <small>2018.10.21</small>
+        <b>左望，右盼</b>
+        <p>照片记得那一天　后来发生了什么</p>
+      </div>
+    </div>
+
+    <div className="opening-scene opening-generated opening-generated-corridor" aria-hidden="true">
+      <img src="/opening/paper-corridor.png" alt=""/>
+      <div className="opening-generated-copy">
+        <small>RECORDS DO NOT TELL THE WHOLE STORY</small>
+        <b>是暂时离开？　是再也不见。</b>
+        <p>同一个名字　出现在两段不同的故事里</p>
+      </div>
+    </div>
+
+    <div className="opening-scene opening-dual" aria-hidden="true">
+      <div className="opening-half left"><div className="opening-portrait"><img src="/characters/shen-wang.png" alt=""/></div><b>望</b><small>2025 · 海外 · 北港</small></div>
+      <div className="opening-half right"><div className="opening-portrait"><img src="/characters/gu-pan.png" alt=""/></div><b>盼</b><small>2022 · 最后讯息</small></div>
+      <p>同一段过去　两种看见真相的方式</p>
+    </div>
+
+    <div className="opening-scene opening-pixel opening-pixel-parallel" aria-hidden="true">
+      <div className="pixel-horizon"/>
+      <div className="pixel-sprite pixel-shen pose-walk pixel-parallel-shen"/>
+      <div className="pixel-sprite pixel-gupan pose-walk pixel-parallel-gupan"/>
+      <div className="pixel-caption"><small>2018 → 2022 → 2025</small><b>他们在不同的时间里继续向前</b></div>
+    </div>
+
+    <div className="opening-scene opening-pixel opening-pixel-messages" aria-hidden="true">
+      <div className="pixel-sprite pixel-shen pose-document pixel-message-shen"/>
+      <div className="pixel-sprite pixel-gupan pose-document pixel-message-gupan"/>
+      <div className="pixel-message-stack left"><i/><i/><i/><i/></div>
+      <div className="pixel-message-stack right"><i/><i/><i/></div>
+      <div className="pixel-caption"><small>未接通　未发送　未说完</small><b>这次，由你发现潜藏在输入框后的秘密</b></div>
+    </div>
+
+    <div className="opening-scene opening-pixel opening-pixel-path" aria-hidden="true">
+      <div className="pixel-sprite pixel-shen pose-stand pixel-path-shen"/>
+      <div className="pixel-sprite pixel-gupan pose-stand pixel-path-gupan"/>
+      <div className="pixel-red-path"/>
+      <div className="pixel-caption"><small>也许　我可以帮你什么</small><b>将没有说完的故事　续写</b></div>
+    </div>
+
+    <div className="opening-scene opening-pixel opening-pixel-return" aria-hidden="true">
+      <div className="pixel-return-memory left"><img src="/memories/art-show-2018.png" alt=""/></div>
+      <div className="pixel-return-memory right"><img src="/memories/airport-goodbye-2022.png" alt=""/></div>
+      <div className="pixel-return-rule"/>
+      <div className="pixel-sprite pixel-shen pose-turn pixel-return-shen"/>
+      <div className="pixel-sprite pixel-gupan pose-turn pixel-return-gupan"/>
+      <div className="pixel-caption"><small>现在　过去</small><b>如果那时有人回头</b></div>
+    </div>
+
+    <div className="opening-scene opening-title-reveal" aria-hidden={!titleReady}>
+      <div className="opening-radicals"><span>女</span><span>家</span></div>
+      <button type="button" className="opening-title-button" disabled={!titleReady} onClick={onSkip} aria-label="进入主菜单">嫁</button>
+      <small>BYE BYE, BABY BLUE</small>
+      <em>AN INTERACTIVE MYSTERY</em>
+    </div>
+  </section>;
+}
+
 function DesktopIcon({ label, symbol, badge, locked, onClick }: { label: string; symbol: string; badge?: boolean; locked?: boolean; onClick: () => void }) {
   return <button className={`desktop-icon ${locked ? "locked" : ""}`} onDoubleClick={onClick} onClick={onClick}>
     <span className="icon-tile">{symbol}</span><span>{label}</span>{badge && <i />}
@@ -286,12 +445,12 @@ function WeChat({ phase }: { phase: number }) {
 
 function Mail({ onTravel }: { onTravel: () => void }) {
   return <div className="mail-view">
-    <p className="mail-meta">北港寄存中心 &lt;notice@northharbor-storage.example&gt;</p>
+    <p className="mail-meta">North Harbor Storage Center（北港寄存中心 · 海外） &lt;notice@northharbor-storage.example&gt;</p>
     <h2>B-17号寄存仓最终到期通知</h2>
     <div className="countdown"><span>剩余时间</span><strong>71 : 42 : 18</strong></div>
     <p>三年保管期限即将结束。登记人：顾盼；授权取件人：沈望。逾期物品将按照协议统一清理。</p>
     <div className="mail-quote">“你又不是去找她。你是去处理你自己的东西。”——刘涵</div>
-    <button className="primary dark" onClick={onTravel}>确认行程 · 前往北港</button>
+    <button className="primary dark" onClick={onTravel}>确认行程 · 前往海外北港</button>
   </div>;
 }
 
@@ -306,16 +465,14 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
   return <div className="storage-view">
     <aside className="evidence-shelf">
       <button onClick={() => { setSelected("letter"); addEvidence("letter"); }}>破损信封 <small>{seen.includes("letter") ? "已查看" : "未查看"}</small></button>
-      <button onClick={() => { setSelected("draft"); addEvidence("draft"); }}>本票信封 <small>{seen.includes("draft") ? "已查看" : "未查看"}</small></button>
       <button onClick={() => { setSelected("laptop"); onLaptop(); }}>顾盼的旧电脑 <small>{laptopOpen ? "已解锁" : "已休眠"}</small></button>
       <button onClick={() => setSelected("memento")}>艺术展合照 <small>2018.10.21</small></button>
     </aside>
     <section className="evidence-detail">
       {!selected && <div className="empty-state"><span>B-17</span><p>请选择一件物品进行整理</p></div>}
-      {selected === "letter" && <article><p className="stamp">退件 · 2022</p><h2>寄件人：郝倩</h2><p>信封底部已经破损，信纸从里面滑了出来。</p><blockquote>“如果你不能原谅我，请至少知道我的痛苦……但请相信我，这并不全是我的错。”</blockquote><p>沈望听顾盼提过这个名字，但从未见过她。</p></article>}
-      {selected === "draft" && <article><p className="stamp">未兑现</p><h2>USD 20,000</h2><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code><blockquote>“收下它。忘记那天晚上。这对所有人都好。”</blockquote></article>}
-      {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面：今天开始，不再只是搭档。</p></article>}
-      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>回国材料</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
+      {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="破损信封与郝倩的手写信"/></article>}
+      {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
+      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
   </div>;
 }
@@ -325,23 +482,24 @@ function Browser({ addEvidence, seen }: { addEvidence: (e: Evidence) => void; se
   const found = /harbor|港湾/i.test(query);
   return <div className="browser-view"><div className="address"><span>⌕</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="搜索 Harborwell Behavioral Services"/></div>
     <div className="browser-tabs"><span className="active">搜索</span><span>图片</span><span>新闻</span><small>安全搜索：开启</small></div>
-    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button></section> : <section className="search-results"><p>约 3,420 条结果（0.31 秒）</p><article className="web-result"><small>northharbormedical.org › harborwell › recovery</small><h2>Harborwell Behavioral Recovery</h2><p>North Harbor医疗网络下属康复项目，提供药物依赖评估、稳定干预和出院转介。</p><div className="result-card"><b>Historical record access</b><span>订单上的患者编号、日期与文件码可用于查询已发布记录</span></div></article><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已确认订单属于康复项目" : "确认治疗机构"}</button>{seen.includes("drug")&&<a className="route-result" href="/hospital" target="_blank" rel="noopener noreferrer"><small>northharbormedical.org › patients › portal</small><b>MyNorthHarbor Medical & Recovery Records ↗</b><span>先查询H.Q.的康复记录；转介机构应从病例中继续发现。</span></a>}</section>}
+    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button></section> : <section className="search-results"><p>约 3,420 条结果（0.31 秒）</p><article className="web-result"><small>northharbormedical.org › harborwell › recovery</small><h2>Harborwell Behavioral Recovery</h2><p>海外 North Harbor 医疗网络下属康复项目，提供药物依赖评估、稳定干预和出院转介。</p><div className="result-card"><b>Historical record access</b><span>订单上的患者编号、日期与文件码可用于查询已发布记录</span></div></article><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已确认订单属于康复项目" : "确认治疗机构"}</button>{seen.includes("drug")&&<a className="route-result" href="/hospital" target="_blank" rel="noopener noreferrer"><small>northharbormedical.org › patients › portal</small><b>MyNorthHarbor Medical & Recovery Records ↗</b><span>先查询H.Q.的康复记录；转介机构应从病例中继续发现。</span></a>}</section>}
   </div>;
 }
 
-function GuFiles() {
+function GuFiles({addEvidence}:{addEvidence:(e:Evidence)=>void}) {
   const [file, setFile] = useState<string | null>(null);
   return <div className="gu-files">
     <aside>
       {[
-        ["回国材料", "return"], ["画", "art"], ["待整理", "todo"], ["聊天备份", "backup"],
-      ].map(([label, id]) => <button key={id} onClick={() => setFile(id)}>{label}<small>{id === "backup" ? "已加密" : "4 项"}</small></button>)}
+        ["暂停学业申请.pdf", "leave"], ["画", "art"], ["待整理", "todo"], ["HM-2217_未兑现.pdf", "check"], ["聊天备份", "backup"],
+      ].map(([label, id]) => <button key={id} onClick={() => { setFile(id); if(id==="check")addEvidence("draft"); }}>{label}<small>{id === "backup" ? "已加密" : id==="check"?"文件":"4 项"}</small></button>)}
     </aside>
     <section>
       {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
-      {file === "return" && <article><p className="stamp">未完成</p><h2>回国与复学</h2><ul><li>暂停学业申请.pdf</li><li>退租确认.pdf</li><li>回国航班_未同步.pdf</li></ul><p>所有文件都显示：她计划暂时离开，而不是永远放弃学业。</p></article>}
+      {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>文件证明她计划暂时离开，而不是彻底消失。</p></article>}
       {file === "art" && <article><p className="stamp">图片素材占位</p><h2>《向阳处》早期草稿</h2><div className="asset-slot">后续生成：顾盼画作 / 窗边植物 / 未完成旅行地图</div><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></article>}
       {file === "todo" && <article><p className="stamp">17项未上传</p><h2>待整理</h2><ul><li>医院_患者编号_GP-221109.jpg</li><li>复诊卡_2022-11-09.pdf</li><li>检验条码_7304.png</li><li>HM-2217_未兑现.pdf</li><li>举报材料_03.tmp</li><li>酒吧页面缓存.dat</li></ul><p>大部分内容无法直接打开，需要从浏览器历史和聊天记录中寻找上下文。</p></article>}
+      {file === "check" && <article><p className="stamp">顾盼旧电脑 · 未兑现</p><h2>HM-2217</h2><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code></article>}
       {file === "backup" && <article><p className="stamp">WECHAT FILES</p><h2>Backup_2022</h2><p>在线登录需要手机确认。顾盼在本机留下了一份离线聊天备份。</p><div className="locked-panel">迁移密码提示：左望右盼<br/><small>完成治疗订单调查后开放恢复谜题</small></div></article>}
     </section>
   </div>;
@@ -374,5 +532,5 @@ function DesktopPane({ side, name, task }: { side: string; name: string; task: s
 }
 
 function appTitle(app: AppId) {
-  return ({ wechat: "微信", mail: "邮箱", memo: "备忘录", files: "北港寄存中心 · B-17", browser: "浏览器", archive: "调查档案", guFiles: "顾盼的个人文件", guWechat: "微信离线备份", full:"完整调查" })[app];
+  return ({ wechat: "微信", mail: "邮箱", memo: "备忘录", files: "North Harbor（海外）· B-17", browser: "浏览器", archive: "调查档案", guFiles: "顾盼的个人文件", guWechat: "微信离线备份", full:"完整调查" })[app];
 }
