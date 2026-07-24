@@ -3,9 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-// Let the opening vocal line finish, then land just before the next complete line.
-const MUSIC_CUT_AT_MS = 15800;
-const MUSIC_CUT_TARGET_SECONDS = 58.95;
+const MUSIC_CUT_AT_MS = 19600;
+const MUSIC_CUT_TARGET_SECONDS = 70.06;
 const DESKTOP_HOLD_MS = 4000;
 const DESKTOP_FADE_MS = 8000;
 const BGM_CROSSFADE_MS = 1800;
