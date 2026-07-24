@@ -42,11 +42,6 @@ const directFileImages:Record<string,PreviewImage>={
     body:<p>照片保留了患者编号、就诊日期和访问码；完整诊疗记录需要前往医院门户。</p>,
     link:["/hospital","打开医院患者门户 ↗"]
   },
-  "事后检查记录_GP-221109.pdf":{
-    src:"/evidence/gupan-post-assault-exam.png",alt:"顾盼事后检查记录扫描件",tag:"敏感医疗资料 · 虚构记录",title:"事后检查与筛查摘要",
-    body:<><div className="pc-scan"><b>PATIENT: GU PAN　MRN: GP-221109</b><span>VISIT DATE: 2022-11-09</span><span>ACCESS CODE: 7304</span><span>SCREENING: ABNORMAL — CONFIRMATORY TEST REQUIRED</span></div><p>临床备注记录了顾盼对“突然失去意识后，疑似发生非自愿接触”的陈述。医护人员建议保存证据、进行复检并接受持续支持。</p><p>这份打印件只包含摘要；完整结果和后续诊疗记录保存在患者门户。</p></>,
-    link:["/hospital","使用患者编号与检验码打开医院门户 ↗"]
-  },
   "治疗订单_HW-220214-HQ.pdf":{
     src:"/evidence/hao-qian-treatment-order.png",alt:"顾盼为郝倩支付的康复治疗订单",tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",
     body:<p>治疗项目只写着“依赖性行为稳定干预”。完整付款方与转介信息需要前往同一医疗集团门户。</p>,
@@ -253,7 +248,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="map")return <MapApp owner={owner}/>;
   if(app==="diary")return <ShenDiary/>;
   if(app==="personal"||app==="files"||app==="storage"||app==="downloads"){
-    const gupanPersonalFiles=["暂停学业申请.pdf","医院_患者编号.jpg","事后检查记录_GP-221109.pdf","治疗订单_HW-220214-HQ.pdf","HM-2217_未兑现.pdf","画"];
+    const gupanPersonalFiles=["暂停学业申请.pdf","医院_患者编号.jpg","治疗订单_HW-220214-HQ.pdf","HM-2217_未兑现.pdf","画"];
     const files=explorerView==="storage"
       ?["B-17现场物品清单.zip","一封破损的信.pdf","合照.jpg"]
       :explorerView==="personal"
@@ -675,7 +670,6 @@ function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}
     "B-17现场物品清单.zip":{tag:"压缩档案 · 现场同步",title:"B-17 物品清单",body:<><img className="pc-evidence-image document" src="/evidence/b17-inventory.png" alt="B-17寄存物品提取清单"/><ul><li>一封破损的信.pdf</li><li>GP-LAPTOP-2018.device</li><li>个人照片及文件</li></ul><p>设备状态：休眠。最近一次活动：2022年11月17日。</p></>},
     "暂停学业申请.pdf":{tag:"学校表单 · 已批准",title:"Temporary Leave of Absence",body:<><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>文件证明她计划暂时离开，而不是彻底消失。</p></>},
     "医院_患者编号.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>照片保留了患者编号、就诊日期和访问码；完整诊疗记录需要前往医院门户。</p></>,link:["/hospital","打开医院患者门户 ↗"]},
-    "事后检查记录_GP-221109.pdf":{tag:"敏感医疗资料 · 虚构记录",title:"事后检查与筛查摘要",body:<><img className="pc-evidence-image document" src="/evidence/gupan-post-assault-exam.png" alt="顾盼事后检查记录扫描件"/><div className="pc-scan"><b>PATIENT: GU PAN　MRN: GP-221109</b><span>VISIT DATE: 2022-11-09</span><span>ACCESS CODE: 7304</span><span>SCREENING: ABNORMAL — CONFIRMATORY TEST REQUIRED</span></div><p>临床备注记录了顾盼对“突然失去意识后，疑似发生非自愿接触”的陈述。医护人员建议保存证据、进行复检并接受持续支持。</p><p>这份打印件只包含摘要；完整结果和后续诊疗记录保存在患者门户。</p></>,link:["/hospital","使用患者编号与检验码打开医院门户 ↗"]},
     "治疗订单_HW-220214-HQ.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>治疗项目只写着“依赖性行为稳定干预”。完整付款方与转介信息需要前往同一医疗集团门户。</p></>,link:["/hospital","打开港湾康复中心病例门户 ↗"]},
     "HM-2217_未兑现.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元本票没有解释用途，附言只留下编号 <code>HM-2217</code>；必须结合聊天、草稿和后台记录判断它代表什么。</p></>},
     "QQ空间截图":{tag:"证据截图",title:"匿名访客留言",body:<><pre>沈望，救我。我被锁在……{"\n"}临川……长宁路……17号{"\n"}……4栋……02室</pre><p>截图只保留了残破正文。完整IP需要进入情侣空间的主人管理页面。</p></>,link:["/qzone","打开QQ情侣空间 ↗"]},
