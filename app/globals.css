@@ -191,8 +191,8 @@ button { cursor:pointer; }
 .opening-title-reveal:before{content:"";position:absolute;z-index:0;inset:0;opacity:0;background:radial-gradient(circle at 50% 45%,#8f202638,transparent 26%),repeating-linear-gradient(0deg,transparent 0 4px,#0005 5px),linear-gradient(115deg,#050707,#111817 55%,#050707);transition:opacity .55s ease}
 .opening-title-reveal:has(.opening-title-button:hover),.opening-title-reveal:focus-within{background:#050707}
 .opening-title-reveal:has(.opening-title-button:hover):before,.opening-title-reveal:focus-within:before{opacity:1}
-.opening-radicals{position:absolute;z-index:1;display:flex;gap:clamp(120px,25vw,420px);font:clamp(120px,24vw,360px)/1 Georgia,"Songti SC",serif;color:#eee7d5}.opening-radicals span:first-child{animation:openingRadicalLeft 1.35s 43s both}.opening-radicals span:last-child{animation:openingRadicalRight 1.35s 43s both}
-.opening-title-button{position:relative;z-index:2;margin:0;padding:0;border:0;background:transparent;color:#eee7d5;font:400 clamp(180px,34vw,500px)/.8 Georgia,"Songti SC",serif;opacity:0;text-shadow:12px 12px 0 #171717;pointer-events:auto;cursor:pointer;transition:color .45s ease,text-shadow .45s ease,filter .45s ease,scale .45s ease;animation:openingGlyph .9s 46.7s both}
+.opening-radicals{position:absolute;z-index:1;display:flex;gap:clamp(120px,25vw,420px);font:clamp(120px,24vw,360px)/1 Georgia,"Songti SC",serif;color:#eee7d5}.opening-radicals span:first-child{animation:openingRadicalLeft 1.35s 46.15s both}.opening-radicals span:last-child{animation:openingRadicalRight 1.35s 46.15s both}
+.opening-title-button{position:relative;z-index:2;margin:0;padding:0;border:0;background:transparent;color:#eee7d5;font:400 clamp(180px,34vw,500px)/.8 Georgia,"Songti SC",serif;opacity:0;text-shadow:12px 12px 0 #171717;pointer-events:auto;cursor:pointer;transition:color .45s ease,text-shadow .45s ease,filter .45s ease,scale .45s ease;animation:openingGlyph .9s 46.15s both}
 .opening-title-button:disabled{pointer-events:none;cursor:default}.opening-title-button:hover,.opening-title-button:focus-visible{color:#f5edd9;text-shadow:12px 12px 0 #8f2026;filter:drop-shadow(0 0 28px #8f202688);scale:1.035;outline:0}
 .opening-title-reveal>small{position:absolute;z-index:1;top:7vh;opacity:0;color:#eee7d5;font:10px ui-monospace,monospace;letter-spacing:.38em;transition:color .45s ease;animation:openingLyric .35s 46.15s both}.opening-title-reveal>em{position:absolute;z-index:1;right:4vw;bottom:4vh;opacity:0;color:#eee7d5;font:8px ui-monospace,monospace;letter-spacing:.28em;font-style:normal;transition:color .45s ease;animation:openingCredit .6s 49.2s both}
 .opening-title-reveal:has(.opening-title-button:hover)>small,.opening-title-reveal:has(.opening-title-button:hover)>em,.opening-title-reveal:focus-within>small,.opening-title-reveal:focus-within>em{color:#a94b50}
@@ -222,7 +222,7 @@ button { cursor:pointer; }
 @keyframes pixelReturnGupan{0%{transform:translateX(32vw) scaleX(-1)}70%,100%{transform:translateX(-30vw) scaleX(-1)}}
 @keyframes openingRadicalLeft{0%{transform:translateX(-35vw) rotate(-15deg)}100%{transform:translateX(45%) rotate(0);opacity:0}}
 @keyframes openingRadicalRight{0%{transform:translateX(35vw) rotate(15deg)}100%{transform:translateX(-45%) rotate(0);opacity:0}}
-@keyframes openingGlyph{0%,35%{opacity:0;transform:scale(1.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes openingGlyph{0%{opacity:0;transform:scale(1.4)}10%{opacity:.55}100%{opacity:1;transform:scale(1)}}
 @keyframes openingLyric{from{opacity:0;letter-spacing:.9em}to{opacity:1;letter-spacing:.38em}}
 @keyframes openingCredit{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes openingRule{0%{transform:rotate(9deg) scaleY(0)}18%,82%{transform:rotate(9deg) scaleY(1)}100%{transform:rotate(-72deg) scaleY(1)}}
