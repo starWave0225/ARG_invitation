@@ -497,8 +497,8 @@ function GuFiles({addEvidence}:{addEvidence:(e:Evidence)=>void}) {
     <section>
       {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
       {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>学校名称：Northbridge University（北桥大学）</p></article>}
-      {file === "receipt" && <article><p className="stamp">扫描件</p><h2>North Harbor Medical Center</h2><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p><a href="/hospital" target="_blank" rel="noopener noreferrer">打开医院患者门户 ↗</a></article>}
-      {file === "bill" && <article><p className="stamp">付款订单 · 已结清</p><h2>Harborwell Recovery Center</h2><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p><a href="/hospital" target="_blank" rel="noopener noreferrer">打开港湾康复中心病例门户 ↗</a></article>}
+      {file === "receipt" && <article><p className="stamp">扫描件</p><h2>North Harbor Medical Center</h2><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></article>}
+      {file === "bill" && <article><p className="stamp">付款订单 · 已结清</p><h2>Harborwell Recovery Center</h2><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p></article>}
       {file === "check" && <article><p className="stamp">异常代号</p><h2>HM-2217</h2><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元支票，未兑现。</p></article>}
       {file === "art" && <article><img className="pc-evidence-image" src="/paintings/xiangyangchu.png" alt="顾盼的油画《向阳处》"/></article>}
     </section>

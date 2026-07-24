@@ -39,13 +39,11 @@ const directFileImages:Record<string,PreviewImage>={
   },
   "医院回执单.jpg":{
     src:"/evidence/gupan-patient-portal-slip.png",alt:"顾盼的医院患者编号与门户访问单",tag:"扫描件",title:"North Harbor Medical Center",
-    body:<p>完整诊疗记录请前往医院门户查询</p>,
-    link:["/hospital","打开医院患者门户 ↗"]
+    body:<p>完整诊疗记录请前往医院门户查询</p>
   },
   "账单.pdf":{
     src:"/evidence/hao-qian-treatment-order.png",alt:"顾盼为郝倩支付的康复治疗订单",tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",
-    body:<p>港湾康复中心的账单</p>,
-    link:["/hospital","打开港湾康复中心病例门户 ↗"]
+    body:<p>港湾康复中心的账单</p>
   },
   "HM-2217.pdf":{
     src:"/evidence/bank-draft-hm-2217.png",alt:"附言为HM-2217的未兑付两万美元银行本票",tag:"异常代号",title:"HM-2217",
@@ -669,8 +667,8 @@ function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}
   const content:Record<string,{tag:string;title:string;body:React.ReactNode;link?:[string,string]}>={
     "B-17现场物品清单.zip":{tag:"压缩档案 · 现场同步",title:"B-17 物品清单",body:<><img className="pc-evidence-image document" src="/evidence/b17-inventory.png" alt="B-17寄存物品提取清单"/><ul><li>一封破损的信.pdf</li><li>GP-LAPTOP-2018.device</li><li>个人照片及文件</li></ul><p>设备状态：休眠。最近一次活动：2022年11月17日。</p></>},
     "暂停学业申请.pdf":{tag:"学校表单 · 已批准",title:"Temporary Leave of Absence",body:<><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>学校名称：Northbridge University（北桥大学）</p></>},
-    "医院回执单.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></>,link:["/hospital","打开医院患者门户 ↗"]},
-    "账单.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p></>,link:["/hospital","打开港湾康复中心病例门户 ↗"]},
+    "医院回执单.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></>},
+    "账单.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p></>},
     "HM-2217.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元支票，未兑现。</p></>},
     "QQ空间截图":{tag:"证据截图",title:"匿名访客留言",body:<><pre>沈望，救我。我被锁在……{"\n"}临川……长宁路……17号{"\n"}……4栋……02室</pre><p>截图只保留了残破正文。完整IP需要进入情侣空间的主人管理页面。</p></>,link:["/qzone","打开QQ情侣空间 ↗"]},
     "IP定位记录":{tag:"交叉筛查",title:"地址候选表",body:<><table><tbody><tr><th>候选</th><th>IP节点</th><th>工作距离</th></tr><tr><td>晴川公寓4栋602</td><td>匹配</td><td>1.2km</td></tr><tr><td>长宁花园17栋402</td><td>不匹配</td><td>8.6km</td></tr></tbody></table></>,link:["/computer/liuhan","返回刘涵桌面"]},
