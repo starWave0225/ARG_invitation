@@ -30,26 +30,26 @@ const directFileImages:Record<string,PreviewImage>={
   "合照.jpg":{
     src:"/evidence/art-show-storage-copy.png",alt:"B-17寄存仓中的校园艺术展开幕合照",backText:"我的秘密"
   },
-  "画":{
+  "向阳处":{
     src:"/paintings/xiangyangchu.png",alt:"顾盼的油画《向阳处》"
   },
   "暂停学业申请.pdf":{
     src:"/evidence/gupan-temporary-leave.png",alt:"顾盼的暂时休学申请批准表",tag:"学校表单 · 已批准",title:"Temporary Leave of Absence",
-    body:<p>文件证明她计划暂时离开，而不是彻底消失。</p>
+    body:<p>学校名称：Northbridge University（北桥大学）</p>
   },
-  "医院_患者编号.jpg":{
+  "医院回执单.jpg":{
     src:"/evidence/gupan-patient-portal-slip.png",alt:"顾盼的医院患者编号与门户访问单",tag:"扫描件",title:"North Harbor Medical Center",
-    body:<p>照片保留了患者编号、就诊日期和访问码；完整诊疗记录需要前往医院门户。</p>,
+    body:<p>完整诊疗记录请前往医院门户查询</p>,
     link:["/hospital","打开医院患者门户 ↗"]
   },
-  "治疗订单_HW-220214-HQ.pdf":{
+  "账单.pdf":{
     src:"/evidence/hao-qian-treatment-order.png",alt:"顾盼为郝倩支付的康复治疗订单",tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",
-    body:<p>治疗项目只写着“依赖性行为稳定干预”。完整付款方与转介信息需要前往同一医疗集团门户。</p>,
+    body:<p>港湾康复中心的账单</p>,
     link:["/hospital","打开港湾康复中心病例门户 ↗"]
   },
-  "HM-2217_未兑现.pdf":{
+  "HM-2217.pdf":{
     src:"/evidence/bank-draft-hm-2217.png",alt:"附言为HM-2217的未兑付两万美元银行本票",tag:"异常代号",title:"HM-2217",
-    body:<p>两万美元本票没有解释用途，附言只留下编号 <code>HM-2217</code>；必须结合聊天、草稿和后台记录判断它代表什么。</p>
+    body:<p>两万美元支票，未兑现。</p>
   },
 };
 
@@ -248,7 +248,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="map")return <MapApp owner={owner}/>;
   if(app==="diary")return <ShenDiary/>;
   if(app==="personal"||app==="files"||app==="storage"||app==="downloads"){
-    const gupanPersonalFiles=["暂停学业申请.pdf","医院_患者编号.jpg","治疗订单_HW-220214-HQ.pdf","HM-2217_未兑现.pdf","画"];
+    const gupanPersonalFiles=["暂停学业申请.pdf","医院回执单.jpg","账单.pdf","HM-2217.pdf","向阳处"];
     const files=explorerView==="storage"
       ?["B-17现场物品清单.zip","一封破损的信.pdf","合照.jpg"]
       :explorerView==="personal"
@@ -262,7 +262,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
         ?[{label:"个人文件",view:"personal"}]
         :[{label:"下载",view:"downloads"}];
     const pathNames:Record<string,string>={root:"此电脑",storage:"B-17 寄存仓",personal:"个人文件",downloads:"下载"};
-    return <div className="pc-explorer"><aside><span>快速访问</span>{rootFolders.map(folder=><span key={folder.view}>{folder.label}</span>)}<span>此电脑</span></aside><section><header>{explorerView==="root"?"←　→　↑　 此电脑":<><button className="pc-explorer-back" type="button" onClick={()=>setExplorerView("root")}>←</button>　→　↑　 此电脑　›　{pathNames[explorerView]||explorerView}</>}</header><div className="pc-filegrid" tabIndex={0} aria-label="文件列表，可滚动查看">{explorerView==="root"?rootFolders.map(folder=><button key={folder.view} onClick={()=>setExplorerView(folder.view)}><i>📁</i><span>{folder.label}</span><small>点击打开</small></button>):files.map(file=><button key={file} onClick={()=>openFile(file)}><i>{file==="画"?"🖼":file==="医院_患者编号.jpg"?"📄":file.endsWith(".jpg")?"🖼":file.includes("手机")?"▰":"📄"}</i><span>{file}</span><small>点击打开</small></button>)}{explorerView==="root"&&owner==="shen"&&gupanPcUnlocked&&<a className="pc-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer"><i>▰</i><span><b>顾盼的旧电脑</b><small>GP-LAPTOP-2018 · 已从休眠恢复</small></span><em>打开设备 ↗</em></a>}{explorerView==="root"&&rootFolders.length===0&&<div className="pc-folder-empty"><span>此位置暂无文件</span></div>}{explorerView!=="root"&&files.length===0&&<div className="pc-folder-empty"><span>此文件夹为空</span></div>}</div>{openedFile&&<FilePreview owner={owner} file={openedFile} close={()=>setOpenedFile(null)}/>}</section></div>;
+    return <div className="pc-explorer"><aside><span>快速访问</span>{rootFolders.map(folder=><span key={folder.view}>{folder.label}</span>)}<span>此电脑</span></aside><section><header>{explorerView==="root"?"←　→　↑　 此电脑":<><button className="pc-explorer-back" type="button" onClick={()=>setExplorerView("root")}>←</button>　→　↑　 此电脑　›　{pathNames[explorerView]||explorerView}</>}</header><div className="pc-filegrid" tabIndex={0} aria-label="文件列表，可滚动查看">{explorerView==="root"?rootFolders.map(folder=><button key={folder.view} onClick={()=>setExplorerView(folder.view)}><i>📁</i><span>{folder.label}</span><small>点击打开</small></button>):files.map(file=><button key={file} onClick={()=>openFile(file)}><i>{file==="向阳处"?"🖼":file==="医院回执单.jpg"?"📄":file.endsWith(".jpg")?"🖼":file.includes("手机")?"▰":"📄"}</i><span>{file}</span><small>点击打开</small></button>)}{explorerView==="root"&&owner==="shen"&&gupanPcUnlocked&&<a className="pc-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer"><i>▰</i><span><b>顾盼的旧电脑</b><small>GP-LAPTOP-2018 · 已从休眠恢复</small></span><em>打开设备 ↗</em></a>}{explorerView==="root"&&rootFolders.length===0&&<div className="pc-folder-empty"><span>此位置暂无文件</span></div>}{explorerView!=="root"&&files.length===0&&<div className="pc-folder-empty"><span>此文件夹为空</span></div>}</div>{openedFile&&<FilePreview owner={owner} file={openedFile} close={()=>setOpenedFile(null)}/>}</section></div>;
   }
   if(app==="police")return <div className="pc-document"><small>临川公安 · 线索协作（只读）</small><h2>陈放</h2><p>有明确的人身危险或转运信息，立即联系我。数据库内容不能私下查，线索必须正式登记。</p><hr/><p>待提交：QQ求救原始记录、IP归属、拘禁现场照片、恒慕转运单。</p></div>;
   if(app==="case")return <CaseArchive mode={gameMode}/>;
@@ -668,10 +668,10 @@ function Moment({src,name,text,time,wedding}:{src:string;name:string;text:string
 function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}){
   const content:Record<string,{tag:string;title:string;body:React.ReactNode;link?:[string,string]}>={
     "B-17现场物品清单.zip":{tag:"压缩档案 · 现场同步",title:"B-17 物品清单",body:<><img className="pc-evidence-image document" src="/evidence/b17-inventory.png" alt="B-17寄存物品提取清单"/><ul><li>一封破损的信.pdf</li><li>GP-LAPTOP-2018.device</li><li>个人照片及文件</li></ul><p>设备状态：休眠。最近一次活动：2022年11月17日。</p></>},
-    "暂停学业申请.pdf":{tag:"学校表单 · 已批准",title:"Temporary Leave of Absence",body:<><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>文件证明她计划暂时离开，而不是彻底消失。</p></>},
-    "医院_患者编号.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>照片保留了患者编号、就诊日期和访问码；完整诊疗记录需要前往医院门户。</p></>,link:["/hospital","打开医院患者门户 ↗"]},
-    "治疗订单_HW-220214-HQ.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>治疗项目只写着“依赖性行为稳定干预”。完整付款方与转介信息需要前往同一医疗集团门户。</p></>,link:["/hospital","打开港湾康复中心病例门户 ↗"]},
-    "HM-2217_未兑现.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元本票没有解释用途，附言只留下编号 <code>HM-2217</code>；必须结合聊天、草稿和后台记录判断它代表什么。</p></>},
+    "暂停学业申请.pdf":{tag:"学校表单 · 已批准",title:"Temporary Leave of Absence",body:<><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>学校名称：Northbridge University（北桥大学）</p></>},
+    "医院回执单.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></>,link:["/hospital","打开医院患者门户 ↗"]},
+    "账单.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p></>,link:["/hospital","打开港湾康复中心病例门户 ↗"]},
+    "HM-2217.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元支票，未兑现。</p></>},
     "QQ空间截图":{tag:"证据截图",title:"匿名访客留言",body:<><pre>沈望，救我。我被锁在……{"\n"}临川……长宁路……17号{"\n"}……4栋……02室</pre><p>截图只保留了残破正文。完整IP需要进入情侣空间的主人管理页面。</p></>,link:["/qzone","打开QQ情侣空间 ↗"]},
     "IP定位记录":{tag:"交叉筛查",title:"地址候选表",body:<><table><tbody><tr><th>候选</th><th>IP节点</th><th>工作距离</th></tr><tr><td>晴川公寓4栋602</td><td>匹配</td><td>1.2km</td></tr><tr><td>长宁花园17栋402</td><td>不匹配</td><td>8.6km</td></tr></tbody></table></>,link:["/computer/liuhan","返回刘涵桌面"]},
     "顾盼的手机_本地数据提取":{tag:"现场证物 · 离线提取",title:"顾盼的手机",body:<><div className="old-phone-extract"><header><span>03:19</span><small>无 SIM 卡　12%</small></header><section><div className="old-phone-app">备忘录</div><article><small>2022年11月17日　03:36</small><h3>旧电脑</h3><p>微信密码：<b>gp2022wxpass</b></p></article><article><small>2025年11月29日　02:47</small><h3>如果消息还是发不出去</h3><p>去情侣空间。沈望还留着主人权限，刘涵知道那个空间。</p></article></section></div><p>手机没有 SIM 卡，只保存了少量本地数据。第一条备忘录中的密码指向顾盼旧电脑上的微信聊天备份。</p></>,link:["/computer/gupan","返回顾盼旧电脑，解锁微信 ↗"]},

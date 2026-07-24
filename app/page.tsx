@@ -472,7 +472,7 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
       {!selected && <div className="empty-state"><span>B-17</span><p>请选择一件物品进行整理</p></div>}
       {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="破损信封与郝倩的手写信"/></article>}
       {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
-      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>画</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
+      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>向阳处</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
   </div>;
 }
@@ -491,15 +491,16 @@ function GuFiles({addEvidence}:{addEvidence:(e:Evidence)=>void}) {
   return <div className="gu-files">
     <aside>
       {[
-        ["暂停学业申请.pdf", "leave"], ["画", "art"], ["HM-2217_未兑现.pdf", "check"], ["聊天备份", "backup"],
-      ].map(([label, id]) => <button key={id} onClick={() => { setFile(id); if(id==="check")addEvidence("draft"); }}>{label}<small>{id === "backup" ? "已加密" : id==="check"?"文件":"4 项"}</small></button>)}
+        ["暂停学业申请.pdf", "leave"], ["医院回执单.jpg", "receipt"], ["账单.pdf", "bill"], ["HM-2217.pdf", "check"], ["向阳处", "art"],
+      ].map(([label, id]) => <button key={id} onClick={() => { setFile(id); if(id==="check")addEvidence("draft"); }}>{label}<small>{id==="art"?"图片":"文件"}</small></button>)}
     </aside>
     <section>
       {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
-      {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>文件证明她计划暂时离开，而不是彻底消失。</p></article>}
-      {file === "art" && <article><p className="stamp">图片素材占位</p><h2>《向阳处》早期草稿</h2><div className="asset-slot">后续生成：顾盼画作 / 窗边植物 / 未完成旅行地图</div><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></article>}
-      {file === "check" && <article><p className="stamp">顾盼旧电脑 · 未兑现</p><h2>HM-2217</h2><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code></article>}
-      {file === "backup" && <article><p className="stamp">WECHAT FILES</p><h2>Backup_2022</h2><p>在线登录需要手机确认。顾盼在本机留下了一份离线聊天备份。</p><div className="locked-panel">迁移密码提示：左望右盼<br/><small>完成治疗订单调查后开放恢复谜题</small></div></article>}
+      {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>学校名称：Northbridge University（北桥大学）</p></article>}
+      {file === "receipt" && <article><p className="stamp">扫描件</p><h2>North Harbor Medical Center</h2><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p><a href="/hospital" target="_blank" rel="noopener noreferrer">打开医院患者门户 ↗</a></article>}
+      {file === "bill" && <article><p className="stamp">付款订单 · 已结清</p><h2>Harborwell Recovery Center</h2><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>港湾康复中心的账单</p><a href="/hospital" target="_blank" rel="noopener noreferrer">打开港湾康复中心病例门户 ↗</a></article>}
+      {file === "check" && <article><p className="stamp">异常代号</p><h2>HM-2217</h2><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元支票，未兑现。</p></article>}
+      {file === "art" && <article><img className="pc-evidence-image" src="/paintings/xiangyangchu.png" alt="顾盼的油画《向阳处》"/></article>}
     </section>
   </div>;
 }
