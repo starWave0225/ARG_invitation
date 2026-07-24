@@ -15,7 +15,7 @@ export default function HaoQianWeibo(){
         <HqPost date="2022-12-02 04:37" text="换了号码。以前认识的人如果还有必要联系，可以加新的微信。备注学校和姓名。" contact/>
         <HqPost date="2022-11-01 01:52" text="我也很痛苦。我当时根本走不了。为什么所有人都觉得只有一种受害者？" deleted/>
       </section>
-      <aside className="wb-right"><section className="wb-people-card"><h3>可能认识的人</h3><div><img src="/characters/gu-pan.png" alt="顾盼"/><span><b>向阳处没有窗</b><small>共同关注 2</small></span></div><CelebrityFollows shift={1} compact/></section><section><h3>关系线索</h3><p>她在事发后更换了手机号和微信号；2024年之后的动态反复强调“不再解释”。</p></section></aside>
+      <aside className="wb-right"><section className="wb-people-card"><h3>可能认识的人</h3><div><img src="/characters/gu-pan.png" alt="顾盼"/><span><b>向阳生长</b><small>共同关注 2</small></span></div><CelebrityFollows shift={1} compact/></section><section><h3>关系线索</h3><p>她在事发后更换了手机号和微信号；2024年之后的动态反复强调“不再解释”。</p></section></aside>
     </div>
     <footer className="wb-footer">微博客服　意见反馈　开放平台　隐私保护　© 2009–2026</footer>
   </main>
