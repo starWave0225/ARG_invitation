@@ -248,7 +248,7 @@
       <p class="eyebrow">Narrative & Player Walkthrough</p>
       <h1>嫁</h1>
       <h2>完整故事线与玩家操作手册</h2>
-      <p>依据当前三电脑版本整理。包含全部剧透、线索来源、点击顺序、密码答案、两周目结局与当前实现断点。</p>
+      <p>依据当前可玩版本整理并同步至 2026-07-24。包含片头、三台电脑、全部剧透、线索来源、点击顺序、密码答案、两周目结局与当前实现断点。</p>
       <span class="spoiler">完整剧透 · 仅供创作与测试</span>
     </div>
   </header>
@@ -318,13 +318,13 @@
       </section>
 
       <section id="opening">
-        <header class="section-head"><small>02 · Opening</small><h2>开场：刘涵消息与B-17寄存仓</h2></header>
+        <header class="section-head"><small>02 · Opening</small><h2>开场：片头、刘涵消息与B-17寄存仓</h2></header>
         <div class="timeline">
           <article class="step">
             <span class="step-num">01</span>
-            <h3>选择游戏模式</h3>
-            <div class="route"><b>点击路径：</b>主选单 → 开始游戏 → 通灵模式 / 真实模式</div>
-            <p>两种模式的剧情、谜题与结局相同。通灵模式显示桌面便签，并在便签内提供调查档案入口；真实模式不显示便签与调查档案。</p>
+            <h3>观看片头并选择游戏模式</h3>
+            <div class="route"><b>点击路径：</b>启动画面“嫁” → 点击进入 → 片头（可跳过）→ 主选单 → 开始游戏 → 通灵模式 / 真实模式</div>
+            <p>片头以03:42最后交谈、B-17寄存物、2018合照、2022未发送消息和2025双线调查预告整个谜案；最后的“嫁”可点击进入主选单。两种模式的剧情、谜题与结局相同。通灵模式显示桌面便签，并在便签内提供调查档案入口；真实模式不显示便签与调查档案。模式可在电脑左下角随时切换。</p>
           </article>
           <article class="step">
             <span class="step-num">02</span>
@@ -346,9 +346,10 @@
           </article>
           <article class="step">
             <span class="step-num">05</span>
-            <h3>打开顾盼旧电脑</h3>
+            <h3>解压现场资料并打开旧电脑</h3>
             <div class="route"><b>点击路径：</b>新邮件 → 解压到桌面 → 文件资源管理器 → 顾盼的旧电脑</div>
-            <p>寄存物包括郝倩的信、艺术展合照和处于休眠状态的顾盼旧电脑。寄存清单不包含支票；未兑现的2万美元本票需要进入顾盼旧电脑后，在“个人文件”中发现。</p>
+            <p>解压后，沈望桌面同时出现“B-17 寄存仓”和“顾盼的旧电脑”。寄存仓内只有 <code>B-17现场物品清单.zip</code>、<code>一封破损的信.pdf</code>、<code>合照.jpg</code> 三项；信件直接显示原图，合照点击后可翻面，背面右下角写着“我的秘密”。</p>
+            <p>寄存仓不包含支票。未兑现的2万美元支票需要登录顾盼旧电脑后，在“个人文件”中发现。</p>
           </article>
         </div>
       </section>
@@ -367,20 +368,21 @@
             <h3>检查个人文件</h3>
             <div class="route"><b>点击路径：</b>顾盼电脑 → 双击“个人文件”</div>
             <ul>
-              <li><b>暂停学业申请.pdf：</b>证明她只是暂时休学，并非放弃人生。</li>
-              <li><b>医院_患者编号.jpg：</b>获得 <code>GP-221109</code>。</li>
-              <li><b>事后检查记录：</b>获得日期 <code>20221109</code> 与访问码 <code>7304</code>。</li>
-              <li><b>治疗订单_HW-220214-HQ：</b>获得郝倩患者编号、日期与文档码。</li>
-              <li><b>HM-2217_未兑现：</b>将未知代号与封口资金联系起来。</li>
-              <li><b>画：</b>查看油画《向阳处》。</li>
+              <li><b>暂停学业申请.pdf：</b>标签“学校表单 · 已批准”，标题 <code>Temporary Leave of Absence</code>；学校为 Northbridge University（北桥大学），证明她计划暂时休学。</li>
+              <li><b>医院回执单.jpg：</b>标签“扫描件”，标题 <code>North Harbor Medical Center</code>；从图片读取顾盼的姓名、病历号 <code>GP-221109</code>、就诊日期 <code>20221109</code> 与文档码 <code>7304</code>。</li>
+              <li><b>账单.pdf：</b>标签“付款订单 · 已结清”，标题 <code>Harborwell Recovery Center</code>；从图片读取郝倩的查询资料 <code>HQ-220214</code> / <code>20220214</code> / <code>0214</code>。</li>
+              <li><b>HM-2217.pdf：</b>标签“异常代号”；一张两万美元、始终没有兑现的支票，将 <code>HM-2217</code> 与可疑资金联系起来。</li>
+              <li><b>向阳处：</b>点击后直接查看顾盼的油画《向阳处》大图，没有额外叙述。</li>
             </ul>
+            <p>个人文件里不再提供“回国材料”“待整理”或完整医疗报告，也没有医院快捷链接；玩家必须根据两张单据自行搜索医院门户。</p>
           </article>
           <article class="step">
             <span class="step-num">08</span>
             <h3>恢复微博未发送草稿</h3>
-            <div class="route"><b>点击路径：</b>顾盼电脑 → 浏览器 → “向阳处没有窗·微博主页” → 页面底部加密草稿</div>
+            <div class="route"><b>点击路径：</b>顾盼电脑 → 双击“微博” → 在新标签页打开顾盼微博 → 页面底部加密草稿</div>
             <p>密码为共同暗号的完整拼音：<code>zuowangyoupan</code>。</p>
-            <p>草稿记录了酒吧后的记忆断片、钥匙与住址疑点、疑似偷拍闪光、医院筛查、家人拒绝帮助以及顾盼的无助。公开微博则停在被侵犯的前夜。</p>
+            <p>公开微博按时间倒序排列，最后公开更新停在被侵犯的前夜；加密入口始终位于公开内容下方。解锁后，未发送草稿继续保留在最下方，并在草稿组内倒序排列。</p>
+            <p>草稿记录了酒吧后的记忆断片、钥匙与住址疑点、疑似偷拍闪光、医院筛查、家人拒绝帮助以及顾盼的无助。</p>
           </article>
           <article class="step">
             <span class="step-num">09</span>
@@ -397,14 +399,16 @@
           <article class="step">
             <span class="step-num">10</span>
             <h3>查询顾盼医疗记录</h3>
+            <div class="route"><b>点击路径：</b>顾盼电脑 → Microsoft Edge → 搜索 <code>North Harbor Medical Center</code> → 打开 MyNorthHarbor Medical Network</div>
             <div class="route"><b>输入：</b><code>GU PAN</code> / <code>GP-221109</code> / <code>20221109</code> / <code>7304</code></div>
-            <p>医院记录证明她报告了失去意识、记忆缺失和疑似药物促成的侵犯，并完成了证据保存与扩展毒理检测。</p>
+            <p>医院记录不会在个人文件中直接出现。进入共享病历门户后，输入“医院回执单.jpg”上的四项资料，查询并点击“保存已发布记录”。记录证明她报告了失去意识、记忆缺失和疑似药物促成的侵犯，并完成了证据保存与扩展毒理检测。</p>
           </article>
           <article class="step">
             <span class="step-num">11</span>
             <h3>查询郝倩康复记录</h3>
-            <div class="route"><b>输入：</b><code>HQ-220214</code> / <code>20220214</code> / <code>0214</code></div>
-            <p>发现顾盼承担全部费用；转介机构是远帆社区互助会，转介编号为 <code>YF-HQ-0214</code>。</p>
+            <div class="route"><b>点击路径：</b>在同一 MyNorthHarbor 门户中选择查询另一份记录</div>
+            <div class="route"><b>输入：</b><code>HAO QIAN</code> / <code>HQ-220214</code> / <code>20220214</code> / <code>0214</code></div>
+            <p>使用“账单.pdf”上的四项资料查询并保存记录。这里确认顾盼是授权付款人并承担全部费用；转介机构是远帆社区互助会，转介编号为 <code>YF-HQ-0214</code>。</p>
           </article>
           <article class="step">
             <span class="step-num">12</span>
@@ -628,10 +632,11 @@
       <section id="gaps">
         <header class="section-head"><small>12 · Implementation Notes</small><h2>当前版本仍未完全接通的节点</h2></header>
         <div class="gap-list">
-          <article><b>完整调查入口未接通：</b>沈望桌面“调查档案”中的“进入完整调查”目前打开首页，首页尚未读取 <code>investigation=full</code>。</article>
+          <article><b>完整调查仍是独立文字原型：</b>三电脑版“调查档案”目前只汇总玩家已经确认的事实，不再显示“进入完整调查”按钮；两周目与结局演出仍保留在首页旧原型中，尚未与三电脑证据进度串联。</article>
           <article><b>恒慕合同号来源不足：</b><code>HM-W-251206-117</code> 目前只在完整调查文字关卡中直接给出，三电脑线还缺少一份可自然发现合同号的文件。</article>
           <article><b>两周目尚未严格锁定：</b>玩家可以随时通过桌面切换进入刘涵线，不必先完成第一结局。</article>
           <article><b>结局尚未由网页证据自动触发：</b>远帆封存证据、恒慕与警方页面已经存在，但尚未自动汇总为“最后证据链”并进入结局。</article>
+          <article><b>个别资料卡地区仍需统一：</b>故事设定中 North Harbor 明确位于国外，但顾盼的微信资料卡地区仍显示“中国”，需要在后续界面统一时修正。</article>
         </div>
       </section>
 

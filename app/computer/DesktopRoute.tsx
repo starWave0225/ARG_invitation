@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import GupanWeibo from "../weibo/GupanWeibo";
 
 type Owner = "shen" | "gupan" | "liuhan";
 type GameMode = "normal" | "hardcore";
@@ -106,6 +105,13 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const [notice,setNotice]=useState(false);
   const [wechatNotice,setWechatNotice]=useState<{title:string;body:string}|null>(null);
   const [extracted,setExtracted]=useState(false);
+  const openDesktopApp=(id:string)=>{
+    if(owner==="gupan"&&id==="weibo"){
+      window.open("/weibo/gupan","_blank","noopener,noreferrer");
+      return;
+    }
+    setActive(id);
+  };
   const resetGame=()=>{
     if(!window.confirm("确定清除《嫁》的全部调查进度并重新开始吗？"))return;
     for(let index=localStorage.length-1;index>=0;index-=1){
@@ -176,7 +182,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   return <main className={`pc-desktop pc-${owner}`}>
     <div className="pc-wallpaper"/>
     <section className="pc-icons" aria-label={`${cfg.owner}的桌面`}>
-      {cfg.apps.map(([label,icon,id])=><button key={id} className={selected===id?"selected":""} onClick={()=>setSelected(id)} onDoubleClick={()=>setActive(id)}><i>{icon}</i><span>{label}</span></button>)}
+      {cfg.apps.map(([label,icon,id])=><button key={id} className={selected===id?"selected":""} onClick={()=>setSelected(id)} onDoubleClick={()=>openDesktopApp(id)}><i>{icon}</i><span>{label}</span></button>)}
       {owner==="shen"&&extracted&&<button className={selected==="storage"?"selected":""} onClick={()=>setSelected("storage")} onDoubleClick={()=>setActive("storage")}><i>📁</i><span>B-17 寄存仓</span></button>}
       {owner==="shen"&&extracted&&<button className={selected==="gupan-pc"?"selected":""} onClick={()=>setSelected("gupan-pc")} onDoubleClick={()=>window.open("/computer/gupan","_blank","noopener,noreferrer")}><i className="device-icon">▰</i><span>顾盼的旧电脑</span></button>}
       {owner==="liuhan"&&<button onDoubleClick={()=>window.open("/hengmu","_blank","noopener,noreferrer")} onClick={()=>setSelected("hengmu")} className={selected==="hengmu"?"selected":""}><i>囍</i><span>恒慕官网.url</span></button>}
@@ -191,7 +197,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       {cfg.apps.slice(0,4).map(([label,icon,id])=><button key={id} className={active===id?"running":""} title={label} onClick={()=>setActive(id)}>{icon}</button>)}
       <span className="pc-tray">⌃　⌨　◉　⌁　🔊　 <b>{systemTime}<small>{cfg.date.replace(" 星期三","").replace(" 星期四","")}</small></b></span>
     </footer>
-    {start&&<div className="pc-startmenu"><div className="pc-start-search">⌕　在应用、设置和文档中搜索</div><header><b>已固定</b><span>所有应用　›</span></header><div>{cfg.apps.map(([label,icon,id])=><button key={id} onClick={()=>{setActive(id);setStart(false)}}><i>{icon}</i><span>{label}</span></button>)}</div><footer><span>●　{cfg.owner}</span><button onClick={()=>{location.href="/"}}>关机</button></footer></div>}
+    {start&&<div className="pc-startmenu"><div className="pc-start-search">⌕　在应用、设置和文档中搜索</div><header><b>已固定</b><span>所有应用　›</span></header><div>{cfg.apps.map(([label,icon,id])=><button key={id} onClick={()=>{openDesktopApp(id);setStart(false)}}><i>{icon}</i><span>{label}</span></button>)}</div><footer><span>●　{cfg.owner}</span><button onClick={()=>{location.href="/"}}>关机</button></footer></div>}
     <div className="pc-route-switch"><span>{cfg.owner}的电脑</span>{gameMode&&<button type="button" className={`pc-mode-label ${gameMode}`} onClick={toggleGameMode} aria-label={`当前为${gameMode==="normal"?"通灵模式":"真实模式"}，点击切换为${gameMode==="normal"?"真实模式":"通灵模式"}`} title="点击切换游戏模式">{gameMode==="normal"?"通灵模式":"真实模式"} <small>⇄</small></button>}<a href="/computer/shen" target="_blank" rel="noopener noreferrer">沈望</a><a href="/computer/gupan" target="_blank" rel="noopener noreferrer">顾盼</a><a href="/computer/liuhan" target="_blank" rel="noopener noreferrer">刘涵</a><a href="/" target="_blank" rel="noopener noreferrer">返回主选单</a><button type="button" onClick={resetGame}>↻ 重置进度</button></div>
   </main>
 }
@@ -240,7 +246,6 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="mail")return <ShenMailbox storageReached={storageReached}/>;
   if(app==="wechat"&&owner==="gupan")return <GupanWeChatArchive/>;
   if(app==="wechat")return <WeChatDesktop owner={owner}/>;
-  if(app==="weibo"&&owner==="gupan")return <GupanWeibo embedded viewer="顾盼"/>;
   if(app==="browser")return <EdgeBrowser owner={owner}/>;
   if(app==="qq")return <div className="pc-document"><small>QQ · 情侣空间快捷入口</small><h2>左望右盼</h2><p>沈望与顾盼的情侣空间。上次访问：2022年1月7日。</p><div className="pc-qzone-card"><img src="/characters/shen-wang.png" alt="沈望"/><b>♥</b><img src="/characters/gu-pan.png" alt="顾盼"/><span>有一条来自匿名访客的新留言</span></div><a href="/qzone" target="_blank" rel="noopener noreferrer">在新标签页打开QQ情侣空间 ↗</a></div>;
   if(app==="map")return <MapApp owner={owner}/>;
