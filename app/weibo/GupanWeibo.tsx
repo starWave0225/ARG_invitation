@@ -25,7 +25,12 @@ export default function GupanWeibo({embedded=false,viewer="沈望"}:{embedded?:b
   const [privateOpen,setPrivateOpen]=useState(false);
   const [code,setCode]=useState("");
   const [selected,setSelected]=useState<number|null>(null);
-  const visible=useMemo(()=>posts.filter(p=>(privateOpen||!p.private)&&(year==="全部"||p.year===year)&&(!query||p.plain.includes(query)||p.tag?.toLowerCase().includes(query.toLowerCase()))),[year,query,privateOpen]);
+  const visible=useMemo(()=>posts
+    .filter(p=>(privateOpen||!p.private)&&(year==="全部"||p.year===year)&&(!query||p.plain.includes(query)||p.tag?.toLowerCase().includes(query.toLowerCase())))
+    .sort((a,b)=>{
+      if(Boolean(a.private)!==Boolean(b.private))return a.private?1:-1;
+      return b.date.localeCompare(a.date);
+    }),[year,query,privateOpen]);
   const showDraftLock=!privateOpen&&(year==="全部"||year==="2022")&&!query;
   const draftPassword="zuowangyoupan";
   const unlockDrafts=()=>{if(code.trim().toLowerCase()===draftPassword)setPrivateOpen(true)};
