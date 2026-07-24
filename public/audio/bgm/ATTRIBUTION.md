@@ -7,6 +7,7 @@ Music by Scott Buckley, released under CC BY 4.0:
 
 - `investigation.mp3`: "Intervention" (No Piano Melody)
 - `second-chance.mp3`: "Signal to Noise"
+- `a-kind-of-hope.mp3`: "A Kind Of Hope"
 
 Source and license information:
 
