@@ -317,7 +317,7 @@ function EdgeBrowser({owner}:{owner:Owner}){
   const hospital=/(north[\s-]*harbor|northharbor|mynorthharbor|medical\s*center|patient\s*portal|医院|医疗|患者门户)/i.test(searched);
   const hengmu=/(恒慕|hengmu|婚姻家庭|婚介)/i.test(searched);
   const results:EdgeResult[]=[
-    ...(owner==="shen"&&/(顾盼|gu\s*pan|gupan|向阳处)/i.test(searched)?[{domain:"weibo.com/u/gpan_sunward",title:"向阳处没有窗的微博",snippet:"顾盼的公开微博主页、相册与近期动态。",url:"/weibo/gupan"}]:[]),
+    ...(owner==="shen"&&/(顾盼|gu\s*pan|gupan|向阳处|向阳生长)/i.test(searched)?[{domain:"weibo.com/u/gpan_sunward",title:"向阳生长的微博",snippet:"顾盼的公开微博主页、相册与近期动态。",url:"/weibo/gupan"}]:[]),
     ...(school?[{domain:"www.northbridge.example",title:"Northbridge University｜北桥大学",snippet:"课程、学生服务、校园目录与学生社区系统。",url:"/university"}]:[]),
     ...(owner==="shen"&&/(远帆|互助会|yuanfan|yf\s*connect)/i.test(searched)?[{domain:"yuanfan-community.example",title:"远帆社区互助会",snippet:"为留学生提供生活互助、危机转介与志愿者服务。",url:"/yuanfan"}]:[]),
     ...((owner==="shen"||owner==="liuhan")&&hengmu?[{domain:"www.hengmu-family.example",title:"恒慕婚姻家庭服务集团",snippet:"婚姻咨询、家庭协调与定制礼仪服务。",url:"/hengmu"}]:[]),
