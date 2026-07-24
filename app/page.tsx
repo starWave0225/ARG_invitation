@@ -304,7 +304,7 @@ function OpeningSequence({onSkip}:{onSkip:()=>void}){
   const [titleReady,setTitleReady]=useState(false);
 
   useEffect(()=>{
-    const timer=window.setTimeout(()=>setTitleReady(true),50600);
+    const timer=window.setTimeout(()=>setTitleReady(true),47250);
     return ()=>window.clearTimeout(timer);
   },[]);
 
