@@ -472,7 +472,7 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
       {!selected && <div className="empty-state"><span>B-17</span><p>请选择一件物品进行整理</p></div>}
       {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="破损信封与郝倩的手写信"/></article>}
       {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
-      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
+      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>画</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
   </div>;
 }
@@ -491,14 +491,13 @@ function GuFiles({addEvidence}:{addEvidence:(e:Evidence)=>void}) {
   return <div className="gu-files">
     <aside>
       {[
-        ["暂停学业申请.pdf", "leave"], ["画", "art"], ["待整理", "todo"], ["HM-2217_未兑现.pdf", "check"], ["聊天备份", "backup"],
+        ["暂停学业申请.pdf", "leave"], ["画", "art"], ["HM-2217_未兑现.pdf", "check"], ["聊天备份", "backup"],
       ].map(([label, id]) => <button key={id} onClick={() => { setFile(id); if(id==="check")addEvidence("draft"); }}>{label}<small>{id === "backup" ? "已加密" : id==="check"?"文件":"4 项"}</small></button>)}
     </aside>
     <section>
       {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
       {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>文件证明她计划暂时离开，而不是彻底消失。</p></article>}
       {file === "art" && <article><p className="stamp">图片素材占位</p><h2>《向阳处》早期草稿</h2><div className="asset-slot">后续生成：顾盼画作 / 窗边植物 / 未完成旅行地图</div><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></article>}
-      {file === "todo" && <article><p className="stamp">17项未上传</p><h2>待整理</h2><ul><li>医院_患者编号_GP-221109.jpg</li><li>复诊卡_2022-11-09.pdf</li><li>检验条码_7304.png</li><li>HM-2217_未兑现.pdf</li><li>举报材料_03.tmp</li><li>酒吧页面缓存.dat</li></ul><p>大部分内容无法直接打开，需要从浏览器历史和聊天记录中寻找上下文。</p></article>}
       {file === "check" && <article><p className="stamp">顾盼旧电脑 · 未兑现</p><h2>HM-2217</h2><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code></article>}
       {file === "backup" && <article><p className="stamp">WECHAT FILES</p><h2>Backup_2022</h2><p>在线登录需要手机确认。顾盼在本机留下了一份离线聊天备份。</p><div className="locked-panel">迁移密码提示：左望右盼<br/><small>完成治疗订单调查后开放恢复谜题</small></div></article>}
     </section>

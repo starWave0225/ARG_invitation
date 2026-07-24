@@ -250,7 +250,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="map")return <MapApp owner={owner}/>;
   if(app==="diary")return <ShenDiary/>;
   if(app==="personal"||app==="files"||app==="storage"||app==="downloads"){
-    const gupanPersonalFiles=["暂停学业申请.pdf","医院_患者编号.jpg","事后检查记录_GP-221109.pdf","治疗订单_HW-220214-HQ.pdf","HM-2217_未兑现.pdf","画","待整理"];
+    const gupanPersonalFiles=["暂停学业申请.pdf","医院_患者编号.jpg","事后检查记录_GP-221109.pdf","治疗订单_HW-220214-HQ.pdf","HM-2217_未兑现.pdf","画"];
     const files=explorerView==="storage"
       ?["B-17现场物品清单.zip","一封破损的信.pdf","合照.jpg"]
       :explorerView==="personal"
@@ -676,7 +676,6 @@ function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}
     "治疗订单_HW-220214-HQ.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="顾盼为郝倩支付的康复治疗订单"/><p>治疗项目只写着“依赖性行为稳定干预”。完整付款方与转介信息需要前往同一医疗集团门户。</p></>,link:["/hospital","打开港湾康复中心病例门户 ↗"]},
     "HM-2217_未兑现.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元本票没有解释用途，附言只留下编号 <code>HM-2217</code>；必须结合聊天、草稿和后台记录判断它代表什么。</p></>},
     "画":{tag:"文件夹 · 27项",title:"顾盼的画",body:<><figure className="pc-painting-preview"><img src="/paintings/xiangyangchu.png" alt="顾盼的油画《向阳处》"/><figcaption>《向阳处》· 油画草稿</figcaption></figure><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></>},
-    "待整理":{tag:"文件夹 · 17项未上传",title:"待整理",body:<><ul><li>检验条码_7304.png</li><li>举报材料_03.tmp</li><li>酒吧页面缓存.dat</li><li>HM-2217_未兑现.pdf</li><li>聊天备份_2022.enc</li></ul><p>文件彼此缺少上下文，需要从浏览器和聊天记录继续追查。</p></>},
     "QQ空间截图":{tag:"证据截图",title:"匿名访客留言",body:<><pre>沈望，救我。我被锁在……{"\n"}临川……长宁路……17号{"\n"}……4栋……02室</pre><p>截图只保留了残破正文。完整IP需要进入情侣空间的主人管理页面。</p></>,link:["/qzone","打开QQ情侣空间 ↗"]},
     "IP定位记录":{tag:"交叉筛查",title:"地址候选表",body:<><table><tbody><tr><th>候选</th><th>IP节点</th><th>工作距离</th></tr><tr><td>晴川公寓4栋602</td><td>匹配</td><td>1.2km</td></tr><tr><td>长宁花园17栋402</td><td>不匹配</td><td>8.6km</td></tr></tbody></table></>,link:["/computer/liuhan","返回刘涵桌面"]},
     "顾盼的手机_本地数据提取":{tag:"现场证物 · 离线提取",title:"顾盼的手机",body:<><div className="old-phone-extract"><header><span>03:19</span><small>无 SIM 卡　12%</small></header><section><div className="old-phone-app">备忘录</div><article><small>2022年11月17日　03:36</small><h3>旧电脑</h3><p>微信密码：<b>gp2022wxpass</b></p></article><article><small>2025年11月29日　02:47</small><h3>如果消息还是发不出去</h3><p>去情侣空间。沈望还留着主人权限，刘涵知道那个空间。</p></article></section></div><p>手机没有 SIM 卡，只保存了少量本地数据。第一条备忘录中的密码指向顾盼旧电脑上的微信聊天备份。</p></>,link:["/computer/gupan","返回顾盼旧电脑，解锁微信 ↗"]},
