@@ -114,9 +114,10 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
     localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"从“我的日记”确认恋爱纪念日，尝试登录顾盼旧电脑。":
     !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"检查顾盼的个人文件，并分别查询两份医疗记录。":
-    localStorage.getItem("jia-hd-added")!=="true"?"从远帆公开主页取得韩铎的微信号，再到微信“添加”中搜索。":
+    localStorage.getItem("jia-hq-first-round-complete")!=="true"?"使用医疗记录与郝倩完成首轮对质，取得她发送的远帆官网链接。":
+    localStorage.getItem("jia-hd-added")!=="true"?"打开远帆“联系我们”，取得韩铎的微信号，再到微信“添加”中搜索。":
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
-    localStorage.getItem("jia-womandriver-site-found")!=="true"?"追查老司机夜航群，取得暗语后回到远帆官网搜索 womandriver。":
+    localStorage.getItem("jia-womandriver-site-found")!=="true"?"根据老司机夜航群的提示查看远帆活动日历，按活动序号解出站内搜索词。":
     localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"打开远帆返回的隐藏网站，搜索YF-HQ-0214；再使用SD-8845127或HM-2217查找顾盼。":
     localStorage.getItem("jia-liuhan-phone-obtained")!=="true"?"切换到刘涵电脑，利用残缺地址和IP记录定位顾盼。":
     localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查旧请柬和服务码，追查恒慕的方案变更。":
@@ -185,7 +186,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     if(owner!=="shen")return;
     const updates=[
       {key:"jia-olddriver-group",seen:"jia-notified-olddriver",title:"老司机夜航群",body:"你已通过验证并加入群聊"},
-      {key:"jia-yuanfan-site-access",seen:"jia-notified-yuanfan-access",title:"远帆网站权限",body:"韩铎已为你开通公告归档与站内搜索"},
+      {key:"jia-yuanfan-site-access",seen:"jia-notified-yuanfan-access",title:"远帆网站权限",body:"韩铎已为你开通成员栏目与站内搜索"},
       {key:"jia-hq-added",seen:"jia-notified-hq",title:"H.Q. · 郝倩",body:"你们已经成为好友，可以开始聊天了"},
       {key:"jia-hd-added",seen:"jia-notified-hd",title:"韩铎",body:"新的联系人已出现在微信中"},
     ];
@@ -455,7 +456,7 @@ function CaseArchive({mode}:{mode:GameMode|null}){
     {ready:localStorage.getItem("jia-gupan-computer-unlocked")==="true",title:"旧电脑登录成功",detail:"个人文件和离线微信备份已经可以继续调查。"},
     {ready:prototypeSeen.includes("medical"),title:"顾盼的医疗记录",detail:"她曾报告意识丧失、记忆缺失及疑似药物促成的侵犯，并保存了相关证据。"},
     {ready:prototypeSeen.includes("hq-treatment"),title:"郝倩的治疗与远帆转介",detail:"顾盼承担了治疗费用，转介编号指向远帆社区互助会。"},
-    {ready:localStorage.getItem("jia-yuanfan-site-access")==="true",title:"远帆学生网站权限",detail:"韩铎核验学生资料后，开通了公告归档与站内搜索。"},
+    {ready:localStorage.getItem("jia-yuanfan-site-access")==="true",title:"远帆学生网站权限",detail:"韩铎核验学生资料后，开通了成员栏目与站内搜索。"},
     {ready:localStorage.getItem("jia-olddriver-group")==="true",title:"老司机夜航群",detail:"汽车黑话并非讨论驾驶，HM-2217与2022年10月27日的群文件有关。"},
     {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"NIGHTDRIVE隐藏站记录",detail:"YF-HQ-0214指向郝倩的遭遇，汇款单编号SD-8845127指向顾盼；两组记录共享来源账号、偷拍视频索引和远帆档案。"},
     {ready:localStorage.getItem("jia-liuhan-address-reached")==="true",title:"晴川公寓4栋602室",detail:"残缺求救、IP节点和地址候选交叉指向同一地点。"},
@@ -645,7 +646,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false)}} onKeyDown={e=>e.key==="Enter"&&searchContact()} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
       {result==="hq"&&<article className="wx-driver-result"><img src="/characters/wechat-hao-qian-wedding.png" alt="H.Q."/><span><b>H.Q.</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
       {result==="hd"&&<article className="wx-driver-result"><img src="/characters/han-duo.png" alt="韩铎"/><span><b>韩铎 · Han Duo</b><small>微信号：hd_047_abroad　地区：海外</small></span>{hdAdded?<em>已添加</em>:!hdRequest?<button onClick={()=>setHdRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>你的大学名称？</b><input value={hdAnswer} onChange={e=>{setHdAnswer(e.target.value);setHdError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHdFriend()} placeholder="输入大学名称"/><button onClick={verifyHdFriend}>提交答案</button>{hdError&&<p>回答不正确。请输入海外就读的大学名称。</p>}<em>可填写学校的中文名或英文名。</em></div>}</article>}
-      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>远帆网站《2022 秋季夜间互助临时群使用规范》中，排版异常的四个字是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：答案在远帆网站的公告归档里。</em></div>}</article>}
+      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>远帆《2022 秋季新生指南》中的临时互助群识别语是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：在远帆网站右键点击“新生指南”。</em></div>}</article>}
       {!result&&query&&<p className="wx-no-result">未找到该用户。请检查完整微信号。</p>}
     </section>}
     {section==="moments"&&<section className="wx-moments"><div className="wx-moments-cover"><span><b>{momentName}</b><img alt={momentName} src={momentAvatar}/></span></div>{momentProfile?<><div className="wx-personal-moments-label"><button onClick={()=>{setMomentProfile(null);setSection("moments")}}>‹ 返回朋友圈</button><span>{momentName}的朋友圈</span></div>{personalMoments[momentName]?.length>0?personalMoments[momentName].map((item,index)=><Moment key={`${momentName}-${index}`} src={momentAvatar} name={momentName} {...item}/>):<div className="wx-empty-moments">该用户暂时没有公开动态。</div>}</>:<>{personalMoments[selfName].map((item,index)=><Moment key={`${selfName}-${index}`} src={profileData[selfName].src} name={selfName} {...item}/>)}{owner==="shen"&&hdAdded&&personalMoments.韩铎.map((item,index)=><Moment key={`韩铎-${index}`} src={profileData.韩铎.src} name="韩铎" {...item}/>) }{owner==="shen"&&added&&personalMoments.郝倩.map((item,index)=><Moment key={`郝倩-${index}`} src={profileData.郝倩.src} name="郝倩" {...item}/>)}</>}</section>}
@@ -903,7 +904,7 @@ function HanDuoIdentityCheck(){
 }
 
 function OldDriverGroup(){
-  return <section className="wx-hd-check wx-yf-group wx-driver-group"><header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先学会看路书。群里不说真名，也别问车是谁的。"/><WxBubble src="/characters/hao-qian.png" text="今晚那辆“新车”状态不对，别再加油了。"/><WxBubble src="/characters/han-duo.png" text="照旧。路线发管理员，记录仪先开，结束以后统一送回车库。"/><WxBubble src="/characters/han-duo.png" text="旧记录别在这里问。远帆网站搜索“女司机”时只认英文连写：womandriver。看完记得清搜索记录。"/><div className="wx-driver-code"><small>群内暗语 · 仅成员可见</small><b>womandriver</b><span>用于远帆网站的站内搜索</span></div><div className="wx-group-notice dangerous"><b>群文件 · 2022-10-27_夜航路书</b><p>目标编号 HM-2217 · 集合地点与回程地址已由管理员隐藏。聊天中的“车”“加油”“记录仪”显然不是在讨论驾驶。</p></div></div></section>
+  return <section className="wx-hd-check wx-yf-group wx-driver-group"><header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先学会看路书。群里不说真名，也别问车是谁的。"/><WxBubble src="/characters/hao-qian.png" text="今晚那辆“新车”状态不对，别再加油了。"/><WxBubble src="/characters/han-duo.png" text="照旧。路线发管理员，记录仪先开，结束以后统一送回车库。"/><WxBubble src="/characters/han-duo.png" text="旧记录别在这里问。回远帆网站看活动日历，圈起来的日期才算数。按活动编号1到11排列，数字是字母在字母表里的位置。"/><div className="wx-driver-code"><small>群内提示 · 仅成员可见</small><b>1 → 11</b><span>圈选日期 · A=1 / Z=26</span></div><div className="wx-group-notice dangerous"><b>群文件 · 2022-10-27_夜航路书</b><p>目标编号 HM-2217 · 集合地点与回程地址已由管理员隐藏。聊天中的“车”“加油”“记录仪”显然不是在讨论驾驶。</p></div></div></section>
 }
 
 const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[

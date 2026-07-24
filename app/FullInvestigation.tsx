@@ -59,12 +59,12 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       {step===3 && <Scene eyebrow="郝倩 · 微信对质" title="她愿意给出一个方向">
         <p>沈望用港湾康复记录证明自己已经接近真相。郝倩没有交出任何账号或口令，只发送了远帆官网。</p>
         <div className="dialogue"><p><b>沈望：</b>我查到了港湾康复中心的记录。</p><p><b>郝倩：</b>你要的答案都在这里。</p><p><b>郝倩：</b>我只知道这么多了。</p></div>
-        <div className="route-launcher"><small>微信 · 郝倩</small><h2>沿远帆链接继续调查</h2><p>使用韩铎开通的学生网站权限查看公告归档与站内搜索。</p><a href="/computer/shen" target="_blank" rel="noopener noreferrer">打开沈望电脑与微信 ↗</a></div>
+        <div className="route-launcher"><small>微信 · 郝倩</small><h2>沿远帆链接继续调查</h2><p>使用韩铎开通的学生网站权限查看成员栏目与站内搜索。</p><a href="/computer/shen" target="_blank" rel="noopener noreferrer">打开沈望电脑与微信 ↗</a></div>
         <button onClick={()=>go(4)}>打开远帆官网</button>
       </Scene>}
       {step===4 && <Scene eyebrow="远帆 · 学生网站" title="HM-2217">
-        <p>韩铎置顶朋友圈的九张照片给出老司机群入口；远帆官网公告归档中排版异常的四个字组成备用识别语。加入群后取得 <code>womandriver</code>，在远帆官网搜索会直接进入一个未登记的成人视频索引站。</p>
-        <div className="route-launcher"><small>yuanfancommunity.org · STUDENT ACCESS</small><h2>远帆社区互助会</h2><p>韩铎核验学生资料后，公告归档与站内搜索会自动解锁。</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆官网 ↗</a></div>
+        <p>韩铎置顶朋友圈的九张照片给出老司机群入口；右键点击远帆“新生指南”会下载包含识别语的文档。加入群后，根据提示查看“活动日历”：按活动序号1至11读取圈选日期，再以A=1、Z=26换算，得到 <code>womandriver</code>。在远帆官网搜索会直接进入一个未登记的成人视频索引站。</p>
+        <div className="route-launcher"><small>yuanfancommunity.org · STUDENT ACCESS</small><h2>远帆社区互助会</h2><p>韩铎核验学生资料后，成员栏目与站内搜索会自动解锁。</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆官网 ↗</a></div>
         <p>在隐藏站输入 <code>HM-2217</code>，偷拍视频索引、事件时间、地址导出与两万美元结算标签把顾盼的遭遇拼成完整记录。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
         <button onClick={()=>{addProof(0);addProof(1);go(5)}}>结束第一周目：迟来的回望</button>
       </Scene>}
