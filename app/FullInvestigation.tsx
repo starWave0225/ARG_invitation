@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 
 const evidenceNames = ["顾盼的高风险标记", "酒吧后台照片", "境外网站结算", "顾父中断报警", "恒慕转运单", "郝倩完整证词"];
 const sceneMeta = [
-  ["学生社区", "身份注册", "PORTAL"], ["微信", "韩铎朋友圈", "WECHAT"], ["CorpusLens", "黑话语料", "TERMINAL"], ["远帆后台", "HengMu", "ADMIN"],
+  ["学生社区", "身份注册", "PORTAL"], ["微信", "韩铎朋友圈", "WECHAT"], ["CorpusLens", "黑话语料", "TERMINAL"], ["远帆旧站", "HengMu", "WEB"],
   ["当面对质", "郝倩", "DIALOGUE"], ["第一结局", "迟来的回望", "ENDING"], ["协作桌面", "匿名访客", "SPLIT"], ["现场勘查", "晴川公寓", "FORENSIC"],
   ["浏览器", "原婚约", "SEARCH"], ["文档检验", "摩斯封边", "DOCUMENT"], ["企业微信", "圆满方案", "SERVICE"], ["案件系统", "接警时间轴", "POLICE"],
-  ["联合行动", "证据链", "COUNTDOWN"], ["证人讯问", "郝倩自首", "TESTIMONY"], ["未迟画廊", "向阳而生", "GALLERY"], ["梦境", "镜花水月", "DREAM"]
+  ["联合行动", "证据链", "COUNTDOWN"], ["证人讯问", "郝倩自首", "TESTIMONY"], ["未迟画廊", "向阳而生", "GALLERY"]
 ];
 const portraits: Record<number, {src:string;name:string;note:string}> = {
   1:{src:"/characters/han-duo.png",name:"韩铎",note:"远帆互助会负责人"},
@@ -18,23 +18,21 @@ const portraits: Record<number, {src:string;name:string;note:string}> = {
   10:{src:"/characters/han-duo.png",name:"专属顾问：韩铎",note:"圆满方案负责人"},
   11:{src:"/characters/chen-fang.png",name:"陈放",note:"临川公安"},
   13:{src:"/characters/hao-qian.png",name:"郝倩",note:"关键证人"},
-  14:{src:"/characters/gu-pan.png",name:"顾盼",note:"《向阳处》作者"},
-  15:{src:"/characters/shen-wang.png",name:"沈望",note:"梦醒之后"}
+  14:{src:"/characters/gu-pan.png",name:"顾盼",note:"《向阳处》作者"}
 };
 
 export function FullInvestigation({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
   const [answer, setAnswer] = useState("");
   const [proof, setProof] = useState<number[]>([]);
-  const [mementos, setMementos] = useState(1);
-  useEffect(()=>{ const n=Number(localStorage.getItem("jia-full-step")||0); const timer=window.setTimeout(()=>setStep(n),0); return ()=>window.clearTimeout(timer); },[]);
+  useEffect(()=>{ const n=Math.min(Number(localStorage.getItem("jia-full-step")||0),14); const timer=window.setTimeout(()=>setStep(n),0); return ()=>window.clearTimeout(timer); },[]);
   const go=(n:number)=>{setStep(n);setAnswer("");localStorage.setItem("jia-full-step",String(n));};
   const addProof=(n:number)=>setProof(p=>p.includes(n)?p:[...p,n]);
 
   const meta=sceneMeta[step];
   const actor=portraits[step];
   return <div className={`full-investigation step-${step}`}>
-    <header><button onClick={onClose}>← 返回桌面</button><div><b>{meta[0]}</b><span>{meta[1]} · {meta[2]}</span></div><small>证据 {proof.length}/6 · 信物 {mementos}/10</small></header>
+    <header><button onClick={onClose}>← 返回桌面</button><div><b>{meta[0]}</b><span>{meta[1]} · {meta[2]}</span></div><small>证据 {proof.length}/6</small></header>
     <div className="investigation-layout">
       <nav className="case-rail" aria-label="调查进度">{sceneMeta.map((item,i)=><button key={i} className={i===step?"active":i<step?"done":""} disabled={i>step} onClick={()=>i<=step&&go(i)}><b>{String(i+1).padStart(2,"0")}</b><span>{item[0]}</span></button>)}</nav>
       <main>
@@ -49,8 +47,8 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       </Scene>}
       {step===1 && <Scene eyebrow="韩铎 · 微信朋友圈" title="进入他的圈子">
         <p>韩铎的朋友圈充满豪车、酒吧定位和远帆迎新合照。玩家使用刚注册的虚构交换生身份回答盘问，并含糊表示对“特殊聚会”感兴趣。</p>
-        <div className="dialogue"><p><b>韩铎：</b>DS新生？住哪片宿舍？</p><p><b>林川：</b>North Hall。迎新页面上看到远帆的。</p><p><b>韩铎：</b>学号发来我看看。</p><p><b>系统：</b>学校社区主页验证通过。</p><p><b>韩铎：</b>行。普通群没意思，给你个老司机群入口。</p></div>
-        <button onClick={()=>go(2)}>接受群邀请</button>
+        <div className="dialogue"><p><b>韩铎：</b>DS新生？住哪片宿舍？</p><p><b>林川：</b>North Hall。迎新页面上看到远帆的。</p><p><b>韩铎：</b>学号发来我看看。</p><p><b>系统：</b>学校社区主页验证通过。</p><p><b>韩铎：</b>行，资料能对上。远帆旧站的学生权限给你开了。</p></div>
+        <button onClick={()=>go(2)}>打开远帆官网</button>
       </Scene>}
       {step===2 && <Scene eyebrow="CorpusLens 0.8" title="破译汽车黑话">
         <p>沈望将1,746条聊天导入语料工具。结合医院时间、酒吧预约与文件编号，为高频词建立字典。</p>
@@ -58,16 +56,16 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <label>“今晚给2217加油，路书传回车库”中的2217是谁？</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="姓名"/>
         <button disabled={answer!=="顾盼"} onClick={()=>go(3)}>确认字典</button>
       </Scene>}
-      {step===3 && <Scene eyebrow="郝倩 · 微信对质" title="后台存在，但没有钥匙">
-        <p>港湾记录给出转介编号YF-HQ-0214；远帆公开页给出韩铎的个人微信。韩铎朋友圈暴露了YF Connect后台路径，但没有账号和口令。</p>
-        <div className="dialogue"><p><b>沈望：</b>港湾记录显示，顾盼替你付了治疗费。</p><p><b>郝倩：</b>是她自己要管我。我没让她付。</p><p><b>沈望：</b>韩铎朋友圈为什么拍到了你的转介编号？</p><p><b>郝倩：</b>……我以前做过短期志愿者。那个账号可能还没注销。</p></div>
-        <div className="route-launcher"><small>微信 · 郝倩</small><h2>取得历史志愿者凭证</h2><p>必须用港湾转介记录和韩铎朋友圈截图逐步对质，不能从公开网站直接进入后台。</p><a href="/computer/shen" target="_blank" rel="noopener noreferrer">打开沈望电脑与微信 ↗</a></div>
-        <button onClick={()=>go(4)}>郝倩提供了只读历史账号</button>
+      {step===3 && <Scene eyebrow="郝倩 · 微信对质" title="她愿意给出一个方向">
+        <p>沈望用港湾康复记录证明自己已经接近真相。郝倩没有交出任何账号或口令，只发送了远帆官网。</p>
+        <div className="dialogue"><p><b>沈望：</b>我查到了港湾康复中心的记录。</p><p><b>郝倩：</b>你要的答案都在这里。</p><p><b>郝倩：</b>我只知道这么多了。</p></div>
+        <div className="route-launcher"><small>微信 · 郝倩</small><h2>沿远帆链接继续调查</h2><p>使用韩铎开通的学生网站权限查看公告归档与站内搜索。</p><a href="/computer/shen" target="_blank" rel="noopener noreferrer">打开沈望电脑与微信 ↗</a></div>
+        <button onClick={()=>go(4)}>打开远帆官网</button>
       </Scene>}
-      {step===4 && <Scene eyebrow="远帆 · 历史志愿者只读档案" title="HM-2217">
-        <p>郝倩提供的账号只能查看与她本人有关的历史转介。关联记录证明顾盼营救并资助过她，也证明韩铎导出了顾盼的住址与紧急联系人。</p>
-        <div className="route-launcher"><small>yuanfancommunity.org · YF Connect</small><h2>远帆社区互助会</h2><p>账号 hq.volunteer · 口令 YF-0214-GP</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆历史档案 ↗</a></div>
-        <p>访问日志把HD-047、YF-HQ-0214和外部标签HM-2217连接在一起。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
+      {step===4 && <Scene eyebrow="远帆 · 学生网站" title="HM-2217">
+        <p>韩铎置顶朋友圈的九张照片给出老司机群入口；远帆官网公告归档中排版异常的四个字组成备用识别语。加入群后取得 <code>womandriver</code>，在远帆官网搜索会直接进入一个未登记的成人视频索引站。</p>
+        <div className="route-launcher"><small>yuanfancommunity.org · STUDENT ACCESS</small><h2>远帆社区互助会</h2><p>韩铎核验学生资料后，公告归档与站内搜索会自动解锁。</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆官网 ↗</a></div>
+        <p>在隐藏站输入 <code>HM-2217</code>，偷拍视频索引、事件时间、地址导出与两万美元结算标签把顾盼的遭遇拼成完整记录。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
         <button onClick={()=>{addProof(0);addProof(1);go(5)}}>结束第一周目：迟来的回望</button>
       </Scene>}
       {step===5 && <Scene eyebrow="第一次结局" title="你知道得太晚了">
@@ -120,14 +118,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       {step===14 && <Scene eyebrow="真结局 · 向阳而生" title="她终于以自己的名字被看见">
         <div className="asset-slot large">后续图片素材：未迟书店画展 / 《向阳处》系列 / 空着的右侧位置</div>
         <p>顾盼的画作在“未迟”展出。沈望没有替她活着，而是带着她曾经活过的证明，继续两人没有完成的旅行。`HengMu`仍有节点运行，也有人开始盯上他。</p>
-        <p>本次原型默认已获得1件信物。后续所有支线接入后，集齐10件可开启《镜花水月》。</p>
-        <button onClick={()=>{setMementos(10);go(15)}}>原型预览：补齐全部信物</button>
-      </Scene>}
-      {step===15 && <Scene eyebrow="隐藏结局 · 镜花水月" title="在梦里，他们拥有完整的一生">
-        <div className="asset-slot large">后续图片素材：2026年婚礼 / 镜面倒影 / 永远停在清晨的窗</div>
-        <blockquote>“这一次，你等到我回头了吗？”<br/>“没有。这一次，我走到了你身边。”</blockquote>
-        <p>梦中的沈望在事发前一晚抵达国外，顾盼完成学业，两人在2026年结婚。钟表最终停住，顾盼让他醒来，替她去看那些没见过的地方。</p>
-        <footer>死亡没有被改写。<br/>但在无人能够夺走的梦里，他们曾有过完整的一生。</footer>
+        <p>隐藏结局不再由信物数量解锁。完成刘涵线后，返回顾盼旧电脑，在回收站阅读恢复出的《给望_未寄出.txt》。</p>
       </Scene>}
       </main>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Children, useEffect, useRef, useState, type ReactNode } from "react";
 
 type Owner = "shen" | "gupan" | "liuhan";
 type GameMode = "normal" | "hardcore";
@@ -86,7 +86,7 @@ const configs = {
   gupan:{
     owner:"顾盼",device:"GP-LAPTOP-2018",os:"Windows 10 家庭中文版",time:"03:42",date:"2022年11月17日 星期四",
     wallpaper:"gp",quote:"希望自卑的人，也能拥有面对黑暗的勇气。",
-    apps:[["此电脑","▣","files"],["个人文件","📁","personal"],["微信","💬","wechat"],["Outlook","✉","mail"],["浏览器","◎","browser"],["微博","微","weibo"],["回收站","♲","trash"]],
+    apps:[["此电脑","▣","files"],["个人文件","📁","personal"],["微信","💬","wechat"],["Outlook","✉","mail"],["微博","微","weibo"],["回收站","♲","trash"]],
   },
   liuhan:{
     owner:"刘涵",device:"LIUHAN-DESKTOP",os:"Windows 11 家庭中文版",time:"22:06",date:"2025年12月3日 星期三",
@@ -94,6 +94,36 @@ const configs = {
     apps:[["微信","💬","wechat"],["QQ","Q","qq"],["浏览器","◎","browser"],["临川地图","⌖","map"],["案件协作","盾","police"],["下载","↓","downloads"]],
   }
 } as const;
+
+function readPrototypeSeen(){
+  if(typeof window==="undefined")return [] as string[];
+  try{
+    const data=JSON.parse(localStorage.getItem("jia-prototype")||"{}");
+    return Array.isArray(data.seen)?data.seen as string[]:[];
+  }catch{
+    return [] as string[];
+  }
+}
+
+function getInvestigationNextHint(){
+  if(typeof window==="undefined")return "完成与刘涵的微信对话，确认B-17寄存仓的存在。";
+  const prototypeSeen=readPrototypeSeen();
+  const openingStep=Number(localStorage.getItem("jia-lh-opening-step-v3")||0);
+  return openingStep<8?"完成与刘涵的微信对话，确认B-17寄存仓的存在。":
+    localStorage.getItem("jia-storage-reached")!=="true"?"读取B-17到期邮件，在地图中搜索寄存中心地址。":
+    localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
+    localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"从“我的日记”确认恋爱纪念日，尝试登录顾盼旧电脑。":
+    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"检查顾盼的个人文件，并分别查询两份医疗记录。":
+    localStorage.getItem("jia-hd-added")!=="true"?"从远帆公开主页取得韩铎的微信号，再到微信“添加”中搜索。":
+    localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
+    localStorage.getItem("jia-womandriver-site-found")!=="true"?"追查老司机夜航群，取得暗语后回到远帆官网搜索 womandriver。":
+    localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"打开远帆返回的隐藏网站，搜索YF-HQ-0214；再使用SD-8845127或HM-2217查找顾盼。":
+    localStorage.getItem("jia-liuhan-phone-obtained")!=="true"?"切换到刘涵电脑，利用残缺地址和IP记录定位顾盼。":
+    localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查旧请柬和服务码，追查恒慕的方案变更。":
+    localStorage.getItem("jia-liuhan-line-complete")!=="true"?"回到刘涵微信，使用陈放提供的协查授权，查看两条关联警情记录。":
+    localStorage.getItem("jia-hidden-ending-unlocked")!=="true"?"返回顾盼旧电脑，打开回收站中新出现的《给望_未寄出.txt》。":
+    "所有调查线索已经确认，隐藏结局已经开启。";
+}
 
 export default function DesktopRoute({owner}:{owner:Owner}){
   const cfg=configs[owner];
@@ -104,7 +134,9 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const [start,setStart]=useState(false);
   const [notice,setNotice]=useState(false);
   const [wechatNotice,setWechatNotice]=useState<{title:string;body:string}|null>(null);
+  const [recoveredLetterNotice,setRecoveredLetterNotice]=useState(false);
   const [extracted,setExtracted]=useState(false);
+  const [progressRevision,setProgressRevision]=useState(0);
   const openDesktopApp=(id:string)=>{
     if(owner==="gupan"&&id==="weibo"){
       window.open("/weibo/gupan","_blank","noopener,noreferrer");
@@ -153,7 +185,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     if(owner!=="shen")return;
     const updates=[
       {key:"jia-olddriver-group",seen:"jia-notified-olddriver",title:"老司机夜航群",body:"你已通过验证并加入群聊"},
-      {key:"jia-yuanfan-management-group",seen:"jia-notified-yuanfan-group",title:"远帆互助会·管理群",body:"韩铎邀请你加入了群聊"},
+      {key:"jia-yuanfan-site-access",seen:"jia-notified-yuanfan-access",title:"远帆网站权限",body:"韩铎已为你开通公告归档与站内搜索"},
       {key:"jia-hq-added",seen:"jia-notified-hq",title:"H.Q. · 郝倩",body:"你们已经成为好友，可以开始聊天了"},
       {key:"jia-hd-added",seen:"jia-notified-hd",title:"韩铎",body:"新的联系人已出现在微信中"},
     ];
@@ -177,8 +209,29 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   },[owner]);
   useEffect(()=>{if(wechatNotice)void playNotificationSound("wechat")},[wechatNotice]);
   useEffect(()=>{if(notice&&!wechatNotice)void playNotificationSound("mail")},[notice,wechatNotice]);
+  useEffect(()=>{
+    if(owner!=="gupan")return;
+    const check=()=>{
+      const available=localStorage.getItem("jia-liuhan-line-complete")==="true";
+      setRecoveredLetterNotice(available&&localStorage.getItem("jia-notified-gp-final-letter")!=="true");
+    };
+    check();
+    window.addEventListener("storage",check);
+    window.addEventListener("jia-progress",check);
+    return()=>{window.removeEventListener("storage",check);window.removeEventListener("jia-progress",check)};
+  },[owner]);
+  useEffect(()=>{if(recoveredLetterNotice)void playNotificationSound("mail")},[recoveredLetterNotice]);
   useEffect(()=>{if(gameMode==="hardcore"&&active==="case")setActive(null)},[gameMode,active]);
+  useEffect(()=>{
+    const refreshObjective=()=>setProgressRevision(value=>value+1);
+    window.addEventListener("storage",refreshObjective);
+    window.addEventListener("jia-progress",refreshObjective);
+    window.addEventListener("jia-wechat-notification",refreshObjective);
+    return()=>{window.removeEventListener("storage",refreshObjective);window.removeEventListener("jia-progress",refreshObjective);window.removeEventListener("jia-wechat-notification",refreshObjective)};
+  },[]);
   useEffect(()=>{document.documentElement.dataset.desktop=owner;return()=>{delete document.documentElement.dataset.desktop}},[owner]);
+  void progressRevision;
+  const currentObjective=getInvestigationNextHint();
   return <main className={`pc-desktop pc-${owner}`}>
     <div className="pc-wallpaper"/>
     <section className="pc-icons" aria-label={`${cfg.owner}的桌面`}>
@@ -187,9 +240,10 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       {owner==="shen"&&extracted&&<button className={selected==="gupan-pc"?"selected":""} onClick={()=>setSelected("gupan-pc")} onDoubleClick={()=>window.open("/computer/gupan","_blank","noopener,noreferrer")}><i className="device-icon">▰</i><span>顾盼的旧电脑</span></button>}
       {owner==="liuhan"&&<button onDoubleClick={()=>window.open("/hengmu","_blank","noopener,noreferrer")} onClick={()=>setSelected("hengmu")} className={selected==="hengmu"?"selected":""}><i>囍</i><span>恒慕官网.url</span></button>}
     </section>
-    {gameMode==="normal"&&<aside className="pc-sticky"><small>当前目标</small><b>{owner==="shen"?"整理 B-17 寄存仓，查明她离开的原因":owner==="gupan"?"恢复旧文件，找到未完成的举报材料":"根据残破地址与IP定位顾盼住处"}</b><span>{owner==="gupan"?"最后同步：2022/11/17 03:42":owner==="liuhan"?"陈放：有线索先走正式程序":"B-17 到期剩余 71:42:18"}</span><button type="button" className="pc-sticky-case" onClick={()=>setActive("case")}><i>◫</i><strong>调查档案</strong><em>查看已经收集的证据</em></button></aside>}
+    {gameMode==="normal"&&<aside className="pc-sticky"><small>当前目标</small><b>{currentObjective}</b><span>与调查档案同步 · 线索确认后自动更新</span><button type="button" className="pc-sticky-case" onClick={()=>setActive("case")}><i>◫</i><strong>调查档案</strong><em>查看已经收集的证据</em></button></aside>}
     {wechatNotice&&<div className="pc-toast pc-wechat-toast"><button className="pc-toast-open" onClick={()=>{setWechatNotice(null);setActive("wechat")}}><i>微</i><span><small>微信 · 现在</small><b>{wechatNotice.title}</b><em>{wechatNotice.body}</em></span></button><button className="pc-toast-close" aria-label="关闭微信通知" onClick={()=>setWechatNotice(null)}>×</button></div>}
     {notice&&!wechatNotice&&<div className="pc-toast"><button className="pc-toast-open" onClick={()=>{setNotice(false);setActive("mail")}}><i>✉</i><span><small>Outlook · 现在</small><b>B-17现场物品清单.zip</b><em>身份核验已完成，请下载现场物品清单</em></span></button><button className="pc-toast-close" aria-label="关闭通知" onClick={()=>setNotice(false)}>×</button></div>}
+    {recoveredLetterNotice&&<div className="pc-toast pc-file-toast"><button className="pc-toast-open" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false);setActive("trash")}}><i>♲</i><span><small>文件恢复 · 现在</small><b>回收站中出现一个恢复文件</b><em>给望_未寄出.txt · 来自手机同步缓存</em></span></button><button className="pc-toast-close" aria-label="关闭文件恢复通知" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false)}}>×</button></div>}
     {active&&<PcWindow owner={owner} app={active} gameMode={gameMode} close={()=>setActive(null)}/>}
     <footer className="pc-taskbar">
       <button className="pc-start" onClick={()=>setStart(!start)}>田</button>
@@ -230,6 +284,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   const [gupanPcUnlocked,setGupanPcUnlocked]=useState(false);
   const [liuhanAddressReached,setLiuhanAddressReached]=useState(false);
   const [liuhanPhoneObtained,setLiuhanPhoneObtained]=useState(false);
+  const [liuhanLineComplete,setLiuhanLineComplete]=useState(false);
   const openFile=(file:string)=>{
     const directImage=directFileImages[file];
     if(directImage){
@@ -239,7 +294,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
     }
     setOpenedFile(file);
   };
-  useEffect(()=>{const sync=()=>{setProgress(v=>v+1);setStorageReached(localStorage.getItem("jia-storage-reached")==="true");setGupanPcUnlocked(localStorage.getItem("jia-gupan-pc-unlocked")==="true");setLiuhanAddressReached(localStorage.getItem("jia-liuhan-address-reached")==="true");setLiuhanPhoneObtained(localStorage.getItem("jia-liuhan-phone-obtained")==="true")};sync();window.addEventListener("jia-progress",sync);return()=>window.removeEventListener("jia-progress",sync)},[]);
+  useEffect(()=>{const sync=()=>{setProgress(v=>v+1);setStorageReached(localStorage.getItem("jia-storage-reached")==="true");setGupanPcUnlocked(localStorage.getItem("jia-gupan-pc-unlocked")==="true");setLiuhanAddressReached(localStorage.getItem("jia-liuhan-address-reached")==="true");setLiuhanPhoneObtained(localStorage.getItem("jia-liuhan-phone-obtained")==="true");setLiuhanLineComplete(localStorage.getItem("jia-liuhan-line-complete")==="true")};sync();window.addEventListener("storage",sync);window.addEventListener("jia-progress",sync);return()=>{window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)}},[]);
   useEffect(()=>{setExplorerView(app==="files"?"root":app);setOpenedFile(null)},[app]);
   void progress;
   if(app==="mail"&&owner==="gupan")return <GupanMailbox/>;
@@ -248,6 +303,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="wechat")return <WeChatDesktop owner={owner}/>;
   if(app==="browser")return <EdgeBrowser owner={owner}/>;
   if(app==="qq")return <div className="pc-document"><small>QQ · 情侣空间快捷入口</small><h2>左望右盼</h2><p>沈望与顾盼的情侣空间。上次访问：2022年1月7日。</p><div className="pc-qzone-card"><img src="/characters/shen-wang.png" alt="沈望"/><b>♥</b><img src="/characters/gu-pan.png" alt="顾盼"/><span>有一条来自匿名访客的新留言</span></div><a href="/qzone" target="_blank" rel="noopener noreferrer">在新标签页打开QQ情侣空间 ↗</a></div>;
+  if(app==="trash")return <RecycleBin owner={owner} letterAvailable={liuhanLineComplete}/>;
   if(app==="map")return <MapApp owner={owner}/>;
   if(app==="diary")return <ShenDiary/>;
   if(app==="personal"||app==="files"||app==="storage"||app==="downloads"){
@@ -271,6 +327,42 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="case")return <CaseArchive mode={gameMode}/>;
   if(app==="memo")return <div className="pc-notepad"><p>2025/12/03</p><h2>原来已经过去这么久了。</h2><p>蛮好的，祝福她。</p><hr/><p>刘涵说得对。不是去找她，只是把过去留下的东西收好。</p></div>;
   return <div className="pc-empty"><span>♲</span><p>此文件夹为空</p></div>;
+}
+
+function RecycleBin({owner,letterAvailable}:{owner:Owner;letterAvailable:boolean}){
+  const [opened,setOpened]=useState(false);
+  if(owner!=="gupan"||!letterAvailable)return <div className="pc-empty"><span>♲</span><p>此文件夹为空</p></div>;
+  const enterHiddenEnding=()=>{
+    localStorage.setItem("jia-hidden-ending-unlocked","true");
+    localStorage.setItem("jia-hidden-ending-source","gupan-final-letter");
+    window.location.assign("/ending/hidden");
+  };
+  if(opened)return <article className="gp-final-letter">
+    <header><button type="button" onClick={()=>setOpened(false)}>← 返回回收站</button><span>给望_未寄出.txt</span><small>只读 · 已从手机同步缓存恢复</small></header>
+    <div>
+      <small>创建时间：2025年11月28日 23:41　·　原位置：文档\未寄出的信</small>
+      <h1>给望</h1>
+      <p>望：</p>
+      <p>回国以后，所有人都说我是回来疗养的。这个词听起来很安静，好像只要按时吃药、晒太阳，把过去忘掉，我就能重新变回他们希望我成为的样子。可我每天醒来，还是会先确认门能不能从里面打开，手机是不是还在手边。夜里有人从走廊经过，我会一直等到脚步声消失，才敢重新呼吸。</p>
+      <p>我没有把真正发生的事告诉你。那时我以为，只要把你推得足够远，他们就不会注意到你。分手的那些话，有些是真的——我确实累了，也确实不知道该怎样继续；但“我们不适合”是假的，“不要再找我”也是假的。我只是害怕你会立刻跨过半个世界来找我，害怕他们顺着我找到你。</p>
+      <p>我曾经以为自己救下了一个人，就证明我还有能力保护别人。后来才明白，郝倩获救的那一天，也有人记住了我的名字、住址和家人的电话。酒吧那晚以后，我把证据收好，把每一处异常都写下来，却没有勇气把它们交给任何人。我怕别人不相信，也怕他们相信以后，先问我为什么去了那里、为什么喝下那杯东西、为什么没有早点离开。</p>
+      <p>回到家以后，门外的人换了，门还是没有打开。他们收走护照和手机，替我安排婚礼，告诉所有亲戚我只是身体不好，需要安静休养。他们说这是为我好，说一个女孩子经历过那些事，往后有人肯要就应该知足。我试过解释，试过拒绝，也试过求他们让我给你打一通电话。最后我才明白，他们听见了，只是从来没有打算回答。</p>
+      <p>我常常想起大学的艺术展。摄影社的人让我们靠近一点，你站在左边，我站在右边。那时我们谁也不敢看镜头，却都在偷偷看对方。后来我在地图的海岸线上画了一颗太阳，以为只要两个人愿意，就一定能走到同一个地方。对不起，我先松开了手，也没有告诉你，我其实一直在回头。</p>
+      <p>别因为这封信惩罚自己。你说“以后还有很多时间，可以慢慢讲”，那时谁都不知道时间会怎样被拿走。你没有错过一个本来就能轻易救下我的瞬间；真正把我困住的，从来不是一句没说出口的话，而是许多人共同维持的沉默。</p>
+      <p>如果你最终知道了一切，请替我记得，我不是一桩婚约，不是谁家的女儿，也不是档案里的编号。我画过画，去过海边，怕冷却总忘记带围巾，也曾经很认真地爱过你。那些都是真的。</p>
+      <p>地图还有很多空白。我大概不能再陪你填完了。可如果世界上真有一个不会迟到的地方，如果在那里，左边的人仍然望着右边——</p>
+      <p className="gp-final-letter-sign">那就再来见我一次吧。<br/>顾盼</p>
+      <button type="button" className="gp-hidden-ending-entry" onClick={enterHiddenEnding}><span>进入隐藏结局</span><b>镜花水月　→</b></button>
+    </div>
+  </article>;
+  return <div className="pc-recycle-bin">
+    <header><span>回收站</span><small>1 个项目　·　恢复来源：顾盼手机本地同步缓存</small></header>
+    <div className="pc-recycle-list">
+      <button type="button" onDoubleClick={()=>setOpened(true)} onClick={()=>setOpened(true)}>
+        <i>📄</i><span><b>给望_未寄出.txt</b><small>原位置：文档\未寄出的信　·　删除时间：2025/11/28 23:58</small></span><em>已恢复</em>
+      </button>
+    </div>
+  </div>;
 }
 
 function ShenMailbox({storageReached}:{storageReached:boolean}){
@@ -354,39 +446,26 @@ function CaseArchive({mode}:{mode:GameMode|null}){
     return()=>{window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync);window.removeEventListener("jia-wechat-notification",sync)};
   },[]);
   void revision;
-  let prototypeSeen:string[]=[];
-  try{
-    const data=JSON.parse(localStorage.getItem("jia-prototype")||"{}");
-    prototypeSeen=Array.isArray(data.seen)?data.seen:[];
-  }catch{}
+  const prototypeSeen=readPrototypeSeen();
   const openingStep=Number(localStorage.getItem("jia-lh-opening-step-v3")||0);
   const facts=[
     {ready:openingStep>0,title:"顾盼可能已经回国",detail:"刘涵从老小区听到了顾家的婚讯，但消息来源和新郎身份仍不明确。"},
     {ready:localStorage.getItem("jia-storage-reached")==="true",title:"B-17寄存仓身份核验完成",detail:"登记人为顾盼，授权取件人为沈望；寄存物即将进入到期清理流程。"},
     {ready:localStorage.getItem("jia-gupan-pc-unlocked")==="true",title:"顾盼旧电脑已经挂载",detail:"设备最后活动时间停在2022年11月17日，仍需使用恋爱纪念日登录。"},
-    {ready:localStorage.getItem("jia-gupan-computer-unlocked")==="true",title:"旧电脑登录成功",detail:"个人文件、浏览器缓存和离线微信备份已经可以继续调查。"},
+    {ready:localStorage.getItem("jia-gupan-computer-unlocked")==="true",title:"旧电脑登录成功",detail:"个人文件和离线微信备份已经可以继续调查。"},
     {ready:prototypeSeen.includes("medical"),title:"顾盼的医疗记录",detail:"她曾报告意识丧失、记忆缺失及疑似药物促成的侵犯，并保存了相关证据。"},
     {ready:prototypeSeen.includes("hq-treatment"),title:"郝倩的治疗与远帆转介",detail:"顾盼承担了治疗费用，转介编号指向远帆社区互助会。"},
-    {ready:localStorage.getItem("jia-yuanfan-management-group")==="true",title:"远帆长期保留成员资料",detail:"管理群确认住址、紧急联系人和旧转介档案被录入YF Connect。"},
+    {ready:localStorage.getItem("jia-yuanfan-site-access")==="true",title:"远帆学生网站权限",detail:"韩铎核验学生资料后，开通了公告归档与站内搜索。"},
     {ready:localStorage.getItem("jia-olddriver-group")==="true",title:"老司机夜航群",detail:"汽车黑话并非讨论驾驶，HM-2217与2022年10月27日的群文件有关。"},
-    {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"远帆封存证据",detail:"多名受害者共享相同的管理员、设备、药物控制用语及资金路径。"},
+    {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"NIGHTDRIVE隐藏站记录",detail:"YF-HQ-0214指向郝倩的遭遇，汇款单编号SD-8845127指向顾盼；两组记录共享来源账号、偷拍视频索引和远帆档案。"},
     {ready:localStorage.getItem("jia-liuhan-address-reached")==="true",title:"晴川公寓4栋602室",detail:"残缺求救、IP节点和地址候选交叉指向同一地点。"},
     {ready:localStorage.getItem("jia-liuhan-phone-obtained")==="true",title:"顾盼的旧手机",detail:"手机保留了旧电脑微信密码，并提示沈望仍拥有情侣空间主人权限。"},
-    {ready:localStorage.getItem("jia-hengmu-unlocked")==="true",title:"恒慕“圆满方案”",detail:"原婚礼已转为特殊家庭委托，委托标的被送往永安礼仪园。"}
+    {ready:localStorage.getItem("jia-hengmu-unlocked")==="true",title:"恒慕“圆满方案”",detail:"原婚礼已转为特殊家庭委托，委托标的被送往永安礼仪园。"},
+    {ready:localStorage.getItem("jia-liuhan-line-complete")==="true",title:"死亡警情与遗体移交记录",detail:"两条警情记录证实顾盼死亡、房门存在外锁痕迹，遗体随后由家属委托的礼仪单位接走。"},
+    {ready:localStorage.getItem("jia-hidden-ending-unlocked")==="true",title:"给望_未寄出.txt",detail:"顾盼回国疗养期间写下的最后一封信，补全了她隐瞒真相、被家人控制以及仍在回望沈望的原因。"}
   ];
   const confirmed=facts.filter(item=>item.ready);
-  const nextHint=
-    openingStep<8?"完成与刘涵的微信对话，确认B-17寄存仓的存在。":
-    localStorage.getItem("jia-storage-reached")!=="true"?"读取B-17到期邮件，在地图中搜索寄存中心地址。":
-    localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
-    localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"从“我的日记”确认恋爱纪念日，尝试登录顾盼旧电脑。":
-    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"检查顾盼的个人文件，并分别查询两份医疗记录。":
-    localStorage.getItem("jia-hd-added")!=="true"?"从远帆公开主页寻找韩铎的联系方式。":
-    localStorage.getItem("jia-yuanfan-management-group")!=="true"?"利用大学官网建立可验证的学生身份，再提交给韩铎。":
-    localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"追查老司机夜航群，取得远帆后台的封存搜索暗语。":
-    localStorage.getItem("jia-liuhan-phone-obtained")!=="true"?"切换到刘涵电脑，利用残缺地址和IP记录定位顾盼。":
-    localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查旧请柬和服务码，追查恒慕的方案变更。":
-    "现有证据已经覆盖海外侵害、国内拘禁与遗体转运，等待最后汇总。";
+  const nextHint=getInvestigationNextHint();
   return <div className="pc-document pc-case-archive">
     <small>沈望 · 私人调查档案</small>
     <header><div><h2>顾盼为什么离开？</h2><p>只记录玩家已经亲自确认的事实。</p></div><strong>{confirmed.length} / {facts.length}</strong></header>
@@ -463,18 +542,30 @@ function MapApp({owner}:{owner:Owner}){
   </div>
 }
 
+const wechatAvatar=(src:string)=>({
+  "/characters/shen-wang.png":"/characters/wechat-shen-wang.png",
+  "/characters/liu-han.png":"/characters/wechat-liu-han.png",
+  "/characters/gu-pan.png":"/characters/wechat-gu-pan.png",
+  "/characters/hao-qian.png":"/characters/wechat-hao-qian-wedding.png"
+} as Record<string,string>)[src]||src;
+
+type MomentGalleryItem={src:string;alt:string};
+type PersonalMoment={text:string;time:string;wedding?:boolean;pinned?:boolean;gallery?:MomentGalleryItem[];comments?:string[]};
+
 function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [section,setSection]=useState<"chats"|"contacts"|"moments"|"add">("chats");
   const [query,setQuery]=useState("");
   const [added,setAdded]=useState(false);
   const [hdAdded,setHdAdded]=useState(false);
-  const [groupJoined,setGroupJoined]=useState(false);
   const [driverJoined,setDriverJoined]=useState(false);
   const [openingStep,setOpeningStep]=useState(0);
-  const [result,setResult]=useState<"hq"|"driver"|null>(null);
+  const [result,setResult]=useState<"hq"|"hd"|"driver"|null>(null);
   const [hqRequest,setHqRequest]=useState(false);
   const [hqAnswer,setHqAnswer]=useState("");
   const [hqError,setHqError]=useState(false);
+  const [hdRequest,setHdRequest]=useState(false);
+  const [hdAnswer,setHdAnswer]=useState("");
+  const [hdError,setHdError]=useState(false);
   const [driverRequest,setDriverRequest]=useState(false);
   const [driverAnswer,setDriverAnswer]=useState("");
   const [driverError,setDriverError]=useState(false);
@@ -484,23 +575,23 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [draft,setDraft]=useState("");
   const [sent,setSent]=useState<{who:string;text:string}[]>([]);
   const messagesRef=useRef<HTMLDivElement>(null);
-  useEffect(()=>{const sync=()=>{setAdded(localStorage.getItem("jia-hq-added")==="true");setHdAdded(localStorage.getItem("jia-hd-added")==="true");setGroupJoined(localStorage.getItem("jia-yuanfan-management-group")==="true");setDriverJoined(localStorage.getItem("jia-olddriver-group")==="true");setOpeningStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0))};sync();window.addEventListener("jia-progress",sync);window.addEventListener("storage",sync);return()=>{window.removeEventListener("jia-progress",sync);window.removeEventListener("storage",sync)}},[]);
+  useEffect(()=>{const sync=()=>{setAdded(localStorage.getItem("jia-hq-added")==="true");setHdAdded(localStorage.getItem("jia-hd-added")==="true");setDriverJoined(localStorage.getItem("jia-olddriver-group")==="true");setOpeningStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0))};sync();window.addEventListener("jia-progress",sync);window.addEventListener("storage",sync);return()=>{window.removeEventListener("jia-progress",sync);window.removeEventListener("storage",sync)}},[]);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=messagesRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"})});return()=>window.cancelAnimationFrame(frame)},[chat,sent.length]);
   const people=owner==="shen"?[
-    {name:"刘涵",src:"/characters/liu-han.png",note:"她回国了？"},
+    {name:"刘涵",src:"/characters/wechat-liu-han.png",note:"她回国了？"},
     ...(driverJoined?[{name:"老司机夜航群",src:"/olddriver-group.svg",note:"今晚的路书发群文件"}]:[]),
-    ...(hdAdded?[{name:"韩铎",src:"/characters/han-duo.png",note:"远帆迎新？你哪个学校的"}]:[]),
-    ...(groupJoined?[{name:"远帆互助会·管理群",src:"/characters/han-duo.png",note:"韩铎邀请你加入了群聊"}]:[]),
-    ...(added?[{name:"郝倩",src:"/characters/hao-qian.png",note:"你是怎么找到我的？"}]:[])
-  ]:owner==="gupan"?[{name:"一家人",src:"/family-group.svg",note:"回来以后就听话"},{name:"郝倩",src:"/characters/hao-qian.png",note:"你怎么回到家的？"},{name:"沈望",src:"/characters/shen-wang.png",note:"语音通话 02:17"}]:[{name:"沈望",src:"/characters/shen-wang.png",note:openingStep>=liuHanOpeningExchanges.length?"嗯。机票定了告诉我。":"还没休息？"},{name:"陈放",src:"/characters/chen-fang.png",note:"有实证再找我"}];
+    ...(hdAdded?[{name:"韩铎",src:"/characters/han-duo.png",note:"朋友圈有点好东西，无聊可以看看"}]:[]),
+    ...(added?[{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"顾盼最近还好吗？"}]:[])
+  ]:owner==="gupan"?[{name:"一家人",src:"/family-group.svg",note:"回来以后就听话"},{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"你怎么回到家的？"},{name:"沈望",src:"/characters/wechat-shen-wang.png",note:"语音通话 02:17"}]:[{name:"沈望",src:"/characters/wechat-shen-wang.png",note:openingStep>=liuHanOpeningExchanges.length?"嗯。机票定了告诉我。":"还没休息？"},{name:"陈放",src:"/characters/chen-fang.png",note:"有实证再找我"}];
   const current=people.find(p=>p.name===chat)||people[0];
-  const specialized=(owner==="shen"&&["刘涵","郝倩","韩铎","远帆互助会·管理群","老司机夜航群"].includes(current.name))||(owner==="liuhan"&&current.name==="沈望");
+  const specialized=(owner==="shen"&&["刘涵","郝倩","韩铎","老司机夜航群"].includes(current.name))||(owner==="liuhan"&&current.name==="沈望");
   const addFriend=()=>{if(offline)return;localStorage.setItem("jia-hq-added","true");setAdded(true);setChat("郝倩");setSection("chats");window.dispatchEvent(new Event("jia-wechat-notification"))};
   const searchContact=()=>{
     if(offline)return;
     const normalized=query.toLowerCase().replace(/^wx\s*:\s*/,"").trim();
-    setHqRequest(false);setHqAnswer("");setHqError(false);setDriverRequest(false);setDriverError(false);
+    setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false);
     if(normalized==="hqian_17")setResult("hq");
+    else if(owner==="shen"&&normalized==="hd_047_abroad")setResult("hd");
     else if(owner==="shen"&&normalized==="olddriver")setResult("driver");
     else setResult(null);
   };
@@ -508,40 +599,60 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     if(hqAnswer.trim()!=="郝倩"){setHqError(true);return}
     addFriend();
   };
+  const verifyHdFriend=()=>{
+    const answer=hdAnswer.toLowerCase().replace(/[\s·•（）()]/g,"");
+    if(!["northbridgeuniversity","北桥大学","northbridgeuniversity北桥大学"].includes(answer)){setHdError(true);return}
+    localStorage.setItem("jia-hd-added","true");
+    setHdAdded(true);setHdError(false);setChat("韩铎");setSection("chats");
+    window.dispatchEvent(new Event("jia-wechat-notification"));
+    window.dispatchEvent(new Event("jia-progress"));
+  };
   const joinDriverGroup=()=>{
-    if(driverAnswer.replace(/\s/g,"")!=="风从北岸来"){setDriverError(true);return}
+    if(driverAnswer.replace(/\s/g,"")!=="孤独帅哥"){setDriverError(true);return}
     localStorage.setItem("jia-olddriver-group","true");
     setDriverJoined(true);setDriverError(false);setChat("老司机夜航群");setSection("chats");
     window.dispatchEvent(new Event("jia-progress"));
   };
   const send=(value?:string)=>{if(offline)return;const text=(value??draft).trim();if(!text)return;setSent(v=>[...v,{who:current.name,text}]);setDraft("")};
-  const profileData:Record<string,{src:string;wx:string;intro:string}>={沈望:{src:"/characters/shen-wang.png",wx:"zw_1021",intro:"有些答案，值得等很久。"},顾盼:{src:"/characters/gu-pan.png",wx:"gpan_sunward",intro:"向阳处。"},刘涵:{src:"/characters/liu-han.png",wx:"liuhan_lc",intro:"临川，偶尔摄影。"},郝倩:{src:"/characters/hao-qian.png",wx:"hqian_17",intro:"现在的生活来之不易。"},韩铎:{src:"/characters/han-duo.png",wx:"hd_047_abroad",intro:"留学生活｜活动联络"},陈放:{src:"/characters/chen-fang.png",wx:"chenfang_1203",intro:"请勿通过微信报警。"}};
-  const personalMoments:Record<string,{text:string;time:string;wedding?:boolean}[]> = {
+  const profileData:Record<string,{src:string;wx:string;intro:string}>={沈望:{src:"/characters/wechat-shen-wang.png",wx:"zw_1021",intro:"有些答案，值得等很久。"},顾盼:{src:"/characters/wechat-gu-pan.png",wx:"gpan_sunward",intro:"向阳处。"},刘涵:{src:"/characters/wechat-liu-han.png",wx:"liuhan_lc",intro:"临川，偶尔摄影。"},郝倩:{src:"/characters/wechat-hao-qian-wedding.png",wx:"hqian_17",intro:"现在的生活来之不易。"},韩铎:{src:"/characters/han-duo.png",wx:"hd_047_abroad",intro:"留学生活｜活动联络"},陈放:{src:"/characters/chen-fang.png",wx:"chenfang_1203",intro:"请勿通过微信报警。"}};
+  const personalMoments:Record<string,PersonalMoment[]> = {
     沈望:[{text:"忙完这阵，想把以前没整理完的照片都洗出来。硬盘里的东西越放越多，人倒是越来越懒。",time:"2025年11月23日"},{text:"艺术展撤展。谢谢每个来看作品的人。",time:"2018年10月28日"}],
     顾盼:[{text:"暂时离开一阵。不是放弃，只是想先把自己照顾好。",time:"2022年11月16日"},{text:"新画还没完成。向阳处没有窗，也可以自己凿一扇。",time:"2022年10月22日"}],
     刘涵:[{text:"临川今晚雾很大，桥上的灯倒是比平时好看。",time:"2025年12月1日"},{text:"旧相机修好了。试卷拍完才发现，最喜欢的还是那些没对准焦的。",time:"2025年10月9日"}],
-    郝倩:[{text:"终于把婚礼照片整理完。日子会继续，过去的就留在过去吧。",time:"2025年10月18日",wedding:true},{text:"她回国不久，我就把那封信寄了出去。后来没有再写第二封。现在想想，道歉不是把话说完就算尽力，也不能要求对方一定回复。",time:"2024年6月7日"},{text:"换了号码。校友请备注学校与姓名。",time:"2022年12月2日"}],
-    韩铎:[{text:"远帆这破后台又让我补档。YF-HQ-0214都结案半年了还在列表里，迟早把 /staff/console 做成书签。",time:"2022年10月19日"},{text:"迎新结束。拍照别只顾着笑，名单、住址、紧急联系人一个都不能漏。",time:"2022年9月4日"}],
+    郝倩:[{text:"终于把婚礼照片整理完。日子会继续，过去的就留在过去吧。",time:"2025年10月18日",wedding:true},{text:"换了号码。校友请备注学校与姓名。",time:"2022年12月2日"}],
+    韩铎:[
+      {text:"寂寞留学生帅哥们交朋友的群，图中自取。",time:"2022年10月20日",pinned:true,gallery:[
+        {src:"/moments/han-duo/party-1-clean.png",alt:"酒吧聚会照片，右下角留有字母D"},
+        {src:"/moments/han-duo/party-2-clean.png",alt:"卡拉OK聚会照片，右下角留有字母O"},
+        {src:"/moments/han-duo/party-3-clean.png",alt:"屋顶聚会照片，右下角留有字母E"},
+        {src:"/moments/han-duo/party-4-clean.png",alt:"豪车合影，右下角留有字母I"},
+        {src:"/moments/han-duo/party-5-clean.png",alt:"酒水服务照片，右下角留有字母D"},
+        {src:"/moments/han-duo/party-6-clean.png",alt:"公寓聚会照片，右下角留有字母R"},
+        {src:"/moments/han-duo/party-7-clean.png",alt:"游艇聚会照片，右下角留有字母L"},
+        {src:"/moments/han-duo/party-8-clean.png",alt:"牌局休息室照片，右下角留有字母V"},
+        {src:"/moments/han-duo/party-9-clean.png",alt:"派对散场照片，右下角留有字母R"}
+      ],comments:["4 1 8 6 3 9 2 7 5","微信搜索"]}
+    ],
     陈放:[{text:"有情况请先保护现场、保存原始记录。网上转发一百次，不如一次完整取证。",time:"2025年11月30日"},{text:"又是夜班。临川降温，出门记得加衣。",time:"2025年11月18日"}]
   };
   const selfName=owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵";
   const momentName=momentProfile||selfName;
   const momentAvatar=profileData[momentName]?.src||profileData[selfName].src;
   return <div className={`wx-app ${offline?"wx-app-offline":""}`} onClick={e=>{const el=e.target as HTMLElement;const profileTarget=el.closest<HTMLElement>("[data-profile]");const name=profileTarget?.dataset.profile||(el.tagName==="IMG"?el.getAttribute("alt"):null);if(name&&name!=="本人"&&profileData[name])setProfile(name)}} onKeyDown={e=>{if(!offline&&e.key==="Enter"&&!e.shiftKey&&(e.target as HTMLElement).tagName==="TEXTAREA"){e.preventDefault();const textarea=e.target as HTMLTextAreaElement;send(textarea.value);textarea.value=""}}}>
-    <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/shen-wang.png":owner==="gupan"?"/characters/gu-pan.png":"/characters/liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>setSection("chats")}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>setSection("contacts")}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments")}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>setSection("add")}>＋<small>添加</small></button></nav>
+    <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/wechat-shen-wang.png":owner==="gupan"?"/characters/wechat-gu-pan.png":"/characters/wechat-liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>setSection("chats")}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>setSection("contacts")}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments")}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>setSection("add")}>＋<small>添加</small></button></nav>
     {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>setChat(p.name)}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:current.name==="陈放"?<><WxBubble src="/characters/chen-fang.png" text="我查到的不是失踪记录。她家属在11月29日报过一起非正常死亡。警方到过现场。"/><WxBubble src="/characters/liu-han.png" mine text="死亡？那为什么她家还在传她要结婚？遗体现在在哪里？"/><WxBubble src="/characters/chen-fang.png" text="警方只确认了表面死因，不知道你说的三日拘禁。遗体后来由家属委托的礼仪公司接走。我给你开脱敏记录，授权码：CF-1203-LH"/><a className="wx-shared-link" href="/police" target="_blank" rel="noopener noreferrer"><i>警</i><span><b>临川公安 · 线索协查档案</b><small>死亡警情与移交记录 · 有效期2小时</small></span><em>打开 ↗</em></a></>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
     {section==="contacts"&&<section className="wx-contacts"><header>通讯录</header><button onClick={()=>setSection("add")}>＋　新的朋友</button>{people.map(p=><div key={p.name}><img src={p.src} alt={p.name}/><b>{p.name}</b><small>{p.note}</small></div>)}</section>}
-    {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setDriverRequest(false);setDriverError(false)}} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
-      {result==="hq"&&<article className="wx-driver-result"><img src="/characters/hao-qian.png" alt="郝倩"/><span><b>H.Q. · 郝倩</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
-      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>2022 秋季夜路安全值班手册中的备用识别语是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：这个答案不在微信里。</em></div>}</article>}
+    {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false)}} onKeyDown={e=>e.key==="Enter"&&searchContact()} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
+      {result==="hq"&&<article className="wx-driver-result"><img src="/characters/wechat-hao-qian-wedding.png" alt="H.Q."/><span><b>H.Q.</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
+      {result==="hd"&&<article className="wx-driver-result"><img src="/characters/han-duo.png" alt="韩铎"/><span><b>韩铎 · Han Duo</b><small>微信号：hd_047_abroad　地区：海外</small></span>{hdAdded?<em>已添加</em>:!hdRequest?<button onClick={()=>setHdRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>你的大学名称？</b><input value={hdAnswer} onChange={e=>{setHdAnswer(e.target.value);setHdError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHdFriend()} placeholder="输入大学名称"/><button onClick={verifyHdFriend}>提交答案</button>{hdError&&<p>回答不正确。请输入海外就读的大学名称。</p>}<em>可填写学校的中文名或英文名。</em></div>}</article>}
+      {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>远帆网站《2022 秋季夜间互助临时群使用规范》中，排版异常的四个字是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：答案在远帆网站的公告归档里。</em></div>}</article>}
       {!result&&query&&<p className="wx-no-result">未找到该用户。请检查完整微信号。</p>}
     </section>}
-    {section==="moments"&&<section className="wx-moments"><div className="wx-moments-cover"><span><b>{momentName}</b><img alt={momentName} src={momentAvatar}/></span></div>{momentProfile?<><div className="wx-personal-moments-label"><button onClick={()=>{setMomentProfile(null);setSection("moments")}}>‹ 返回朋友圈</button><span>{momentName}的朋友圈</span></div>{personalMoments[momentName]?.length>0?personalMoments[momentName].map((item,index)=><Moment key={`${momentName}-${index}`} src={momentAvatar} name={momentName} text={item.text} time={item.time} wedding={item.wedding}/>):<div className="wx-empty-moments">该用户暂时没有公开动态。</div>}</>:<>{personalMoments[selfName].map((item,index)=><Moment key={`${selfName}-${index}`} src={profileData[selfName].src} name={selfName} text={item.text} time={item.time} wedding={item.wedding}/>)}{owner==="shen"&&hdAdded&&personalMoments.韩铎.map((item,index)=><Moment key={`韩铎-${index}`} src={profileData.韩铎.src} name="韩铎" text={item.text} time={item.time}/>) }{owner==="shen"&&added&&personalMoments.郝倩.map((item,index)=><Moment key={`郝倩-${index}`} src={profileData.郝倩.src} name="郝倩" text={item.text} time={item.time} wedding={item.wedding}/>)}</>}</section>}
+    {section==="moments"&&<section className="wx-moments"><div className="wx-moments-cover"><span><b>{momentName}</b><img alt={momentName} src={momentAvatar}/></span></div>{momentProfile?<><div className="wx-personal-moments-label"><button onClick={()=>{setMomentProfile(null);setSection("moments")}}>‹ 返回朋友圈</button><span>{momentName}的朋友圈</span></div>{personalMoments[momentName]?.length>0?personalMoments[momentName].map((item,index)=><Moment key={`${momentName}-${index}`} src={momentAvatar} name={momentName} {...item}/>):<div className="wx-empty-moments">该用户暂时没有公开动态。</div>}</>:<>{personalMoments[selfName].map((item,index)=><Moment key={`${selfName}-${index}`} src={profileData[selfName].src} name={selfName} {...item}/>)}{owner==="shen"&&hdAdded&&personalMoments.韩铎.map((item,index)=><Moment key={`韩铎-${index}`} src={profileData.韩铎.src} name="韩铎" {...item}/>) }{owner==="shen"&&added&&personalMoments.郝倩.map((item,index)=><Moment key={`郝倩-${index}`} src={profileData.郝倩.src} name="郝倩" {...item}/>)}</>}</section>}
     {owner==="shen"&&section==="chats"&&current.name==="刘涵"&&<LiuHanOpeningDialogue/>}
-    {owner==="shen"&&section==="chats"&&current.name==="郝倩"&&<HaoQianConfrontation hdAdded={hdAdded}/>}
+    {owner==="shen"&&section==="chats"&&current.name==="郝倩"&&<HaoQianConfrontation/>}
     {owner==="liuhan"&&section==="chats"&&current.name==="沈望"&&<ShenWangOpeningMirror/>}
     {owner==="shen"&&section==="chats"&&current.name==="韩铎"&&<HanDuoIdentityCheck/>}
-    {owner==="shen"&&section==="chats"&&current.name==="远帆互助会·管理群"&&<YuanfanManagementGroup/>}
     {owner==="shen"&&section==="chats"&&current.name==="老司机夜航群"&&<OldDriverGroup/>}
     {sent.filter(x=>x.who===current.name).length>0&&section==="chats"&&<div className="wx-live-sent">{sent.filter(x=>x.who===current.name).map((x,i)=><p key={i}>{x.text}</p>)}</div>}
     {profile&&profileData[profile]&&<div className="wx-profile-modal" onClick={()=>setProfile(null)}><article onClick={e=>e.stopPropagation()}><button onClick={()=>setProfile(null)}>×</button><header><img src={profileData[profile].src} alt={profile}/><span><h2>{profile}</h2><small>微信号：{profileData[profile].wx}</small></span></header><dl><dt>个人简介</dt><dd>{profileData[profile].intro}</dd><dt>地区</dt><dd>{profile==="郝倩"||profile==="韩铎"?"海外":"中国"}</dd></dl><button className="wx-profile-moments" onClick={()=>{setMomentProfile(profile);setProfile(null);setSection("moments")}}>朋友圈　›</button></article></div>}
@@ -568,11 +679,11 @@ function GupanShenBreakupChat(){
     <article className="wx-breakup-letter">
       <header><span>顾盼</span><small>已发送 · 此后无新消息</small></header>
       <p>沈望：</p>
-      <p>这段时间我想了很久。我们隔着时差，生活已经越来越不一<em>w</em>样。</p>
-      <p>我不想再等你，也不想让你<em>x:</em>继续等我。</p>
-      <p>一直跑着实在太累了，我决定停<em>old</em>下来。</p>
-      <p>请尊重我的选择，我需要安<em>dr</em>静一会，不要来找我。</p>
-      <p>不是因为你做错了什么，只是我不再想和你一起计划以<em>iver</em>后。</p>
+      <p>这段时间我想了很久。我们隔着时差，生活已经越来越不一样。</p>
+      <p>我不想再等你，也不想让你继续等我。</p>
+      <p>一直跑着实在太累了，我决定停下来。</p>
+      <p>请尊重我的选择，我需要安静一会，不要来找我。</p>
+      <p>不是因为你做错了什么，只是我不再想和你一起计划以后。</p>
       <p>到这里吧。</p>
       <p>顾盼</p>
     </article>
@@ -580,25 +691,62 @@ function GupanShenBreakupChat(){
   </>
 }
 
-type HaoQianTone="truth"|"blame"|"account";
-type HaoQianPromise="privacy"|"cold"|"police";
+type HaoQianEvidence="none"|"letter"|"medical";
+type HaoQianTone="explain"|"persist";
 
-function HaoQianConfrontation({hdAdded}:{hdAdded:boolean}){
+function TimedMessages({children,play,interval=700,onReveal,onComplete}:{children:ReactNode;play:boolean;interval?:number;onReveal?:()=>void;onComplete?:()=>void}){
+  const items=Children.toArray(children);
+  const [visibleCount,setVisibleCount]=useState(play?Math.min(1,items.length):items.length);
+  const revealRef=useRef(onReveal);
+  const completeRef=useRef(onComplete);
+  revealRef.current=onReveal;
+  completeRef.current=onComplete;
+  useEffect(()=>{
+    if(!play){
+      setVisibleCount(items.length);
+      return;
+    }
+    setVisibleCount(Math.min(1,items.length));
+    const timers=items.slice(1).map((_,index)=>window.setTimeout(()=>setVisibleCount(index+2),interval*(index+1)));
+    return()=>timers.forEach(timer=>window.clearTimeout(timer));
+  },[play,items.length,interval]);
+  useEffect(()=>{
+    revealRef.current?.();
+    if(play&&visibleCount>=items.length)completeRef.current?.();
+  },[play,visibleCount,items.length]);
+  return <>{items.slice(0,visibleCount)}</>;
+}
+
+function HaoQianConfrontation(){
   const [step,setStep]=useState(0);
   const [answer,setAnswer]=useState("");
   const [error,setError]=useState("");
-  const [tone,setTone]=useState<HaoQianTone>("truth");
-  const [promise,setPromise]=useState<HaoQianPromise>("privacy");
+  const [evidence,setEvidence]=useState<HaoQianEvidence>("none");
+  const [tone,setTone]=useState<HaoQianTone>("explain");
+  const [hasMedical,setHasMedical]=useState(false);
+  const [animatedStep,setAnimatedStep]=useState<number|null>(null);
+  const [deliveryPending,setDeliveryPending]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
+  const syncEvidence=()=>{
+    try{
+      const data=JSON.parse(localStorage.getItem("jia-prototype")||"{}") as {seen?:string[]};
+      setHasMedical(Array.isArray(data.seen)&&data.seen.includes("hq-treatment"));
+    }catch{setHasMedical(false)}
+  };
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
-      setStep(Number(localStorage.getItem("jia-hq-confront-step-v3")||0));
-      const savedTone=localStorage.getItem("jia-hq-confront-tone-v3");
-      const savedPromise=localStorage.getItem("jia-hq-confront-promise-v3");
-      if(savedTone==="truth"||savedTone==="blame"||savedTone==="account")setTone(savedTone);
-      if(savedPromise==="privacy"||savedPromise==="cold"||savedPromise==="police")setPromise(savedPromise);
+      setStep(Number(localStorage.getItem("jia-hq-confront-step-v4")||0));
+      const savedEvidence=localStorage.getItem("jia-hq-confront-evidence-v4");
+      const savedTone=localStorage.getItem("jia-hq-confront-tone-v4");
+      if(savedEvidence==="letter"||savedEvidence==="medical")setEvidence(savedEvidence);
+      if(savedTone==="explain"||savedTone==="persist")setTone(savedTone);
+      syncEvidence();
     });
-    return()=>window.cancelAnimationFrame(frame);
+    const sync=()=>syncEvidence();
+    window.addEventListener("focus",sync);
+    window.addEventListener("storage",sync);
+    window.addEventListener("jia-progress",sync);
+    return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("focus",sync);window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
   },[]);
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
@@ -606,84 +754,115 @@ function HaoQianConfrontation({hdAdded}:{hdAdded:boolean}){
       if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:step>0?"smooth":"auto"});
     });
     return()=>window.cancelAnimationFrame(frame);
-  },[step,hdAdded]);
+  },[step,evidence,tone,hasMedical]);
+  const scrollToLatest=()=>window.requestAnimationFrame(()=>{
+    const panel=threadRef.current;
+    if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
+  });
   const advance=(next:number)=>{
-    localStorage.setItem("jia-hq-confront-step-v3",String(next));
-    setStep(next);
-    setAnswer("");
-    setError("");
+    localStorage.setItem("jia-hq-confront-step-v4",String(next));
+    setAnimatedStep(next);
+    setDeliveryPending([1,4,5,6,8,11,12,20,30,31].includes(next));
+    setStep(next);setAnswer("");setError("");
     window.dispatchEvent(new Event("jia-progress"));
   };
-  const submitSource=()=>{
-    const normalized=answer.replace(/\s/g,"").toLowerCase();
-    if(!normalized.includes("微博")&&!(normalized.includes("2022")&&normalized.includes("12"))){
-      setError("她没有继续回复。想想你是在哪里看到新微信号的。");
-      return;
-    }
-    advance(1);
-  };
-  const submitReferral=()=>{
-    if(answer.replace(/\s/g,"").toUpperCase()!=="YF-HQ-0214"){
-      setError("编号不正确。请回到港湾康复记录核对完整的转介编号。");
-      return;
-    }
-    advance(3);
-  };
-  const chooseTone=(nextTone:HaoQianTone)=>{
-    localStorage.setItem("jia-hq-confront-tone-v3",nextTone);
-    setTone(nextTone);
+  const submitDate=()=>{
+    if(answer.replace(/\D/g,"")!=="20221027"){setError("日期不正确。请核对事情发生的日期。");return}
     advance(4);
   };
-  const submitPath=()=>{
-    const normalized=answer.trim().toLowerCase().replace(/^https?:\/\/[^/]+/,"").replace(/\/+$/,"");
-    if(normalized!=="/staff/console"&&normalized!=="staff/console"){
-      setError("路径不正确。请查看韩铎朋友圈中提到的 YF Connect 后台。");
-      return;
-    }
+  const chooseEvidence=(nextEvidence:HaoQianEvidence)=>{
+    if(nextEvidence==="medical"&&!hasMedical)return;
+    localStorage.setItem("jia-hq-confront-evidence-v4",nextEvidence);
+    setEvidence(nextEvidence);
+    advance(nextEvidence==="letter"?6:10);
+  };
+  const clearCompletion=()=>{
+    localStorage.removeItem("jia-hq-first-round-complete");
+    if(localStorage.getItem("jia-hq-stage")==="1")localStorage.removeItem("jia-hq-stage");
+  };
+  const resetEvidenceChoice=()=>{
+    localStorage.removeItem("jia-hq-confront-evidence-v4");
+    localStorage.removeItem("jia-hq-confront-tone-v4");
+    clearCompletion();
+    setEvidence("none");
+    setTone("explain");
     advance(5);
+    syncEvidence();
   };
-  const choosePromise=(nextPromise:HaoQianPromise)=>{
-    localStorage.setItem("jia-hq-confront-promise-v3",nextPromise);
-    localStorage.setItem("jia-hq-stage","3");
-    setPromise(nextPromise);
-    advance(6);
+  const resetToneChoice=()=>{
+    localStorage.removeItem("jia-hq-confront-tone-v4");
+    clearCompletion();
+    setTone("explain");
+    advance(11);
   };
-  const toneReply:Record<HaoQianTone,string>={
-    truth:"如果你真想知道，就别只把我当成她故事里的坏人。我能说的，会说。",
-    blame:"你和其他人一样，已经先判了我。可顾盼的事不能只剩下一种说法，我会把知道的告诉你。",
-    account:"你查得很快。可一个账号不是答案。你先听我把话说完。"
+  const chooseTone=(nextTone:HaoQianTone)=>{
+    localStorage.setItem("jia-hq-confront-tone-v4",nextTone);
+    setTone(nextTone);
+    advance(nextTone==="explain"?12:20);
   };
-  const promiseReply:Record<HaoQianPromise,string>={
-    privacy:"好。我相信你一次。别公开我的病历，也别把顾盼只写成一个档案编号。",
-    cold:"你说得很冷静。也好，至少比假装关心诚实。账号给你，但你只能看到和我有关的历史记录。",
-    police:"可以交给警方，但不要公开我的诊疗内容。和顾盼有关的记录，你自己去确认。"
+  const finishFirstRound=()=>{
+    localStorage.setItem("jia-hq-first-round-complete","true");
+    localStorage.setItem("jia-hq-stage","1");
+    advance(32);
   };
   const inputStyle={width:"100%",margin:"0 0 8px",padding:"10px 12px",border:"1px solid #c4c8c5",borderRadius:"4px",background:"#fff",outline:"none"};
   const optionStyle={width:"100%",margin:"0 0 6px",padding:"10px 12px",border:"1px solid #82aa70",borderRadius:"4px",background:"#e7f4df",color:"#395b31",textAlign:"left" as const};
+  const disabledOptionStyle={...optionStyle,opacity:.45,cursor:"not-allowed"};
+  const backOptionStyle={...optionStyle,borderColor:"#b5bbb7",background:"#f4f5f4",color:"#626965"};
+  const medicalHistory=step>=10&&evidence==="medical";
+  const explainHistory=medicalHistory&&tone==="explain"&&(step===12||step>=30);
+  const persistHistory=medicalHistory&&tone==="persist"&&(step>=20||step>=30);
+  const commonHistory=step>=30;
   return <section className="wx-lh-dialogue wx-hq-confrontation" style={{gridTemplateRows:"50px minmax(0,1fr) auto"}}>
-    <header><button data-profile="郝倩"><img src="/characters/hao-qian.png" alt="郝倩"/><span><b>郝倩</b><small>微信号：hqian_17</small></span></button></header>
+    <header><button data-profile="郝倩"><img src="/characters/wechat-hao-qian-wedding.png" alt="郝倩"/><span><b>郝倩</b><small>微信号：hqian_17</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
       <div className="wx-system">你们已经成为好友，可以开始聊天了</div>
-      <WxBubble src="/characters/shen-wang.png" mine text="我是沈望。顾盼以前提过你。"/>
-      <WxBubble src="/characters/hao-qian.png" text="你是怎么找到这个号的？"/>
-      {step>=1&&<><WxBubble src="/characters/shen-wang.png" mine text="在你2022年12月发布的微博里。"/><WxBubble src="/characters/hao-qian.png" text="那条动态我早就不想留了。你加我做什么？"/></>}
-      {step>=2&&<><WxBubble src="/characters/shen-wang.png" mine text="我在北港取回了顾盼留下的东西。里面有一封写给她的破损信。"/><WxBubble src="/characters/hao-qian.png" text="那封信不是写给你的。她还留下了什么？你既然查过港湾记录，把我的完整转介编号发给我。"/></>}
-      {step>=3&&<><WxBubble src="/characters/shen-wang.png" mine text="YF-HQ-0214。记录显示顾盼替你结清了治疗费。"/><WxBubble src="/characters/hao-qian.png" text="那是我的转介编号。顾盼是自己要管我，我没让她付钱。沈望，你来找我，到底想要什么？"/></>}
-      {step>=4&&<><WxBubble src="/characters/shen-wang.png" mine text={tone==="truth"?"我只想知道顾盼后来发生了什么。":tone==="blame"?"我要知道你们对顾盼做了什么。":"把能查到顾盼的远帆账号交给我。"}/><WxBubble src="/characters/hao-qian.png" text={toneReply[tone]}/><WxBubble src="/characters/hao-qian.png" text="你说你查到了韩铎。他的朋友圈里，暴露了哪个后台路径？"/></>}
-      {step>=5&&<><WxBubble src="/characters/shen-wang.png" mine text="/staff/console"/><WxBubble src="/characters/hao-qian.png" text="那张截图里的YF-HQ-0214就是我。治疗结束后我做过短期志愿者；韩铎有正式权限，能看到住址和紧急联系人。我离开后，旧账号一直没有注销。"/><WxBubble src="/characters/hao-qian.png" text="我把账号给你，你准备怎么处理里面关于我的记录？"/></>}
-      {step>=6&&<><WxBubble src="/characters/shen-wang.png" mine text={promise==="privacy"?"我只查与顾盼有关的记录，不公开你的医疗隐私。":promise==="cold"?"我只需要账号，其他内容与我无关。":"我会把相关材料交给警方，由他们判断。"} /><WxBubble src="/characters/hao-qian.png" text={promiseReply[promise]}/><WxBubble src="/characters/hao-qian.png" text="旧账号是 hq.volunteer，历史口令 YF-0214-GP。顾盼救我那天，也被他们建成了关联人。别再问我酒吧那晚，现在我能给你的只有这个。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>YF Connect · 历史志愿者入口</b><small>账号 hq.volunteer · 口令 YF-0214-GP</small></span><em>打开 ↗</em></a><div className="wx-system">首次对质结束 · 已取得远帆历史账号</div></>}
+      {step>=1&&<><WxBubble src="/characters/shen-wang.png" mine text="我是顾盼的朋友。"/><TimedMessages play={animatedStep===1} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你，你好。"/><WxBubble src="/characters/hao-qian.png" text="顾盼最近还好吗？"/></TimedMessages></>}
+      {step>=2&&<WxBubble src="/characters/shen-wang.png" mine text="我……不知道她的近况。找你，是因为有些事情想向你确认。"/>}
+      {step>=3&&<><WxBubble src="/characters/shen-wang.png" mine text="那天到底发生了什么？"/><WxBubble src="/characters/hao-qian.png" text="我不明白你在说什么。"/><div className="wx-system">她没有继续回复。输入事情发生的完整日期，证明你知道自己在问什么。</div></>}
+      {step>=4&&<><WxBubble src="/characters/shen-wang.png" mine text="2022年10月27日。"/><TimedMessages play={animatedStep===4} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你到底是谁？"/><WxBubble src="/characters/hao-qian.png" text="你是远帆互助会的人吗？"/></TimedMessages></>}
+      {step>=5&&<><WxBubble src="/characters/shen-wang.png" mine text="不。那是什么？"/><TimedMessages play={animatedStep===5} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="不……"/><WxBubble src="/characters/hao-qian.png" text="我要怎么相信你？"/></TimedMessages></>}
+
+      {evidence==="letter"&&step>=6&&<><WxBubble src="/characters/shen-wang.png" mine text="我知道这封信是你写的。"/><TimedMessages play={animatedStep===6} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="信里的话已经说得很清楚了。"/><WxBubble src="/characters/hao-qian.png" text="我没有什么可以再解释的。"/></TimedMessages></>}
+      {evidence==="letter"&&step>=7&&<><WxBubble src="/characters/shen-wang.png" mine text="那些人是谁？"/><WxBubble src="/characters/hao-qian.png" text="我不知道你在说什么。"/></>}
+      {evidence==="letter"&&step>=8&&<><WxBubble src="/characters/shen-wang.png" mine text="是谁逼你做了伤害顾盼的事情？我只想知道到底发生了什么。"/><TimedMessages play={animatedStep===8} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你应该去问远帆的人，而不是我。"/><WxBubble src="/characters/hao-qian.png" text="不要再联系我了。"/><div className="wx-system">郝倩结束了本次对话</div></TimedMessages></>}
+
+      {medicalHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="我查到了港湾康复中心的记录。"/><div className="wx-system">沈望发送了“H.Q.康复项目摘要”</div></>}
+      {medicalHistory&&step>=11&&<><WxBubble src="/characters/shen-wang.png" mine text="我知道你的过去。"/><WxBubble src="/characters/shen-wang.png" mine text="人有犯错的权利。可贵的是面对错误的勇气。"/><TimedMessages play={animatedStep===11} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="面对错误的勇气？"/><WxBubble src="/characters/hao-qian.png" text="你说得可真轻巧。"/><WxBubble src="/characters/hao-qian.png" text="你有当过猎物吗？你爸妈有跟你说过不要在外面过夜，不要一个人走夜路，有没有跟你说过一定要带套？等你在围猎场被人当作猎物，再去探索勇气的意义吧。"/></TimedMessages></>}
+
+      {explainHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="不，我没有评判的资格。"/><WxBubble src="/characters/shen-wang.png" mine text="我只是希望你能把顾盼在国外发生的事情告诉我。我要的是面对真相的勇气，与其说是对你说，不如说也是对我自己说的。"/><WxBubble src="/characters/shen-wang.png" mine text="当时我没有任何渠道知道这些。但我真的很需要知道事情的原委。"/><WxBubble src="/characters/shen-wang.png" mine text="至少，能够解开我的心结。"/><TimedMessages play={animatedStep===12} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="心结？"/><WxBubble src="/characters/hao-qian.png" text="对你来说，那也许是一件没有得到答案的往事。"/><WxBubble src="/characters/hao-qian.png" text="可对我来说，是每天睡前都要祈祷不要遇见的梦魇。"/><WxBubble src="/characters/hao-qian.png" text="你想知道真相，是因为你仍挂念，对吗？"/><WxBubble src="/characters/hao-qian.png" text="可一旦说出来，会有什么后果，你有想过吗？"/><WxBubble src="/characters/hao-qian.png" text="公平和正义，与现在勉强维持的安稳生活相比，究竟哪个更重要？"/></TimedMessages></>}
+      {explainHistory&&commonHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="我没有资格替你决定。"/><WxBubble src="/characters/shen-wang.png" mine text="你可以不说那些不想说的部分，但你想想，顾盼当时把你当作了真正的朋友。她为你支付的账单，都是无声的证明。"/><TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages></>}
+
+      {persistHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="是的。但这跟男女没有关系。"/><WxBubble src="/characters/shen-wang.png" mine text="我认为我们还年轻。"/><WxBubble src="/characters/shen-wang.png" mine text="不管是什么困难，只要肯试一试，总会有一线机会。"/><WxBubble src="/characters/shen-wang.png" mine text="不管前方是什么，我都不允许自己再失去她一次了。"/><TimedMessages play={animatedStep===20} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你说得好像只要足够坚定，就一定能够把一个人救回来。"/><WxBubble src="/characters/hao-qian.png" text="可是人只有体面下葬，才是死亡吗？"/><WxBubble src="/characters/hao-qian.png" text="我已经死过一次了。你现在只是让我再跳回那个坑里，把土埋过头顶。"/></TimedMessages></>}
+      {persistHistory&&step>=21&&<WxBubble src="/characters/shen-wang.png" mine text="听着，郝倩，我知道那段过去对你来说很痛苦。我猜到一定有不好的事情发生，也知道那痛苦一定蔓延到了顾盼身上。我是她当时的男朋友，但我居然什么都不知道，连她的求救都没有察觉。"/>}
+      {persistHistory&&commonHistory&&<><WxBubble src="/characters/shen-wang.png" mine text="也许我做不到让一切回到原点，但我不能看到找到真相的机会，还继续装作什么都没有发生。"/><TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="对不起，我不知道……你是沈望，是吗？你和顾盼真的很像。"/><WxBubble src="/characters/hao-qian.png" text="明明没有人愿意帮我，她还是义无反顾。"/><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages></>}
+
+      {step>=31&&<><WxBubble src="/characters/shen-wang.png" mine text="10月27日的聚会，是你让她去的？"/><TimedMessages play={animatedStep===31} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="不是我安排的。"/><WxBubble src="/characters/hao-qian.png" text="你要的答案都在这里。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>官方网站 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/hao-qian.png" text="我知道他们还有一个群。"/><WxBubble src="/characters/hao-qian.png" text="我只知道这么多了。"/></TimedMessages></>}
+      {step>=32&&<><WxBubble src="/characters/shen-wang.png" mine text="谢谢。"/><WxBubble src="/characters/hao-qian.png" text="祝你好运。"/><div className="wx-system">首轮对话暂时结束</div></>}
     </div>
-    {step<6&&<footer style={{maxHeight:"205px",overflowY:"auto"}}>
-      {step===0&&<><small>回答郝倩的问题</small><input style={inputStyle} value={answer} onChange={event=>{setAnswer(event.target.value);setError("")}} onKeyDown={event=>event.key==="Enter"&&submitSource()} placeholder="在哪里找到她的新微信号？"/><button style={optionStyle} onClick={submitSource}>发送回答</button></>}
-      {step===1&&<><small>点击发送下一条消息</small><button style={optionStyle} onClick={()=>advance(2)}>发送：她留下了一封破损的信</button></>}
-      {step===2&&<><small>回答郝倩的问题 · 输入完整转介编号</small><input style={inputStyle} value={answer} onChange={event=>{setAnswer(event.target.value);setError("")}} onKeyDown={event=>event.key==="Enter"&&submitReferral()} placeholder="例如：YF-XX-0000"/><button style={optionStyle} onClick={submitReferral}>发送回答</button></>}
-      {step===3&&<><small>选择沈望的回答 · 选择会改变郝倩的语气</small><button style={optionStyle} onClick={()=>chooseTone("truth")}>我只想知道顾盼后来发生了什么。</button><button style={optionStyle} onClick={()=>chooseTone("blame")}>我要知道你们对顾盼做了什么。</button><button style={optionStyle} onClick={()=>chooseTone("account")}>把能查到顾盼的远帆账号交给我。</button></>}
-      {step===4&&!hdAdded&&<><small>当前证据不足</small><button style={optionStyle} disabled>需要先添加韩铎并查看他的朋友圈</button></>}
-      {step===4&&hdAdded&&<><small>回答郝倩的问题 · 输入完整后台路径</small><input style={inputStyle} value={answer} onChange={event=>{setAnswer(event.target.value);setError("")}} onKeyDown={event=>event.key==="Enter"&&submitPath()} placeholder="/…/…"/><button style={optionStyle} onClick={submitPath}>发送回答</button></>}
-      {step===5&&<><small>回答郝倩的问题 · 选择会改变她的回应</small><button style={optionStyle} onClick={()=>choosePromise("privacy")}>只查顾盼相关记录，不公开你的医疗隐私。</button><button style={optionStyle} onClick={()=>choosePromise("cold")}>我只需要账号，其他内容与我无关。</button><button style={optionStyle} onClick={()=>choosePromise("police")}>我会把相关材料交给警方。</button></>}
+
+    {step<32&&<footer style={{maxHeight:"235px",overflowY:"auto"}}>
+      {deliveryPending?<small>对方正在输入…</small>:<>
+      {step===0&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(1)}>我是顾盼的朋友。</button></>}
+      {step===1&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(2)}>我不知道她的近况，想向你确认一些事情。</button></>}
+      {step===2&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(3)}>那天到底发生了什么？</button></>}
+      {step===3&&<><small>请输入那天的日期 · 格式：YYYY/MM/DD</small><input style={inputStyle} value={answer} onChange={event=>{setAnswer(event.target.value);setError("")}} onKeyDown={event=>event.key==="Enter"&&submitDate()} placeholder="YYYY/MM/DD"/><button style={optionStyle} onClick={submitDate}>发送日期</button></>}
+      {step===4&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(5)}>不。那是什么？</button></>}
+      {step===5&&<><small>选择用于证明身份的证据</small><button style={optionStyle} onClick={()=>chooseEvidence("letter")}>展示那封破损的信</button><button style={hasMedical?optionStyle:disabledOptionStyle} disabled={!hasMedical} onClick={()=>chooseEvidence("medical")}>展示H.Q.的医疗记录</button>{!hasMedical&&<small style={{display:"block",marginTop:"2px",color:"#777"}}>尚未取得H.Q.的医疗记录</small>}</>}
+      {evidence==="letter"&&step===6&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(7)}>那些人是谁？</button><button style={backOptionStyle} onClick={resetEvidenceChoice}>返回证据选择</button></>}
+      {evidence==="letter"&&step===7&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(8)}>是谁逼你做了伤害顾盼的事情？</button><button style={backOptionStyle} onClick={resetEvidenceChoice}>返回证据选择</button></>}
+      {evidence==="letter"&&step===8&&<><small>这条证据无法让郝倩继续开口</small><button style={backOptionStyle} onClick={resetEvidenceChoice}>撤回这个分支，重新选择证据</button></>}
+      {evidence==="medical"&&step===10&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={()=>advance(11)}>我知道你的过去。人有犯错的权利，可贵的是面对错误的勇气。</button><button style={backOptionStyle} onClick={resetEvidenceChoice}>返回证据选择</button></>}
+      {evidence==="medical"&&step===11&&<><small>选择沈望的态度</small><button style={optionStyle} onClick={()=>chooseTone("explain")}>解释与请求</button><button style={optionStyle} onClick={()=>chooseTone("persist")}>坚持调查</button><button style={backOptionStyle} onClick={resetEvidenceChoice}>返回证据选择</button></>}
+      {evidence==="medical"&&step===12&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(30)}>我没有资格替你决定。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
+      {evidence==="medical"&&step===20&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(21)}>我知道那段过去很痛苦。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
+      {evidence==="medical"&&step===21&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(30)}>我不能继续装作什么都没有发生。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
+      {step===30&&<><small>点击发送沈望的追问</small><button style={optionStyle} onClick={()=>advance(31)}>10月27日的聚会，是你让她去的？</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
+      {step===31&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={finishFirstRound}>谢谢。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
       {error&&<small style={{display:"block",marginTop:"2px",color:"#a43b3b"}}>{error}</small>}
+      </>}
     </footer>}
-    {step>=6&&<footer><span>对话暂时结束　✓</span></footer>}
+    {step>=32&&<footer style={{maxHeight:"190px",overflowY:"auto"}}><small>当前证据不足</small><button style={disabledOptionStyle} disabled>你愿意为顾盼作证吗？</button><span>请先继续你的调查</span><button style={backOptionStyle} onClick={resetToneChoice}>返回上一个分叉重新选择</button></footer>}
   </section>
 }
 
@@ -692,34 +871,39 @@ function HanDuoIdentityCheck(){
   const [year,setYear]=useState("");
   const [major,setMajor]=useState("");
   const [studentId,setStudentId]=useState("");
-  const [status,setStatus]=useState<"idle"|"error"|"success">("idle");
+  const [status,setStatus]=useState<"idle"|"error"|"duplicate"|"success">("idle");
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{if(localStorage.getItem("jia-hd-trusted")==="true")setStatus("success")});return()=>window.cancelAnimationFrame(frame)},[]);
   const verify=()=>{
+    const submitted={name:name.trim().toUpperCase(),year:year.trim(),major:major.trim().toUpperCase(),studentId:studentId.trim().toUpperCase()};
+    const existingProfiles=[
+      {name:"MENG ZHI",year:"2025",major:"DS",studentId:"2025-DS-MZ-104305"},
+      {name:"JIN WEI",year:"2024",major:"CS",studentId:"2024-CS-JW-040219"},
+      {name:"LUO XIN",year:"2025",major:"VC",studentId:"2025-VC-LX-281740"},
+      {name:"CHEN YU",year:"2023",major:"EC",studentId:"2023-EC-CY-193802"},
+    ];
+    if(existingProfiles.some(profile=>profile.name===submitted.name&&profile.year===submitted.year&&profile.major===submitted.major&&profile.studentId===submitted.studentId)){setStatus("duplicate");return}
     const raw=localStorage.getItem("jia-school-profile");
     if(!raw){setStatus("error");return}
     const profile=JSON.parse(raw) as {name:string;year:string;major:string;studentId:string};
-    const matches=name.trim()===profile.name&&year.trim()===profile.year&&major.trim().toUpperCase()===profile.major&&studentId.trim().toUpperCase()===profile.studentId;
+    const matches=name.trim()===profile.name&&submitted.year===profile.year&&submitted.major===profile.major&&submitted.studentId===profile.studentId;
     if(!matches){setStatus("error");return}
     localStorage.setItem("jia-hd-trusted","true");
-    localStorage.setItem("jia-yuanfan-management-group","true");
+    localStorage.setItem("jia-yuanfan-site-access","true");
     setStatus("success");window.dispatchEvent(new Event("jia-progress"));
   };
   return <section className="wx-hd-check">
     <header><img src="/characters/han-duo.png" alt="韩铎"/><span><b>韩铎</b><small>远帆社区联络</small></span></header>
-    <div className="wx-hd-thread"><WxBubble src="/characters/han-duo.png" text="远帆迎新？你哪个学校的？最近冒充留学生混活动的人不少。姓名、入学年份、专业代码和完整学号都发我，我查一下。"/>
-      {status==="error"&&<><WxBubble src="/characters/shen-wang.png" mine text={`${name} / ${year} / ${major} / ${studentId}`}/><WxBubble src="/characters/han-duo.png" text="对不上。学校社区档案里不是这套信息。资料想清楚再发。"/></>}
-      {status==="success"&&<><WxBubble src="/characters/shen-wang.png" mine text="身份资料已按学校社区档案提交。"/><WxBubble src="/characters/han-duo.png" text="查到了，信息能对上。先拉你进管理群，群里的旧资料别往外转。"/><div className="wx-group-invite"><i>远</i><span><b>远帆互助会·管理群</b><small>韩铎邀请你加入群聊</small></span><em>已加入</em></div></>}
+    <div className="wx-hd-thread"><WxBubble src="/characters/han-duo.png" text="远帆迎新进来的吗？你哪个学校的？最近冒充留学生混活动的人不少。姓名、入学年份、专业代码和完整学号都发我，我查一下。"/>
+      {status==="error"&&<><WxBubble src="/characters/shen-wang.png" mine text={`${name} / ${year} / ${major} / ${studentId}`}/><WxBubble src="/characters/han-duo.png" text="对不上。学校社区档案里不存在这套信息。资料想清楚再发。"/></>}
+      {status==="duplicate"&&<><WxBubble src="/characters/shen-wang.png" mine text={`${name} / ${year} / ${major} / ${studentId}`}/><WxBubble src="/characters/han-duo.png" text="已经注册过了。你到底是谁？"/></>}
+      {status==="success"&&<><WxBubble src="/characters/shen-wang.png" mine text="身份资料已按学校社区档案提交。"/><WxBubble src="/characters/han-duo.png" text="查到了，信息能对上。"/><WxBubble src="/characters/han-duo.png" text="远帆的权限给你开了。有一些功能和站内搜索现在可以用。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>学生网站权限已开通 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/han-duo.png" text="我朋友圈有点好东西。你要是无聊了，可以自己看看。"/></>}
     </div>
     {status!=="success"&&<footer><small>必须与大学社区系统中注册的信息完全一致</small><div><input value={name} onChange={e=>setName(e.target.value)} placeholder="姓名"/><input value={year} onChange={e=>setYear(e.target.value)} placeholder="入学年份"/><input value={major} onChange={e=>setMajor(e.target.value)} placeholder="专业代码"/><input value={studentId} onChange={e=>setStudentId(e.target.value)} placeholder="完整学号"/></div><button onClick={verify}>发送身份资料</button></footer>}
   </section>
 }
 
-function YuanfanManagementGroup(){
-  return <section className="wx-hd-check wx-yf-group"><header><i>远</i><span><b>远帆互助会·管理群（17）</b><small>消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">韩铎邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先看群公告。活动名单、住址和紧急联系人统一录进 YF Connect，别在群里发原表。"/><WxBubble src="/characters/hao-qian.png" text="以前的转介档案还要补吗？有些关联人的信息不应该一直留着。"/><WxBubble src="/characters/han-duo.png" text="系统没让删就别动。YF-HQ-0214那批我会处理。后台路径还是 /staff/console。"/><div className="wx-group-notice"><b>群公告</b><p>历史资料仅限内部使用。管理员账号不得外借，导出记录由负责人统一归档。</p></div></div></section>
-}
-
 function OldDriverGroup(){
-  return <section className="wx-hd-check wx-yf-group wx-driver-group"><header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先学会看路书。群里不说真名，也别问车是谁的。"/><WxBubble src="/characters/hao-qian.png" text="今晚那辆“新车”状态不对，别再加油了。"/><WxBubble src="/characters/han-duo.png" text="照旧。路线发管理员，记录仪先开，结束以后统一送回车库。"/><WxBubble src="/characters/han-duo.png" text="旧记录别在这里问。远帆后台搜索“女司机”时只认英文连写：womandriver。看完记得清搜索记录。"/><div className="wx-driver-code"><small>群内暗语 · 仅成员可见</small><b>womandriver</b><span>用于 YF Connect 管理后台搜索栏</span></div><div className="wx-group-notice dangerous"><b>群文件 · 2022-10-27_夜航路书</b><p>目标编号 HM-2217 · 集合地点与回程地址已由管理员隐藏。聊天中的“车”“加油”“记录仪”显然不是在讨论驾驶。</p></div></div></section>
+  return <section className="wx-hd-check wx-yf-group wx-driver-group"><header><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>老司机夜航群（46）</b><small>群聊已开启消息免打扰</small></span></header><div className="wx-hd-thread"><div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div><WxBubble src="/characters/han-duo.png" text="新来的先学会看路书。群里不说真名，也别问车是谁的。"/><WxBubble src="/characters/hao-qian.png" text="今晚那辆“新车”状态不对，别再加油了。"/><WxBubble src="/characters/han-duo.png" text="照旧。路线发管理员，记录仪先开，结束以后统一送回车库。"/><WxBubble src="/characters/han-duo.png" text="旧记录别在这里问。远帆网站搜索“女司机”时只认英文连写：womandriver。看完记得清搜索记录。"/><div className="wx-driver-code"><small>群内暗语 · 仅成员可见</small><b>womandriver</b><span>用于远帆网站的站内搜索</span></div><div className="wx-group-notice dangerous"><b>群文件 · 2022-10-27_夜航路书</b><p>目标编号 HM-2217 · 集合地点与回程地址已由管理员隐藏。聊天中的“车”“加油”“记录仪”显然不是在讨论驾驶。</p></div></div></section>
 }
 
 const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[
@@ -735,19 +919,29 @@ const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[
 
 function LiuHanOpeningDialogue(){
   const [step,setStep]=useState(0);
+  const [animatedStep,setAnimatedStep]=useState<number|null>(null);
+  const [deliveryPending,setDeliveryPending]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>setStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0)));return()=>window.cancelAnimationFrame(frame)},[]);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:step>0?"smooth":"auto"})});return()=>window.cancelAnimationFrame(frame)},[step]);
-  const advance=()=>setStep(value=>{const next=Math.min(liuHanOpeningExchanges.length,value+1);localStorage.setItem("jia-lh-opening-step-v3",String(next));window.dispatchEvent(new Event("jia-progress"));return next});
+  const scrollToLatest=()=>window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"})});
+  const advance=()=>setStep(value=>{
+    const next=Math.min(liuHanOpeningExchanges.length,value+1);
+    setAnimatedStep(next);
+    setDeliveryPending(Boolean(liuHanOpeningExchanges[next-1]?.followup));
+    localStorage.setItem("jia-lh-opening-step-v3",String(next));
+    window.dispatchEvent(new Event("jia-progress"));
+    return next;
+  });
   return <section className="wx-lh-dialogue">
-    <header><button><img src="/characters/liu-han.png" alt="刘涵"/><span><b>刘涵</b><small>微信号：liuhan_lc</small></span></button></header>
+    <header><button><img src="/characters/wechat-liu-han.png" alt="刘涵"/><span><b>刘涵</b><small>微信号：liuhan_lc</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
       <div className="wx-system">以下为你与刘涵的聊天</div>
       <WxBubble src="/characters/liu-han.png" text="还没休息？"/>
-      {liuHanOpeningExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}><WxBubble src="/characters/shen-wang.png" mine text={exchange.reply}/><WxBubble src="/characters/liu-han.png" text={exchange.response}/>{exchange.followup&&<WxBubble src="/characters/liu-han.png" text={exchange.followup}/>}</div>)}
+      {liuHanOpeningExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}><WxBubble src="/characters/shen-wang.png" mine text={exchange.reply}/>{exchange.followup?<TimedMessages play={animatedStep===index+1} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/liu-han.png" text={exchange.response}/><WxBubble src="/characters/liu-han.png" text={exchange.followup}/></TimedMessages>:<WxBubble src="/characters/liu-han.png" text={exchange.response}/>}</div>)}
       {step===liuHanOpeningExchanges.length&&<div className="wx-system">对话结束 · 新目标已经明确</div>}
     </div>
-    <footer>{step<liuHanOpeningExchanges.length?<><small>点击发送回复</small><button onClick={advance}>{liuHanOpeningExchanges[step].reply}</button></>:<span>已发送　✓</span>}</footer>
+    <footer>{deliveryPending?<small>对方正在输入…</small>:step<liuHanOpeningExchanges.length?<><small>点击发送回复</small><button onClick={advance}>{liuHanOpeningExchanges[step].reply}</button></>:<span>已发送　✓</span>}</footer>
   </section>
 }
 
@@ -763,7 +957,7 @@ function ShenWangOpeningMirror(){
   },[]);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"auto"})});return()=>window.cancelAnimationFrame(frame)},[step]);
   return <section className="wx-lh-dialogue wx-lh-mirror">
-    <header><button><img src="/characters/shen-wang.png" alt="沈望"/><span><b>沈望</b><small>微信号：zw_1021</small></span></button></header>
+    <header><button><img src="/characters/wechat-shen-wang.png" alt="沈望"/><span><b>沈望</b><small>微信号：zw_1021</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
       <div className="wx-system">以下为你与沈望的聊天 · 与沈望端同步</div>
       <WxBubble src="/characters/liu-han.png" mine text="还没休息？"/>
@@ -777,9 +971,23 @@ function ShenWangOpeningMirror(){
 function WxBubble({src,text,mine}:{src:string;text:string;mine?:boolean}){
   const avatarNames:Record<string,string>={"/characters/shen-wang.png":"沈望","/characters/gu-pan.png":"顾盼","/characters/liu-han.png":"刘涵","/characters/hao-qian.png":"郝倩","/characters/han-duo.png":"韩铎","/characters/chen-fang.png":"陈放","/family-mother.svg":"母亲","/family-father.svg":"父亲","/family-brother.svg":"弟弟"};
   const name=avatarNames[src]||"联系人";
-  return <div className={`wx-bubble ${mine?"mine":""}`}><button type="button" className="wx-bubble-avatar" data-profile={name} aria-label={`查看${name}资料`}><img src={src} alt={name}/></button><p>{text}</p></div>
+  return <div className={`wx-bubble ${mine?"mine":""}`}><button type="button" className="wx-bubble-avatar" data-profile={name} aria-label={`查看${name}资料`}><img src={wechatAvatar(src)} alt={name}/></button><p>{text}</p></div>
 }
-function Moment({src,name,text,time,wedding}:{src:string;name:string;text:string;time:string;wedding?:boolean}){return <article className="wx-moment"><img src={src} alt={name}/><div><b>{name}</b><p>{text}</p>{wedding&&<div className="wx-wedding">WEDDING · 2025</div>}<small>{time}　♡　··</small></div></article>}
+function Moment({src,name,text,time,wedding,pinned,gallery,comments}:{src:string;name:string}&PersonalMoment){
+  const [selected,setSelected]=useState<MomentGalleryItem|null>(null);
+  return <article className="wx-moment">
+    <img src={wechatAvatar(src)} alt={name}/>
+    <div>
+      <b>{name}{pinned&&<em className="wx-moment-pinned">置顶</em>}</b>
+      <p>{text}</p>
+      {gallery&&<div className="wx-moment-gallery">{gallery.map((item,index)=><button key={item.src} type="button" aria-label={`放大第${index+1}张图片`} onClick={event=>{event.stopPropagation();setSelected(item)}}><img src={item.src} alt={item.alt}/></button>)}</div>}
+      {wedding&&<div className="wx-wedding">WEDDING · 2025</div>}
+      <small>{time}　♡　··</small>
+      {comments&&<div className="wx-moment-comments">{comments.map((comment,index)=><p key={`${comment}-${index}`}><b>{name}</b>：{comment}</p>)}</div>}
+    </div>
+    {selected&&<div className="wx-moment-lightbox" role="dialog" aria-modal="true" aria-label="查看朋友圈图片大图" onClick={event=>{event.stopPropagation();setSelected(null)}}><button type="button" aria-label="关闭大图" onClick={()=>setSelected(null)}>×</button><img src={selected.src} alt={selected.alt} onClick={event=>event.stopPropagation()}/></div>}
+  </article>
+}
 
 function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}){
   const content:Record<string,{tag:string;title:string;body:React.ReactNode;link?:[string,string]}>={

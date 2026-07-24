@@ -31,7 +31,7 @@ const storyMap = [
   { title: "迟来的回望", body: "管理员后台将顾盼标记为 HM-2217。郝倩已经结婚，面对密信与照片仍拒绝作证。沈望终于知道顾盼为什么离开，却在回国后发现所谓婚礼已经完成，遗体不知所踪。" },
   { title: "第二周目 · 双线", body: "玩家保留第一周目的记忆。左侧沈望快速重取国外证据；右侧刘涵从QQ情侣空间的匿名留言、完整IP与残破地址交叉定位晴川公寓。双桌面从这里同步推进。" },
   { title: "方案变更", body: "刘涵在拘禁现场找到旧请柬。新郎邵明辉来自当地富豪家庭，原宴席已经取消。请柬二维码通向恒慕官网；撕碎变更单底部的摩斯封边给出服务码 YQ-730419。" },
-  { title: "真相与结局", body: "合同号、服务码和付款记录解锁“圆满方案”。警方朋友陈放把中断接警、恒慕车辆与永安礼仪园纳入正式调查。证据完整则阻止冥婚、说服郝倩自首，进入《向阳而生》；集齐信物后进入《镜花水月》。" },
+  { title: "真相与结局", body: "合同号、服务码和付款记录解锁“圆满方案”。警方朋友陈放把中断接警、恒慕车辆与永安礼仪园纳入正式调查。读完刘涵线最后两份警方档案后，顾盼旧电脑会恢复一封被删除的绝笔信；信末通向隐藏结局《镜花水月》。" },
 ];
 
 export default function Home() {
@@ -471,7 +471,7 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
     <section className="evidence-detail">
       {!selected && <div className="empty-state"><span>B-17</span><p>请选择一件物品进行整理</p></div>}
       {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="一封破损的手写信"/></article>}
-      {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
+      {selected === "memento" && <article><p className="stamp">纪念物</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
       {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>向阳处</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
   </div>;
@@ -513,7 +513,7 @@ function WeChatBackup({ seen, addEvidence }: { seen: Evidence[]; addEvidence: (e
   return <div className="wechat-backup"><aside><button className={tab==="hq"?"active":""} onClick={()=>setTab("hq")}><img src="/characters/hao-qian.png" alt="郝倩"/>郝倩</button><button className={tab==="sw"?"active":""} onClick={()=>setTab("sw")}><img src="/characters/shen-wang.png" alt="沈望"/>沈望</button><button className={tab==="letter"?"active":""} onClick={()=>setTab("letter")}><span className="draft-avatar">稿</span>分手信草稿</button></aside><section>
     {tab==="hq" && <article><p className="stamp">2022.10.28 · 事发次日</p><h2>你怎么回到家的？</h2><div className="transcript"><p><b>顾盼：</b>昨晚到底发生了什么？我为什么会在家？</p><p><b>郝倩：</b>我提前走了。你喝多了，应该是酒吧的人送你的。</p><p><b>顾盼：</b>他们怎么知道我住在哪里？我手机有密码，也没有叫车记录。</p><p><b>顾盼：</b>门没有被撬过。除了你，还有谁有我家的钥匙？</p><p><b>郝倩：</b>我只是把地址告诉他们。我真的没有跟着去。</p></div><button className="primary dark" onClick={()=>addEvidence("betrayal")}>{seen.includes("betrayal")?"矛盾已标记":"标记证词矛盾"}</button></article>}
     {tab==="sw" && <article><p className="stamp">语音通话 · 02分17秒</p><h2>没有说完的话</h2><div className="transcript"><p><b>顾盼：</b>昨晚在酒吧，我可能遇到了一些事……</p><p><b>沈望：</b>我早就说过那边酒吧很乱。真想去的话，至少等我过去，或者提前告诉我。</p><p><b>顾盼：</b>你说得对。是我不该去。</p></div><blockquote>未发送：我本来想告诉你，昨晚可能有人伤害了我。可是爸爸妈妈也问我为什么要去。你也这样问。</blockquote></article>}
-    {tab==="letter" && <article><p className="stamp">版本历史 · 5处异常片段</p><h2>分手信</h2><div className="breakup-letter"><p>沈望：</p><p>这段时间我想了很久。我们隔着时差，生活已经越来越不一<em>w</em>样。</p><p>我不想再等你，也不想让你<em>x:</em>继续等我。</p><p>一直跑着实在太累了，我决定停<em>old</em>下来。</p><p>请尊重我的选择，我需要安<em>dr</em>静一会，不要来找我。</p><p>不是因为你做错了什么，只是我不再想和你一起计划以<em>iver</em>后。</p><p>到这里吧。</p><p>顾盼</p></div><button className="primary dark" onClick={()=>addEvidence("breakup")}>{seen.includes("breakup")?"隐藏信息：wx: olddriver":"提取异常片段"}</button>{seen.includes("breakup")&&<p className="cipher-help">这不是单词，而是一个可以在微信中搜索的账号。</p>}</article>}
+    {tab==="letter" && <article><p className="stamp">本地草稿 · 2022年11月17日</p><h2>分手信</h2><div className="breakup-letter"><p>沈望：</p><p>这段时间我想了很久。我们隔着时差，生活已经越来越不一样。</p><p>我不想再等你，也不想让你继续等我。</p><p>一直跑着实在太累了，我决定停下来。</p><p>请尊重我的选择，我需要安静一会，不要来找我。</p><p>不是因为你做错了什么，只是我不再想和你一起计划以后。</p><p>到这里吧。</p><p>顾盼</p></div><button className="primary dark" onClick={()=>addEvidence("breakup")}>{seen.includes("breakup")?"已读":"读取完整草稿"}</button></article>}
   </section></div>;
 }
 
