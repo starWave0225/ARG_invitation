@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <rect width="96" height="96" rx="14" fill="#65717a"/>
+  <circle cx="48" cy="34" r="17" fill="#d8c7b7"/>
+  <path d="M15 92c2-27 15-42 33-42s31 15 33 42" fill="#8998a2"/>
+  <path d="M32 27c3-11 9-16 17-16 10 0 16 7 16 19-7-4-13-6-19-6-5 0-10 1-14 3" fill="#34393c"/>
+  <text x="48" y="86" text-anchor="middle" fill="#334047" font-size="12" font-family="sans-serif">父</text>
+</svg>

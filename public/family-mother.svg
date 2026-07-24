@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <rect width="96" height="96" rx="14" fill="#8b746e"/>
+  <circle cx="48" cy="34" r="17" fill="#e5d3c5"/>
+  <path d="M17 92c2-27 14-42 31-42s29 15 31 42" fill="#c7aaa0"/>
+  <path d="M31 34c0-15 7-23 17-23s17 8 17 23c-6-5-11-7-17-7s-11 2-17 7" fill="#4c3d39"/>
+  <text x="48" y="86" text-anchor="middle" fill="#55433f" font-size="12" font-family="sans-serif">母</text>
+</svg>

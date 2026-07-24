@@ -41,8 +41,9 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       <div className="template-chrome"><span>{meta[2]}</span><i/><i/><i/></div>
       {actor && <aside className="actor-card"><img src={actor.src} alt={actor.name}/><div><b>{actor.name}</b><span>{actor.note}</span></div></aside>}
       {step===0 && <Scene eyebrow="远帆学生社区" title="创建一个不存在的学生">
-        <p>公开名单揭示了学号结构：入学年份＋专业代码＋姓名首字母＋尚未占用的六位数字。学校旧社区只核验格式，没有连接教务系统。</p>
-        <div className="source-grid"><Card title="专业目录" text="Computer Science — CS\nData Science — DS\nVisual Communication — VC"/><Card title="姓名" text="林川 / Lin Chuan\n首字母：LC"/><Card title="可用序号" text="184206 — 未占用"/></div>
+        <p>韩铎只接受本校学生。沈望需要进入学校官网，从专业目录、公开学生名单和国际生待处理档案中推导一个能够通过旧社区验证的身份。</p>
+        <div className="route-launcher"><small>搜索结果 · northbridge.edu</small><h2>Northbridge University</h2><p>Academic catalog, campus directory and student services.</p><a href="/university" target="_blank" rel="noopener noreferrer">在新标签页打开学校官网 ↗</a></div>
+        <p>目标身份：林川 / Lin Chuan。请先在学校网站完成社区账号激活，再把完整学号带回这里。</p>
         <label>输入完整学号</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="2025-DS-LC-184206"/>
         <button disabled={answer.toUpperCase()!=="2025-DS-LC-184206"} onClick={()=>go(1)}>注册学生社区账号</button>
       </Scene>}
@@ -57,16 +58,17 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <label>“今晚给2217加油，路书传回车库”中的2217是谁？</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="姓名"/>
         <button disabled={answer!=="顾盼"} onClick={()=>go(3)}>确认字典</button>
       </Scene>}
-      {step===3 && <Scene eyebrow="互助会管理员后台" title="HengMu">
-        <p>浏览器搜索结果显示，远帆拥有完整的公益组织官网。公开页面的“成员登录”通往共享内部工作台。</p>
-        <div className="route-launcher"><small>搜索结果 · yuanfancommunity.org</small><h2>远帆社区互助会</h2><p>新生支持、健康转介、同伴陪伴与成员工作台。</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">在新标签页打开网站 ↗</a></div>
-        <p>请在新标签页中进入成员后台，核对 HM-2217 的个案与行动日志，然后回到这里继续。</p>
-        <button onClick={()=>{addProof(0);addProof(1);go(4)}}>已核对后台 · 导出日志</button>
+      {step===3 && <Scene eyebrow="郝倩 · 微信对质" title="后台存在，但没有钥匙">
+        <p>港湾记录给出转介编号YF-HQ-0214；远帆公开页给出韩铎的个人微信。韩铎朋友圈暴露了YF Connect后台路径，但没有账号和口令。</p>
+        <div className="dialogue"><p><b>沈望：</b>港湾记录显示，顾盼替你付了治疗费。</p><p><b>郝倩：</b>是她自己要管我。我没让她付。</p><p><b>沈望：</b>韩铎朋友圈为什么拍到了你的转介编号？</p><p><b>郝倩：</b>……我以前做过短期志愿者。那个账号可能还没注销。</p></div>
+        <div className="route-launcher"><small>微信 · 郝倩</small><h2>取得历史志愿者凭证</h2><p>必须用港湾转介记录和韩铎朋友圈截图逐步对质，不能从公开网站直接进入后台。</p><a href="/computer/shen" target="_blank" rel="noopener noreferrer">打开沈望电脑与微信 ↗</a></div>
+        <button onClick={()=>go(4)}>郝倩提供了只读历史账号</button>
       </Scene>}
-      {step===4 && <Scene eyebrow="郝倩 · 现在使用婚后姓名" title="她选择关门">
-        <div className="dialogue"><p><b>沈望：</b>门是你打开的。你就在摄像机后面。</p><p><b>郝倩：</b>他们不让我走。我也是受害者。</p><p><b>沈望：</b>顾盼替你付了治疗费，也救过你。</p><p><b>郝倩：</b>我已经写信道歉了。她没收到，不是我的错。你为什么一定要毁掉两个活着的人？</p></div>
-        <p>证据仍不足以迫使她正式作证。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
-        <button onClick={()=>go(5)}>结束第一周目：迟来的回望</button>
+      {step===4 && <Scene eyebrow="远帆 · 历史志愿者只读档案" title="HM-2217">
+        <p>郝倩提供的账号只能查看与她本人有关的历史转介。关联记录证明顾盼营救并资助过她，也证明韩铎导出了顾盼的住址与紧急联系人。</p>
+        <div className="route-launcher"><small>yuanfancommunity.org · YF Connect</small><h2>远帆社区互助会</h2><p>账号 hq.volunteer · 口令 YF-0214-GP</p><a href="/yuanfan" target="_blank" rel="noopener noreferrer">打开远帆历史档案 ↗</a></div>
+        <p>访问日志把HD-047、YF-HQ-0214和外部标签HM-2217连接在一起。与此同时，刘涵发现顾盼回国无人知晓，也根本不在家乡。</p>
+        <button onClick={()=>{addProof(0);addProof(1);go(5)}}>结束第一周目：迟来的回望</button>
       </Scene>}
       {step===5 && <Scene eyebrow="第一次结局" title="你知道得太晚了">
         <p>沈望回国时，仪式已经完成。顾盼遗体不知所踪。屏幕熄灭前，备忘录出现一行不属于任何角色的文字：</p>
@@ -86,6 +88,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       {step===8 && <Scene eyebrow="旧请柬" title="原来的新郎">
         <p>搜索显示邵明辉是当地富豪独子，长期需要照护；邵家公开寻找“温顺、能够照顾家庭”的伴侣。云庭酒店则确认原定宴席已经取消。</p>
         <div className="source-grid"><Card title="搜索结果" text="邵家愿支付高额彩礼\n本人很少公开露面"/><Card title="酒店档期" text="2025.12.06 锦华厅\n原预约已取消 / 当前空档"/><Card title="二维码" text="恒慕婚姻家庭服务集团\n状态：方案变更"/></div>
+        <div className="route-launcher"><small>二维码识别结果 · hengmu-family.cn</small><h2>恒慕婚姻家庭服务集团</h2><p>婚恋服务、家庭顾问与会员专属服务中心。</p><a href="/hengmu" target="_blank" rel="noopener noreferrer">在新标签页打开恒慕官网 ↗</a></div>
         <button onClick={()=>go(9)}>拼合婚约变更单</button>
       </Scene>}
       {step===9 && <Scene eyebrow="变更单底部封边" title="摩斯电码">
@@ -94,6 +97,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button disabled={answer!=="YQ-730419"} onClick={()=>go(10)}>添加恒慕企业微信</button>
       </Scene>}
       {step===10 && <Scene eyebrow="恒慕家庭顾问" title="圆满方案">
+        <p>返回恒慕官网的“服务进度查询”，同时输入合同号 <b>HM-W-251206-117</b> 与刚刚解出的服务码，取得变更时间线和内部结算摘要。</p>
         <div className="dialogue"><p><b>自动客服：</b>订单 HM-W-251206-117 已进入特殊变更流程。</p><p><b>刘涵：</b>服务码 YQ-730419。查询家属委托物。</p><p><b>私人顾问：</b>委托标的已接收，恒温保存；新匹配完成。家属分成50%。</p></div>
         <p>转运单将“委托标的”写成顾盼，接收地为永安礼仪园。她已经死亡；父母正在出售她的遗体。</p>
         <button onClick={()=>{addProof(4);go(11)}}>联系微信列表里的陈放</button>
@@ -111,7 +115,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       {step===13 && <Scene eyebrow="郝倩的选择" title="这一次，她没有再解释">
         <blockquote>“我受过伤害，但伤害她的那一步，是我自己走的。我不请求她原谅。我会把我做过的事情全部说出来。”</blockquote>
         <p>郝倩自首并出庭。警方在转运前进入永安礼仪园，阻止冥婚。顾盼父母和直接参与者被追责，韩铎的国内外犯罪链被连接。</p>
-        <button onClick={()=>{addProof(5);go(14)}}>进入真结局</button>
+        <button onClick={()=>{addProof(5);localStorage.setItem("jia-game-cleared","true");go(14)}}>进入真结局</button>
       </Scene>}
       {step===14 && <Scene eyebrow="真结局 · 向阳而生" title="她终于以自己的名字被看见">
         <div className="asset-slot large">后续图片素材：未迟书店画展 / 《向阳处》系列 / 空着的右侧位置</div>

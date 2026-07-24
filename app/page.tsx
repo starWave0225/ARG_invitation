@@ -5,6 +5,7 @@ import { FullInvestigation } from "./FullInvestigation";
 
 type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive" | "guFiles" | "guWechat" | "full";
 type Evidence = "letter" | "draft" | "laptop" | "invoice" | "drug" | "betrayal" | "breakup" | "medical";
+type GameMode = "normal" | "hardcore";
 
 const chapters = [
   ["序", "迟到的婚讯"],
@@ -34,6 +35,8 @@ const storyMap = [
 
 export default function Home() {
   const [started, setStarted] = useState(false);
+  const [choosingMode, setChoosingMode] = useState(false);
+  const [gameCleared, setGameCleared] = useState(false);
   const [activeApp, setActiveApp] = useState<AppId | null>(null);
   const [phase, setPhase] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
@@ -44,6 +47,21 @@ export default function Home() {
   const [device, setDevice] = useState<"shen" | "gu">("shen");
   const [weekTwo, setWeekTwo] = useState(false);
   const [showMap, setShowMap] = useState(false);
+
+  const startGame = (mode: GameMode) => {
+    window.localStorage.setItem("jia-game-mode", mode);
+    window.location.assign("/computer/shen");
+  };
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setGameCleared(
+        window.localStorage.getItem("jia-game-cleared") === "true" ||
+        Number(window.localStorage.getItem("jia-full-step") || 0) >= 14
+      );
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("jia-prototype");
@@ -91,7 +109,14 @@ export default function Home() {
   };
 
   const reset = () => {
-    window.localStorage.removeItem("jia-prototype");
+    for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
+      const key = window.localStorage.key(index);
+      if (key?.startsWith("jia-")) window.localStorage.removeItem(key);
+    }
+    for (let index = window.sessionStorage.length - 1; index >= 0; index -= 1) {
+      const key = window.sessionStorage.key(index);
+      if (key?.startsWith("jia-")) window.sessionStorage.removeItem(key);
+    }
     setPhase(0); setSeen([]); setLaptopOpen(false); setWeekTwo(false); setDevice("shen");
     setActiveApp(null); setNotice(null); setPassword("");
   };
@@ -101,14 +126,24 @@ export default function Home() {
       <main className="landing">
         <div className="grain" />
         <section className="title-card">
-          <p className="eyebrow">一部双周目网页调查叙事</p>
+          <p className="eyebrow">本格网页调查叙事</p>
           <h1>嫁</h1>
-          <p className="tagline">左边有人等，右边有人回头。</p>
+          <p className="tagline">总有人在等，总有人回头。</p>
           <div className="content-note">
-            本作涉及性侵、药物控制、受害者指责、非法拘禁与死亡。内容以文字和证据呈现，不展示侵害画面。
+            本作涉及所有违法情节均为虚构和游戏创作。<br/>
+            敏感内容以文字和证据呈现，不展示、生成实际画面。
           </div>
-          <button className="primary" onClick={() => setStarted(true)}>进入沈望的电脑</button>
-          <button className="text-button" onClick={() => { setStarted(true); setShowMap(true); }}>查看文字逻辑初稿</button>
+          {!choosingMode ? <>
+            <button className="primary" onClick={() => setChoosingMode(true)}>开始游戏</button>
+            <button className="text-button" disabled={!gameCleared} title={gameCleared?"打开文字逻辑初稿":"完成真结局后解锁"} onClick={() => { if(gameCleared){setStarted(true);setShowMap(true)} }}>查看文字逻辑初稿（只在通关后可用）</button>
+          </> : <section className="game-mode-select" aria-label="选择游戏模式">
+            <header><button type="button" onClick={()=>setChoosingMode(false)}>← 返回</button><span>选择游戏模式</span></header>
+            <div>
+              <button type="button" className="normal" onClick={()=>startGame("normal")}><small>NORMAL</small><b>通灵模式</b><p>桌面会显示提示，指引当前目标与调查方向。</p></button>
+              <button type="button" className="hardcore" onClick={()=>startGame("hardcore")}><small>HARDCORE</small><b>真实模式</b><p>无额外提示。真实模拟主角面对的调查困境，并展示你的推理能力。</p><em>别紧张，你随时可以回到主选单再次选择</em></button>
+            </div>
+            <p>两种模式的剧情、谜题和结局分叉完全相同。</p>
+          </section>}
           <p className="desktop-note">建议使用电脑与耳机 · 进度保存在当前浏览器</p>
         </section>
       </main>
@@ -142,7 +177,6 @@ export default function Home() {
               <DesktopIcon label="邮箱" symbol="邮" badge={phase >= 2} onClick={() => open("mail")} />
               <DesktopIcon label="备忘录" symbol="记" onClick={() => open("memo")} />
               <DesktopIcon label="B-17 寄存仓" symbol="箱" locked={phase < 3} onClick={() => phase >= 3 && open("files")} />
-              <DesktopIcon label="顾盼的旧电脑" symbol="盼" locked={!laptopOpen} onClick={() => laptopOpen && setDevice("gu")} />
               <DesktopIcon label="调查档案" symbol="档" onClick={() => open("archive")} />
             </> : <>
               <DesktopIcon label="个人文件" symbol="文" onClick={() => open("guFiles")} />
@@ -239,12 +273,12 @@ function DesktopIcon({ label, symbol, badge, locked, onClick }: { label: string;
 
 function WeChat({ phase }: { phase: number }) {
   return <div className="chat-layout">
-    <aside className="chat-list"><div className="avatar">刘</div><div><b>刘涵</b><p>蛮好的。祝福她。</p></div></aside>
+    <aside className="chat-list"><img className="avatar" src="/characters/liu-han.png" alt="刘涵"/><div><b>刘涵</b><p>蛮好的。祝福她。</p></div></aside>
     <section className="conversation">
       <header>刘涵 <small>大学发小</small></header>
       <div className="messages">
-        {chatLines.map((line, i) => <div className={`bubble-row ${line.who === "沈望" ? "mine" : ""}`} key={i}><span>{line.who[0]}</span><p>{line.text}</p></div>)}
-        {phase >= 2 && <div className="bubble-row"><span>刘</span><p>当年那个寄存仓？去一趟吧，把该收的都收回来。也算和过去告个别。</p></div>}
+        {chatLines.map((line, i) => <div className={`bubble-row ${line.who === "沈望" ? "mine" : ""}`} key={i}><img src={line.who==="沈望"?"/characters/shen-wang.png":"/characters/liu-han.png"} alt={line.who}/><p>{line.text}</p></div>)}
+        {phase >= 2 && <div className="bubble-row"><img src="/characters/liu-han.png" alt="刘涵"/><p>当年那个寄存仓？去一趟吧，把该收的都收回来。也算和过去告个别。</p></div>}
       </div>
     </section>
   </div>;
@@ -281,7 +315,7 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
       {selected === "letter" && <article><p className="stamp">退件 · 2022</p><h2>寄件人：郝倩</h2><p>信封底部已经破损，信纸从里面滑了出来。</p><blockquote>“如果你不能原谅我，请至少知道我的痛苦……但请相信我，这并不全是我的错。”</blockquote><p>沈望听顾盼提过这个名字，但从未见过她。</p></article>}
       {selected === "draft" && <article><p className="stamp">未兑现</p><h2>USD 20,000</h2><p>一张已经失效的银行本票。付款方是一家空壳咨询公司，备注只有：</p><code>HM-2217</code><blockquote>“收下它。忘记那天晚上。这对所有人都好。”</blockquote></article>}
       {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面：今天开始，不再只是搭档。</p></article>}
-      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "欢迎回来，顾盼" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>回国材料</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。请关闭窗口，从桌面进入她的电脑。</p></>}</article>}
+      {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>回国材料</span><span>画</span><span>待整理</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
   </div>;
 }
@@ -291,7 +325,7 @@ function Browser({ addEvidence, seen }: { addEvidence: (e: Evidence) => void; se
   const found = /harbor|港湾/i.test(query);
   return <div className="browser-view"><div className="address"><span>⌕</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="搜索 Harborwell Behavioral Services"/></div>
     <div className="browser-tabs"><span className="active">搜索</span><span>图片</span><span>新闻</span><small>安全搜索：开启</small></div>
-    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button></section> : <section className="search-results"><p>约 3,420 条结果（0.31 秒）</p><article className="web-result"><small>harborwell.org › programs › residential</small><h2>Harborwell Behavioral Services</h2><p>提供药物依赖、戒断管理与28天住院支持的行为健康机构。出于隐私保护，公开页面不展示患者诊断。</p><div className="result-card"><b>Residential Treatment Program</b><span>药物依赖住院治疗 · 28天</span></div></article><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已加入备忘录" : "确认线索：H.Q.可能是郝倩"}</button>{seen.includes("drug")&&<><a className="route-result" href="/hospital" target="_blank" rel="noopener noreferrer"><small>northharbormedical.org › patients › portal</small><b>MyNorthHarbor Patient Portal ↗</b><span>查看历史就诊、检验结果与已发布的临床文档。将在新标签页打开。</span></a><a className="route-result" href="/yuanfan" target="_blank" rel="noopener noreferrer"><small>yuanfancommunity.org</small><b>远帆社区互助会 ↗</b><span>新生支持、健康转介与成员登录。将在新标签页打开。</span></a></>}</section>}
+    {!found ? <section className="invoice"><p>最近浏览</p><h2>治疗订单 #HW-220214-HQ</h2><dl><dt>付款人</dt><dd>GU PAN</dd><dt>项目</dt><dd>Residential Treatment Program</dd><dt>入住人</dt><dd>H. Q.</dd><dt>金额</dt><dd>$12,480</dd></dl><button onClick={() => { setQuery("Harborwell Behavioral Services"); addEvidence("invoice"); }}>搜索机构名称</button></section> : <section className="search-results"><p>约 3,420 条结果（0.31 秒）</p><article className="web-result"><small>northharbormedical.org › harborwell › recovery</small><h2>Harborwell Behavioral Recovery</h2><p>North Harbor医疗网络下属康复项目，提供药物依赖评估、稳定干预和出院转介。</p><div className="result-card"><b>Historical record access</b><span>订单上的患者编号、日期与文件码可用于查询已发布记录</span></div></article><button className="primary dark" onClick={() => addEvidence("drug")}>{seen.includes("drug") ? "已确认订单属于康复项目" : "确认治疗机构"}</button>{seen.includes("drug")&&<a className="route-result" href="/hospital" target="_blank" rel="noopener noreferrer"><small>northharbormedical.org › patients › portal</small><b>MyNorthHarbor Medical & Recovery Records ↗</b><span>先查询H.Q.的康复记录；转介机构应从病例中继续发现。</span></a>}</section>}
   </div>;
 }
 
@@ -305,7 +339,7 @@ function GuFiles() {
     </aside>
     <section>
       {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
-      {file === "return" && <article><p className="stamp">未完成</p><h2>回国与复学</h2><ul><li>暂停学业申请.pdf</li><li>退租确认.pdf</li><li>回国航班_未同步.pdf</li><li>复学计划_草稿.docx</li></ul><p>所有文件都显示：她计划暂时离开，而不是永远放弃学业。</p></article>}
+      {file === "return" && <article><p className="stamp">未完成</p><h2>回国与复学</h2><ul><li>暂停学业申请.pdf</li><li>退租确认.pdf</li><li>回国航班_未同步.pdf</li></ul><p>所有文件都显示：她计划暂时离开，而不是永远放弃学业。</p></article>}
       {file === "art" && <article><p className="stamp">图片素材占位</p><h2>《向阳处》早期草稿</h2><div className="asset-slot">后续生成：顾盼画作 / 窗边植物 / 未完成旅行地图</div><p>文件备注：希望自卑的人，都有面对黑暗的勇气。</p></article>}
       {file === "todo" && <article><p className="stamp">17项未上传</p><h2>待整理</h2><ul><li>医院_患者编号_GP-221109.jpg</li><li>复诊卡_2022-11-09.pdf</li><li>检验条码_7304.png</li><li>HM-2217_未兑现.pdf</li><li>举报材料_03.tmp</li><li>酒吧页面缓存.dat</li></ul><p>大部分内容无法直接打开，需要从浏览器历史和聊天记录中寻找上下文。</p></article>}
       {file === "backup" && <article><p className="stamp">WECHAT FILES</p><h2>Backup_2022</h2><p>在线登录需要手机确认。顾盼在本机留下了一份离线聊天备份。</p><div className="locked-panel">迁移密码提示：左望右盼<br/><small>完成治疗订单调查后开放恢复谜题</small></div></article>}
@@ -318,10 +352,10 @@ function WeChatBackup({ seen, addEvidence }: { seen: Evidence[]; addEvidence: (e
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"hq"|"sw"|"letter">("hq");
   if (!open) return <div className="backup-view"><p className="stamp">本地备份 · Backup_2022</p><h2>迁移密码</h2><p>顾盼留下的提示只有四个字：<b>左望右盼</b></p><div className="cipher-grid"><span><b>1</b> / 7</span><span>6 / <b>0</b></span><span><b>2</b> / 9</span><span>8 / <b>1</b></span></div><p className="cipher-help">从左侧的“望”开始，再到右侧的“盼”，交替读取。</p><input value={code} onChange={(e)=>setCode(e.target.value)} maxLength={4} placeholder="四位迁移密码"/><button className="primary dark" onClick={()=>code==="1021"&&setOpen(true)}>恢复离线聊天</button>{code && code!=="1021" && <p className="hint">顺序不对。左望，右盼。</p>}</div>;
-  return <div className="wechat-backup"><aside><button className={tab==="hq"?"active":""} onClick={()=>setTab("hq")}>郝倩</button><button className={tab==="sw"?"active":""} onClick={()=>setTab("sw")}>沈望</button><button className={tab==="letter"?"active":""} onClick={()=>setTab("letter")}>分手信草稿</button></aside><section>
+  return <div className="wechat-backup"><aside><button className={tab==="hq"?"active":""} onClick={()=>setTab("hq")}><img src="/characters/hao-qian.png" alt="郝倩"/>郝倩</button><button className={tab==="sw"?"active":""} onClick={()=>setTab("sw")}><img src="/characters/shen-wang.png" alt="沈望"/>沈望</button><button className={tab==="letter"?"active":""} onClick={()=>setTab("letter")}><span className="draft-avatar">稿</span>分手信草稿</button></aside><section>
     {tab==="hq" && <article><p className="stamp">2022.10.28 · 事发次日</p><h2>你怎么回到家的？</h2><div className="transcript"><p><b>顾盼：</b>昨晚到底发生了什么？我为什么会在家？</p><p><b>郝倩：</b>我提前走了。你喝多了，应该是酒吧的人送你的。</p><p><b>顾盼：</b>他们怎么知道我住在哪里？我手机有密码，也没有叫车记录。</p><p><b>顾盼：</b>门没有被撬过。除了你，还有谁有我家的钥匙？</p><p><b>郝倩：</b>我只是把地址告诉他们。我真的没有跟着去。</p></div><button className="primary dark" onClick={()=>addEvidence("betrayal")}>{seen.includes("betrayal")?"矛盾已标记":"标记证词矛盾"}</button></article>}
     {tab==="sw" && <article><p className="stamp">语音通话 · 02分17秒</p><h2>没有说完的话</h2><div className="transcript"><p><b>顾盼：</b>昨晚在酒吧，我可能遇到了一些事……</p><p><b>沈望：</b>我早就说过那边酒吧很乱。真想去的话，至少等我过去，或者提前告诉我。</p><p><b>顾盼：</b>你说得对。是我不该去。</p></div><blockquote>未发送：我本来想告诉你，昨晚可能有人伤害了我。可是爸爸妈妈也问我为什么要去。你也这样问。</blockquote></article>}
-    {tab==="letter" && <article><p className="stamp">版本历史 · 4处异常字符</p><h2>分手信</h2><div className="breakup-letter"><p>沈望：</p><p>这段时间我想了很久。我们隔着时差，生活已经越来越不一<em>d</em>样。</p><p>我不想再等你，也不想让你<em>r</em>继续等我。</p><p>一直跑着实在太累了，我决定停下来。</p><p>请尊重我的选择，我需要安<em>u</em>静一会，不要来找我。</p><p>不是因为你做错了什么，只是我不再想和你一起计划以后。</p><p>到这里<em>g</em>吧。</p><p>顾盼</p></div><button className="primary dark" onClick={()=>addEvidence("breakup")}>{seen.includes("breakup")?"隐藏信息：DRUG":"提取异常字符"}</button></article>}
+    {tab==="letter" && <article><p className="stamp">版本历史 · 5处异常片段</p><h2>分手信</h2><div className="breakup-letter"><p>沈望：</p><p>这段时间我想了很久。我们隔着时差，生活已经越来越不一<em>w</em>样。</p><p>我不想再等你，也不想让你<em>x:</em>继续等我。</p><p>一直跑着实在太累了，我决定停<em>old</em>下来。</p><p>请尊重我的选择，我需要安<em>dr</em>静一会，不要来找我。</p><p>不是因为你做错了什么，只是我不再想和你一起计划以<em>iver</em>后。</p><p>到这里吧。</p><p>顾盼</p></div><button className="primary dark" onClick={()=>addEvidence("breakup")}>{seen.includes("breakup")?"隐藏信息：wx: olddriver":"提取异常片段"}</button>{seen.includes("breakup")&&<p className="cipher-help">这不是单词，而是一个可以在微信中搜索的账号。</p>}</article>}
   </section></div>;
 }
 
