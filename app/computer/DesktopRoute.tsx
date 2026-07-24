@@ -472,6 +472,9 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [driverJoined,setDriverJoined]=useState(false);
   const [openingStep,setOpeningStep]=useState(0);
   const [result,setResult]=useState<"hq"|"driver"|null>(null);
+  const [hqRequest,setHqRequest]=useState(false);
+  const [hqAnswer,setHqAnswer]=useState("");
+  const [hqError,setHqError]=useState(false);
   const [driverRequest,setDriverRequest]=useState(false);
   const [driverAnswer,setDriverAnswer]=useState("");
   const [driverError,setDriverError]=useState(false);
@@ -496,10 +499,14 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const searchContact=()=>{
     if(offline)return;
     const normalized=query.toLowerCase().replace(/^wx\s*:\s*/,"").trim();
-    setDriverRequest(false);setDriverError(false);
+    setHqRequest(false);setHqAnswer("");setHqError(false);setDriverRequest(false);setDriverError(false);
     if(normalized==="hqian_17")setResult("hq");
     else if(owner==="shen"&&normalized==="olddriver")setResult("driver");
     else setResult(null);
+  };
+  const verifyHqFriend=()=>{
+    if(hqAnswer.trim()!=="郝倩"){setHqError(true);return}
+    addFriend();
   };
   const joinDriverGroup=()=>{
     if(driverAnswer.replace(/\s/g,"")!=="风从北岸来"){setDriverError(true);return}
@@ -524,8 +531,8 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/shen-wang.png":owner==="gupan"?"/characters/gu-pan.png":"/characters/liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>setSection("chats")}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>setSection("contacts")}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments")}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>setSection("add")}>＋<small>添加</small></button></nav>
     {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>setChat(p.name)}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:current.name==="陈放"?<><WxBubble src="/characters/chen-fang.png" text="我查到的不是失踪记录。她家属在11月29日报过一起非正常死亡。警方到过现场。"/><WxBubble src="/characters/liu-han.png" mine text="死亡？那为什么她家还在传她要结婚？遗体现在在哪里？"/><WxBubble src="/characters/chen-fang.png" text="警方只确认了表面死因，不知道你说的三日拘禁。遗体后来由家属委托的礼仪公司接走。我给你开脱敏记录，授权码：CF-1203-LH"/><a className="wx-shared-link" href="/police" target="_blank" rel="noopener noreferrer"><i>警</i><span><b>临川公安 · 线索协查档案</b><small>死亡警情与移交记录 · 有效期2小时</small></span><em>打开 ↗</em></a></>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
     {section==="contacts"&&<section className="wx-contacts"><header>通讯录</header><button onClick={()=>setSection("add")}>＋　新的朋友</button>{people.map(p=><div key={p.name}><img src={p.src} alt={p.name}/><b>{p.name}</b><small>{p.note}</small></div>)}</section>}
-    {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setDriverRequest(false);setDriverError(false)}} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
-      {result==="hq"&&<article><img src="/characters/hao-qian.png" alt="郝倩"/><span><b>H.Q. · 郝倩</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:<button onClick={addFriend}>添加到通讯录</button>}</article>}
+    {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setDriverRequest(false);setDriverError(false)}} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
+      {result==="hq"&&<article className="wx-driver-result"><img src="/characters/hao-qian.png" alt="郝倩"/><span><b>H.Q. · 郝倩</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
       {result==="driver"&&<article className="wx-driver-result"><img src="/olddriver-group.svg" alt="老司机夜航群"/><span><b>Old Driver · 夜航入口</b><small>微信号：olddriver　仅通过群验证加入</small></span>{driverJoined?<em>已加入</em>:!driverRequest?<button onClick={()=>setDriverRequest(true)}>申请加入群聊</button>:<div className="wx-driver-challenge"><small>入群问题</small><b>2022 秋季夜路安全值班手册中的备用识别语是什么？</b><input value={driverAnswer} onChange={e=>{setDriverAnswer(e.target.value);setDriverError(false)}} placeholder="输入识别语"/><button onClick={joinDriverGroup}>提交答案</button>{driverError&&<p>识别语不正确。群主拒绝了本次申请。</p>}<em>提示：这个答案不在微信里。</em></div>}</article>}
       {!result&&query&&<p className="wx-no-result">未找到该用户。请检查完整微信号。</p>}
     </section>}
