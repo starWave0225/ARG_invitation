@@ -25,7 +25,7 @@ type EdgeResult = {
 
 const directFileImages:Record<string,PreviewImage>={
   "一封破损的信.pdf":{
-    src:"/evidence/hao-qian-letter.png",alt:"破损信封与郝倩的手写信"
+    src:"/evidence/hao-qian-letter.png",alt:"一封破损的手写信",hideCaption:true
   },
   "合照.jpg":{
     src:"/evidence/art-show-storage-copy.png",alt:"B-17寄存仓中的校园艺术展开幕合照",backText:"我的秘密"

@@ -470,7 +470,7 @@ function Storage({ seen, addEvidence, onLaptop, password, setPassword, hint, lap
     </aside>
     <section className="evidence-detail">
       {!selected && <div className="empty-state"><span>B-17</span><p>请选择一件物品进行整理</p></div>}
-      {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="破损信封与郝倩的手写信"/></article>}
+      {selected === "letter" && <article><img className="pc-evidence-image" src="/evidence/hao-qian-letter.png" alt="一封破损的手写信"/></article>}
       {selected === "memento" && <article><p className="stamp">隐藏信物 01</p><h2>左望右盼</h2><p>校园艺术展开幕合照。沈望站在画面左边，顾盼站在右边。</p><code>2018-10-21_左望右盼.jpg</code><p>照片背面右下角：我的秘密</p></article>}
       {selected === "laptop" && <article className="laptop-lock"><p className="stamp">GU PAN · LOCAL DEVICE</p><h2>{laptopOpen ? "设备已恢复" : "输入密码"}</h2>{!laptopOpen ? <><input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="八位数字" maxLength={8}/><button className="primary dark" onClick={unlock}>解锁</button>{hint && <p className="hint">密码提示：恋爱纪念日</p>}</> : <><div className="folder-list"><span>个人文件</span><span>向阳处</span><span>微信备份 🔒</span></div><p>系统恢复了顾盼最后一次休眠时的现场。</p><a className="storage-device-link" href="/computer/gupan" target="_blank" rel="noopener noreferrer">打开顾盼的旧电脑 ↗</a></>}</article>}
     </section>
