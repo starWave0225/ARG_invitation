@@ -22,8 +22,8 @@ export default function WeiboImage({kind,label,src}:{kind:WeiboImageKind;label:s
 
   return <>
     {kind==="wedding"?
-      <button type="button" className="hq-wedding-photo wb-image-trigger" onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid="weibo-image-wedding">
-        WEDDING · 2025<br/><small>婚礼照片预览</small>
+      <button type="button" className="hq-wedding-photo wb-image-trigger" style={src?{backgroundImage:`linear-gradient(#0000,#0008),url("${src}")`,backgroundPosition:"center",backgroundSize:"cover"}:undefined} onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid="weibo-image-wedding">
+        <span>WEDDING · 2025<br/><small>婚礼照片预览</small></span>
       </button>:
       kind==="lab"?
         <button type="button" className="wb-attachment wb-image-file" onClick={()=>setOpen(true)} aria-label={`放大查看：${label}`} data-testid="weibo-image-lab">
@@ -38,7 +38,7 @@ export default function WeiboImage({kind,label,src}:{kind:WeiboImageKind;label:s
         <button type="button" className="wb-image-lightbox-close" onClick={()=>setOpen(false)} aria-label="关闭大图">×</button>
         <figure onClick={event=>event.stopPropagation()}>
           {kind==="wedding"?
-            <div className="hq-wedding-photo wb-wedding-large">WEDDING · 2025<br/><small>婚礼照片预览</small></div>:
+            src?<img src={src} alt={label}/>:<div className="hq-wedding-photo wb-wedding-large">WEDDING · 2025<br/><small>婚礼照片预览</small></div>:
             <img src={src??imageSources[kind]} alt={label}/>
           }
           <figcaption>{label}</figcaption>
