@@ -11,7 +11,7 @@ export default function HaoQianWeibo(){
       <section className="wb-feed">
         <div className="wb-filter"><b>她的微博</b><span>按时间排序</span></div>
         <HqPost date="2025-10-18 13:26" text="终于把婚礼照片整理完。谢谢所有从不同城市赶来的朋友。" image/>
-        <HqPost date="2024-06-07 00:14" text="有些信寄出去以后就不应该再等回复。道歉的人已经尽力，原不原谅是另一回事。"/>
+        <HqPost date="2024-06-07 00:14" text="她回国不久，我就把那封信寄了出去。后来没有再写第二封。现在想想，道歉不是把话说完就算尽力，也不能要求对方一定回复。"/>
         <HqPost date="2023-02-15 22:09" text="戒掉一种依赖比想象中难。不是所有选择都是清醒的时候做出的，但人总要允许自己重新开始。"/>
         <HqPost date="2022-12-02 04:37" text="换了号码。以前认识的人如果还有必要联系，可以加新的微信。备注学校和姓名。" contact/>
         <HqPost date="2022-11-01 01:52" text="我也很痛苦。我当时根本走不了。为什么所有人都觉得只有一种受害者？" deleted/>
