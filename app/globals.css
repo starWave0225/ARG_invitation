@@ -505,3 +505,20 @@ button { cursor:pointer; }
 .shen-expiry-document .shen-expiry-notice{width:100%;margin:0}
 .shen-translation-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 12px;border:1px solid #b7c4cc;border-bottom:0;background:#e8f0f4;color:#425967}
 .shen-translation-banner b{font-size:10px;letter-spacing:.1em}.shen-translation-banner span{color:#6d7d85;font:8px monospace;text-align:right}
+
+/* Weibo posts are static records; only their attached images are interactive. */
+.wb-feed>article{cursor:default}
+.wb-feed>article:hover{box-shadow:none}
+.gp-wb-dark .wb-feed>article:hover{box-shadow:none;background:#303336}
+.gp-wb-dark .wb-feed>article.private:hover{background:#353432}
+.wb-photo{width:100%;border:0;text-align:left;cursor:zoom-in}
+.wb-image-file{width:100%;border:0;text-align:left;cursor:zoom-in}
+.wb-image-trigger:focus-visible,.wb-image-file:focus-visible{outline:2px solid #f7691d;outline-offset:2px}
+.hq-wedding-photo.wb-image-trigger{width:100%;border:0;cursor:zoom-in}
+.wb-image-lightbox{position:fixed;z-index:60;inset:0;display:grid;place-items:center;padding:48px;background:#080a0ce8;backdrop-filter:blur(8px);cursor:zoom-out}
+.wb-image-lightbox figure{max-width:min(1100px,94vw);max-height:88vh;margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:default}
+.wb-image-lightbox figure img{display:block;max-width:100%;max-height:80vh;object-fit:contain;border:1px solid #ffffff33;box-shadow:0 22px 70px #000b}
+.wb-image-lightbox figcaption{color:#e7e7e7;font-size:11px}
+.wb-image-lightbox-close{position:fixed;z-index:1;right:24px;top:20px;width:42px;height:42px;border:1px solid #ffffff66;border-radius:50%;background:#111a;color:#fff;font-size:28px;line-height:1;cursor:pointer}
+.wb-wedding-large{width:min(900px,84vw);height:min(620px,70vh);cursor:default;font-size:42px;box-shadow:0 22px 70px #0009}
+.wb-wedding-large small{font-size:13px}

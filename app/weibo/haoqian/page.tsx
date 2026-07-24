@@ -1,4 +1,5 @@
 import CelebrityFollows from "../CelebrityFollows";
+import WeiboImage from "../WeiboImage";
 
 export default function HaoQianWeibo(){
   return <main className="wb-route hq-wb">
@@ -22,5 +23,5 @@ export default function HaoQianWeibo(){
 }
 
 function HqPost({date,text,image,contact,deleted}:{date:string;text:string;image?:boolean;contact?:boolean;deleted?:boolean}){
-  return <article className={deleted?"deleted-post":""}><img src="/characters/hao-qian.png" alt="郝倩"/><div><header><b>H_Qian17</b><small>{date}　来自 iPhone客户端　IP属地：海外</small></header><p>{text}</p>{image&&<div className="hq-wedding-photo">WEDDING · 2025<br/><small>婚礼照片预览</small></div>}{contact&&<div className="wb-attachment">微信号更新：<b>hqian_17</b><small>此账号与手机号均已更换</small></div>}{deleted&&<small className="hq-deleted">该微博后来被作者删除 · 网页缓存仍可见</small>}<footer><span>☆ 收藏</span><span>↗ 转发</span><span>□ 评论</span><span>♡ 赞</span></footer></div></article>
+  return <article className={deleted?"deleted-post":""}><img src="/characters/hao-qian.png" alt="郝倩"/><div><header><b>H_Qian17</b><small>{date}　来自 iPhone客户端　IP属地：海外</small></header><p>{text}</p>{image&&<WeiboImage kind="wedding" label="婚礼照片预览"/>}{contact&&<div className="wb-attachment">微信号更新：<b>hqian_17</b><small>此账号与手机号均已更换</small></div>}{deleted&&<small className="hq-deleted">该微博后来被作者删除 · 网页缓存仍可见</small>}<footer><span>☆ 收藏</span><span>↗ 转发</span><span>□ 评论</span><span>♡ 赞</span></footer></div></article>
 }
