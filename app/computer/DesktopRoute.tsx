@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import GupanWeibo from "../weibo/GupanWeibo";
 
 type Owner = "shen" | "gupan" | "liuhan";
 type GameMode = "normal" | "hardcore";
@@ -90,7 +91,7 @@ const configs = {
   gupan:{
     owner:"顾盼",device:"GP-LAPTOP-2018",os:"Windows 10 家庭中文版",time:"03:42",date:"2022年11月17日 星期四",
     wallpaper:"gp",quote:"希望自卑的人，也能拥有面对黑暗的勇气。",
-    apps:[["此电脑","▣","files"],["个人文件","📁","personal"],["微信","💬","wechat"],["Outlook","✉","mail"],["浏览器","◎","browser"],["回收站","♲","trash"]],
+    apps:[["此电脑","▣","files"],["个人文件","📁","personal"],["微信","💬","wechat"],["Outlook","✉","mail"],["浏览器","◎","browser"],["微博","微","weibo"],["回收站","♲","trash"]],
   },
   liuhan:{
     owner:"刘涵",device:"LIUHAN-DESKTOP",os:"Windows 11 家庭中文版",time:"22:06",date:"2025年12月3日 星期三",
@@ -200,7 +201,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
 }
 
 function PcWindow({owner,app,gameMode,close}:{owner:Owner;app:string;gameMode:GameMode|null;close:()=>void}){
-  const titles:Record<string,string>={wechat:"微信",mail:"Outlook",files:"文件资源管理器",storage:"B-17 寄存仓",memo:"备忘录",diary:"我的日记",case:"调查档案",trash:"回收站",personal:"个人文件",browser:"Microsoft Edge",qq:"QQ",map:"地图",police:"案件协作",downloads:"下载"};
+  const titles:Record<string,string>={wechat:"微信",mail:"Outlook",files:"文件资源管理器",storage:"B-17 寄存仓",memo:"备忘录",diary:"我的日记",case:"调查档案",trash:"回收站",personal:"个人文件",browser:"Microsoft Edge",weibo:"微博",qq:"QQ",map:"地图",police:"案件协作",downloads:"下载"};
   const isExplorer=["files","storage","personal","downloads"].includes(app);
   const [previewImage,setPreviewImage]=useState<PreviewImage|null>(null);
   const [imageFlipped,setImageFlipped]=useState(false);
@@ -243,6 +244,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
   if(app==="mail")return <ShenMailbox storageReached={storageReached}/>;
   if(app==="wechat"&&owner==="gupan")return <GupanWeChatArchive/>;
   if(app==="wechat")return <WeChatDesktop owner={owner}/>;
+  if(app==="weibo"&&owner==="gupan")return <GupanWeibo embedded viewer="顾盼"/>;
   if(app==="browser")return <EdgeBrowser owner={owner}/>;
   if(app==="qq")return <div className="pc-document"><small>QQ · 情侣空间快捷入口</small><h2>左望右盼</h2><p>沈望与顾盼的情侣空间。上次访问：2022年1月7日。</p><div className="pc-qzone-card"><img src="/characters/shen-wang.png" alt="沈望"/><b>♥</b><img src="/characters/gu-pan.png" alt="顾盼"/><span>有一条来自匿名访客的新留言</span></div><a href="/qzone" target="_blank" rel="noopener noreferrer">在新标签页打开QQ情侣空间 ↗</a></div>;
   if(app==="map")return <MapApp owner={owner}/>;
