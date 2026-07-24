@@ -1,7 +1,22 @@
+"use client";
+
+import {useState} from "react";
 import CelebrityFollows from "../CelebrityFollows";
 import WeiboImage from "../WeiboImage";
+import WeiboSortToggle,{type WeiboSortOrder} from "../WeiboSortToggle";
+
+type HqPostData={date:string;text:string;image?:boolean;contact?:boolean;deleted?:boolean};
+const posts:HqPostData[]=[
+  {date:"2025-10-18 13:26",text:"终于把婚礼照片整理完。谢谢所有从不同城市赶来的朋友。",image:true},
+  {date:"2024-06-07 00:14",text:"她回国不久，我就把那封信寄了出去。后来没有再写第二封。现在想想，道歉不是把话说完就算尽力，也不能要求对方一定回复。"},
+  {date:"2023-02-15 22:09",text:"戒掉一种依赖比想象中难。不是所有选择都是清醒的时候做出的，但人总要允许自己重新开始。"},
+  {date:"2022-12-02 04:37",text:"换了号码。以前认识的人如果还有必要联系，可以加新的微信。备注学校和姓名。",contact:true},
+  {date:"2022-11-01 01:52",text:"我也很痛苦。我当时根本走不了。为什么所有人都觉得只有一种受害者？",deleted:true},
+];
 
 export default function HaoQianWeibo(){
+  const [sortOrder,setSortOrder]=useState<WeiboSortOrder>("asc");
+  const visible=[...posts].sort((a,b)=>sortOrder==="asc"?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
   return <main className="wb-route hq-wb">
     <header className="wb-top"><b><i>微</i>微博</b><div className="wb-search">⌕ <input placeholder="搜微博"/></div><nav>首页　视频　发现　游戏</nav><span>沈望　⚙</span></header>
     <section className="wb-cover hq-cover"><div className="wb-profile"><img src="/characters/hao-qian.png" alt="郝倩"/><h1>H_Qian17</h1><p>@HQ_abroad　♀</p><small>生活要向前看。旧事不必反复解释。</small></div></section>
@@ -9,12 +24,8 @@ export default function HaoQianWeibo(){
     <div className="wb-layout hq-layout">
       <aside><section><h3>个人资料</h3><p>所在地：海外</p><p>教育信息：Northbridge University</p><p>感情状况：已婚</p></section></aside>
       <section className="wb-feed">
-        <div className="wb-filter"><b>她的微博</b><span>按时间排序</span></div>
-        <HqPost date="2025-10-18 13:26" text="终于把婚礼照片整理完。谢谢所有从不同城市赶来的朋友。" image/>
-        <HqPost date="2024-06-07 00:14" text="她回国不久，我就把那封信寄了出去。后来没有再写第二封。现在想想，道歉不是把话说完就算尽力，也不能要求对方一定回复。"/>
-        <HqPost date="2023-02-15 22:09" text="戒掉一种依赖比想象中难。不是所有选择都是清醒的时候做出的，但人总要允许自己重新开始。"/>
-        <HqPost date="2022-12-02 04:37" text="换了号码。以前认识的人如果还有必要联系，可以加新的微信。备注学校和姓名。" contact/>
-        <HqPost date="2022-11-01 01:52" text="我也很痛苦。我当时根本走不了。为什么所有人都觉得只有一种受害者？" deleted/>
+        <div className="wb-filter"><b>她的微博</b><WeiboSortToggle order={sortOrder} onChange={setSortOrder}/></div>
+        {visible.map(post=><HqPost key={post.date} {...post}/>)}
       </section>
       <aside className="wb-right"><section className="wb-people-card"><h3>可能认识的人</h3><div><img src="/characters/gu-pan.png" alt="顾盼"/><span><b>向阳生长</b><small>共同关注 2</small></span></div><CelebrityFollows shift={1} compact/></section><section><h3>关系线索</h3><p>她在事发后更换了手机号和微信号；2024年之后的动态反复强调“不再解释”。</p></section></aside>
     </div>
