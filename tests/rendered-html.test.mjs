@@ -357,6 +357,10 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.match(guide, /与恒慕机构完成最终对质/);
   assert.match(guide, /第三结局：嫁/);
   assert.match(guide, /隐藏结局只能从这封信的底部进入/);
+  assert.match(guide, /调查接力与四个结局/);
+  assert.match(guide, /01\/04[\s\S]*02\/04[\s\S]*03\/04[\s\S]*04\/04/);
+  assert.match(guide, /音乐沿用当前播放进度/);
+  assert.doesNotMatch(guide, /真结局：向阳而生/);
   assert.match(guide, /YQ-730419<\/code> 或 <code>YQ730419/);
   assert.match(hengmu, /11:42完成现场处置|现场处置结束后/);
   assert.match(hengmu, /<time>11:48<\/time>[\s\S]*?<time>12:06<\/time>[\s\S]*?<time>12:26<\/time>/);
@@ -365,7 +369,7 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.doesNotMatch(ending, /<i>12\.03<\/i>/);
   assert.match(prototype, /页面直接展示18条同期节点记录，不提供输入框、结果提示或目标行高亮/);
   assert.match(prototype, /输入该编号后，系统直接返回两份关联警情档案/);
-  assert.match(guide, /2022年11月8日|11月8日聚会侵害/);
+  assert.match(guide, /2022年10月27日|10月27日聚会侵害/);
   assert.match(guide, /2025年12月2日/);
   await access(new URL("../public/characters/hengmu-case-manager.svg", import.meta.url));
   await access(new URL("../public/audio/bgm/ending-xi.mp3", import.meta.url));
