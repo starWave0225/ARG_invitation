@@ -130,9 +130,9 @@ export default function HiddenEndingPage(){
     <div className="hidden-ending-film-grain"/>
 
     {status==="gate"&&<section className="hidden-ending-gate">
-      <small>HIDDEN ENDING · 镜花水月</small>
-      <h1>在梦里，他们拥有完整的一生</h1>
-      <p>请打开声音。接下来的约两分钟，是一场没有发生过的未来。</p>
+      <small>04/04</small>
+      <h1>HIDDEN ENDING · 镜花水月</h1>
+      <p>请打开声音。在梦里，他们拥有完整的一生</p>
       <button type="button" onClick={start}><span>▶</span>播放隐藏结局</button>
       <em>配乐：《好久不见》· 陈奕迅</em>
     </section>}
