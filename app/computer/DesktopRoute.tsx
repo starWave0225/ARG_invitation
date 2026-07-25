@@ -109,12 +109,14 @@ function getInvestigationNextHint(){
   if(typeof window==="undefined")return "完成与刘涵的微信对话。";
   const prototypeSeen=readPrototypeSeen();
   const openingStep=Number(localStorage.getItem("jia-lh-opening-step-v3")||0);
+  const hqTreatmentSeen=prototypeSeen.includes("hq-treatment");
+  const hqFirstRoundComplete=localStorage.getItem("jia-hq-first-round-complete")==="true";
   return openingStep<8?"完成与刘涵的微信对话。":
     localStorage.getItem("jia-storage-reached")!=="true"?"读取寄存仓到期邮件，在地图中搜索寄存中心地址。":
     localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
     localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"尝试登录顾盼旧电脑。":
-    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"查询遗留的医疗记录和账单；看看旧电脑上还有无可用信息。":
-    localStorage.getItem("jia-hq-first-round-complete")!=="true"?"使用相关证据和郝倩完成首轮对质，获悉当年事件的相关组织。":
+    !hqTreatmentSeen&&!hqFirstRoundComplete?"查询遗留的治疗记录和账单；看看旧电脑上还有无可用信息。":
+    !hqFirstRoundComplete?"使用相关证据和郝倩完成首轮对质，获悉当年事件的相关组织。":
     localStorage.getItem("jia-hd-added")!=="true"?"与远帆取得联系。":
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
     localStorage.getItem("jia-womandriver-site-found")!=="true"?"根据老司机夜航群的提示解锁关键词。":
@@ -466,13 +468,19 @@ function CaseArchive({mode}:{mode:GameMode|null}){
   void revision;
   const prototypeSeen=readPrototypeSeen();
   const openingStep=Number(localStorage.getItem("jia-lh-opening-step-v3")||0);
+  const medicalSeen=prototypeSeen.includes("medical");
+  const hqTreatmentSeen=prototypeSeen.includes("hq-treatment");
+  const medicalReferralDetail=medicalSeen&&hqTreatmentSeen
+    ?"顾盼曾报告意识丧失、记忆缺失及疑似药物促成的侵犯，并保存了相关证据；她也承担了郝倩的治疗费用，相关转介编号指向远帆社区互助会。"
+    :medicalSeen
+      ?"顾盼曾报告意识丧失、记忆缺失及疑似药物促成的侵犯，并保存了相关证据。"
+      :"顾盼承担了郝倩的治疗费用，相关转介编号指向远帆社区互助会。";
   const facts=[
     {ready:openingStep>0,title:"顾盼可能已经回国",detail:"刘涵从老小区听到了顾家的婚讯。"},
     {ready:localStorage.getItem("jia-storage-reached")==="true",title:"寄存仓身份核验完成",detail:"登记人为顾盼，授权取件人为沈望；寄存物即将进入到期清理流程。"},
     {ready:localStorage.getItem("jia-gupan-pc-unlocked")==="true",title:"顾盼旧电脑已经挂载",detail:"设备最后活动时间停在2022年11月17日，仍需使用恋爱纪念日登录。"},
     {ready:localStorage.getItem("jia-gupan-computer-unlocked")==="true",title:"旧电脑登录成功",detail:"个人文件和离线微信备份已经可以继续调查。"},
-    {ready:prototypeSeen.includes("medical"),title:"顾盼的医疗记录",detail:"她曾报告意识丧失、记忆缺失及疑似药物促成的侵犯，并保存了相关证据。"},
-    {ready:prototypeSeen.includes("hq-treatment"),title:"郝倩的治疗与远帆转介",detail:"顾盼承担了治疗费用，转介编号指向一个名为远帆社区互助会的机构。"},
+    {ready:medicalSeen||hqTreatmentSeen,title:"医疗记录与远帆转介",detail:medicalReferralDetail},
     {ready:localStorage.getItem("jia-yuanfan-site-access")==="true",title:"远帆学生网站权限",detail:"韩铎核验学生资料后，为我们开通了成员栏目与站内搜索。"},
     {ready:localStorage.getItem("jia-olddriver-group")==="true",title:"老司机夜航群",detail:"汽车黑话并非讨论驾驶，而是留学生从事迷奸并上传偷拍视频的非法勾当。"},
     {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"NIGHTDRIVE 隐藏站记录",detail:"YF-HQ-0214指向郝倩的遭遇，汇款单编号SD-8845127指向顾盼；两组记录相关联并互相印证。"},
