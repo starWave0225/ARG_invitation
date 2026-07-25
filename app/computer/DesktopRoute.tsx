@@ -113,7 +113,7 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-storage-reached")!=="true"?"读取B-17到期邮件，在地图中搜索寄存中心地址。":
     localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
     localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"从“我的日记”确认恋爱纪念日，尝试登录顾盼旧电脑。":
-    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"检查顾盼的个人文件，并分别查询两份医疗记录。":
+    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"先查询顾盼的医疗记录；再从顾盼微博进入H.Q.微博确认真实姓名，用账单编号查询郝倩的康复记录。":
     localStorage.getItem("jia-hq-first-round-complete")!=="true"?"使用医疗记录与郝倩完成首轮对质，取得她发送的远帆官网链接。":
     localStorage.getItem("jia-hd-added")!=="true"?"打开远帆“联系我们”，取得韩铎的微信号，再到微信“添加”中搜索。":
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
@@ -1083,6 +1083,7 @@ function LiuHanDialogue(){
 
 function LiuHanFarewellDialogue(){
   const [ready,setReady]=useState(false);
+  const [openingStep,setOpeningStep]=useState(0);
   const [step,setStep]=useState(0);
   const [introPlaying,setIntroPlaying]=useState(false);
   const [animatedStep,setAnimatedStep]=useState<number|null>(null);
@@ -1090,6 +1091,7 @@ function LiuHanFarewellDialogue(){
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
+      setOpeningStep(Math.max(0,Math.min(liuHanOpeningExchanges.length,Number(localStorage.getItem("jia-lh-opening-step-v3")||0))));
       setStep(Math.max(0,Math.min(liuHanFarewellExchanges.length,Number(localStorage.getItem("jia-ending-two-briefing-step")||0))));
       const shouldPlayIntro=localStorage.getItem("jia-ending-two-briefing-intro-seen")!=="true";
       setIntroPlaying(shouldPlayIntro);
@@ -1131,6 +1133,14 @@ function LiuHanFarewellDialogue(){
   return <section className="wx-lh-dialogue wx-lh-farewell">
     <header><button><img src="/characters/wechat-liu-han.png" alt="刘涵"/><span><b>刘涵</b><small>微信号：liuhan_lc</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
+      <div className="wx-system">以下为你与刘涵的聊天</div>
+      <WxBubble src="/characters/liu-han.png" text="还没休息？"/>
+      {liuHanOpeningExchanges.slice(0,openingStep).map((exchange,index)=><div className="wx-exchange" key={`opening-${index}`}>
+        <WxBubble src="/characters/shen-wang.png" mine text={exchange.reply}/>
+        <WxBubble src="/characters/liu-han.png" text={exchange.response}/>
+        {exchange.followup&&<WxBubble src="/characters/liu-han.png" text={exchange.followup}/>}
+      </div>)}
+      {openingStep===liuHanOpeningExchanges.length&&<div className="wx-system">沈望已前往海外北港的寄存中心</div>}
       <div className="wx-system">今天 03:17</div>
       <TimedMessages play={introPlaying} interval={820} onReveal={scrollToLatest} onComplete={finishIntro}>
         <WxBubble src="/characters/liu-han.png" text="沈望，你先别订回程。"/>
@@ -1180,19 +1190,23 @@ function LiuHanOpeningDialogue(){
 
 function ShenWangOpeningMirror(){
   const [step,setStep]=useState(0);
+  const [farewellStep,setFarewellStep]=useState(0);
   const [postEnding,setPostEnding]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const sync=()=>{
       setStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0));
-      setPostEnding(localStorage.getItem("jia-ending-two-complete")==="true");
+      const endingComplete=localStorage.getItem("jia-ending-two-complete")==="true";
+      const savedFarewellStep=Number(localStorage.getItem("jia-ending-two-briefing-step")||0);
+      setFarewellStep(endingComplete?liuHanFarewellExchanges.length:Math.max(0,Math.min(liuHanFarewellExchanges.length,savedFarewellStep)));
+      setPostEnding(endingComplete);
     };
     const frame=window.requestAnimationFrame(sync);
     window.addEventListener("storage",sync);
     window.addEventListener("jia-progress",sync);
     return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
   },[]);
-  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"auto"})});return()=>window.cancelAnimationFrame(frame)},[step]);
+  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"auto"})});return()=>window.cancelAnimationFrame(frame)},[step,farewellStep,postEnding]);
   return <section className="wx-lh-dialogue wx-lh-mirror">
     <header><button><img src="/characters/wechat-shen-wang.png" alt="沈望"/><span><b>沈望</b><small>微信号：zw_1021</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
@@ -1201,6 +1215,15 @@ function ShenWangOpeningMirror(){
       {liuHanOpeningExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}><WxBubble src="/characters/shen-wang.png" text={exchange.reply}/><WxBubble src="/characters/liu-han.png" mine text={exchange.response}/>{exchange.followup&&<WxBubble src="/characters/liu-han.png" mine text={exchange.followup}/>}</div>)}
       {step===liuHanOpeningExchanges.length&&<div className="wx-system">对话结束 · 沈望已决定前往海外北港的寄存中心</div>}
       {postEnding&&<>
+        <div className="wx-system">第二结局之前 · 今天 03:17</div>
+        <WxBubble src="/characters/liu-han.png" mine text="沈望，你先别订回程。"/>
+        <WxBubble src="/characters/liu-han.png" mine text="我妈刚去顾家问过。婚宴的说法根本不对，顾家这几天一直关着门。"/>
+        <WxBubble src="/characters/liu-han.png" mine text="陈放帮我确认，顾盼11月29日在临川青槐区有过一通只接通三秒的报警电话。之后，再没有任何活动记录。"/>
+        <WxBubble src="/characters/liu-han.png" mine text="沈望，我觉得事情不对。你还在北港吗？"/>
+        {liuHanFarewellExchanges.slice(0,farewellStep).map((exchange,index)=><div className="wx-exchange" key={`farewell-${index}`}>
+          <WxBubble src="/characters/shen-wang.png" text={exchange.reply}/>
+          {exchange.responses.map(response=><WxBubble key={response} src="/characters/liu-han.png" mine text={response}/>)}
+        </div>)}
         <div className="wx-system">第二结局之后 · 2025年12月4日 05:52</div>
         <WxBubble src="/characters/shen-wang.png" text="她为什么会死？"/>
         <WxBubble src="/characters/liu-han.png" mine text="我不知道。但11月29日那通没有接完的报警电话，不该只有三秒。"/>
