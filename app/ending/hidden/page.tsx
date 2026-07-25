@@ -148,11 +148,11 @@ export default function HiddenEndingPage(){
     <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
     <div className="hidden-ending-film-grain"/>
 
-    {status==="gate"&&<section className="hidden-ending-gate">
+    {status==="gate"&&<section className="hidden-ending-gate late-flowers-gate">
       <small>04/04</small>
       <h1>HIDDEN ENDING · 镜花水月</h1>
-      <p>请打开声音。在梦里，他们拥有完整的一生</p>
-      <button type="button" onClick={start}><span>▶</span>播放隐藏结局</button>
+      <p>在梦里，他们拥有完整的一生</p>
+      <button type="button" onClick={start}>▶播放隐藏结局</button>
       <em>配乐：《好久不见》· 陈奕迅</em>
     </section>}
 

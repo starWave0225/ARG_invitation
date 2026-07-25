@@ -20,58 +20,57 @@ const endingBeats:EndingBeat[]=[
     from:0,
     to:7,
     chapter:"第三结局",
-    title:"喜",
-    text:"红纸写下婚约以前，没有人问过她愿不愿意。"
+    title:"嫁",
+    text:"红纸写下婚约，尘缘落定"
   },
   {
     from:7,
     to:18,
     chapter:"壹 · 囍字未干",
-    text:"回国以后，顾盼的父母收走了她的护照和手机，把门从外面锁上。他们说，这是一门能让全家重新体面的婚事。"
+    text:"回国以后，顾盼的父母收走了她的护照和手机，把门严严锁上。\n他们说，这是一门能让全家重新体面的婚事。"
   },
   {
     from:18,
     to:29,
     chapter:"壹 · 囍字未干",
-    text:"顾盼一次次拒绝，一次次被告知：经历过那些事，还有人肯娶，就应该知足。她的名字写在合同里，唯独她的意见不在。"
+    text:"顾盼的拒绝，换来的只有忠告：\n经历过那些事，还有人肯娶，就应该知足。"
   },
   {
     from:29,
     to:39,
     chapter:"贰 · 人已不在",
-    text:"长期的拘禁与逼迫最终夺走了她。可死亡没有终止那场婚姻，反而让另一份更加荒诞的委托得以开始。"
+    text:"长期的拘禁与逼迫最终夺走了她求生的意识。\n可死亡没有终止婚姻的买卖，反而让另一份更加荒诞的委托得以开始。"
   },
   {
     from:39,
     to:50,
     chapter:"贰 · 阴契",
-    text:"红线、纸人、牌位、花轿。恒慕把顾盼称作“标的”，把遗体称作“交付”，把六十万元写成一桩所谓的圆满方案。"
+    text:"红线、纸人、牌位、花轿。\n顾盼就是那个新的新娘，数十万元，一桩圆满。"
   },
   {
     from:50,
     to:61,
     chapter:"叁 · 赶到",
-    text:"沈望和刘涵循着转运记录赶到永安礼仪园。喜乐已经响起，东区静安厅的门正在合上。",
-    quote:"刘涵：警察已经在路上。"
+    text:"沈望和刘涵循着记录赶到永安礼仪园。\n喜乐已经响起，东区静安厅的门正在合上。",
+    quote:"刘涵：叫警察来！快！"
   },
   {
     from:61,
     to:72,
     chapter:"叁 · 破门",
-    text:"他们掀翻拦在门前的桌椅，和守在现场的人扭打在一起。沈望只说了一句话。",
-    quote:"沈望：先把门打开。"
+    text:"他们掀翻拦在门前的桌椅，和守在现场的人扭打在一起。\n沈望的拳头如雨点般，打在每一个看客的身上。"
   },
   {
     from:72,
     to:83,
     chapter:"肆 · 收网",
-    text:"警灯照进礼仪厅。合同、账本、硬盘和转运记录被逐一封存。父母、恒慕人员与参与交易的中间人被带离现场。"
+    text:"警灯照进礼仪厅。合同、账本、硬盘所有证据被逐一封存。\n父母、恒慕人员与参与交易的中间人被带离现场。"
   },
   {
     from:83,
     to:92,
     chapter:"终 · 天亮",
-    text:"那一晚，他们终于没有再次迟到。被当作婚约、商品与档案编号的顾盼，重新以自己的名字进入了案卷。"
+    text:"那一晚，他们挽救了最后的尊严。\n被当作婚约商品的顾盼，重新以自己的名字进入了案卷。"
   }
 ];
 
@@ -170,7 +169,6 @@ export default function XiEndingPage(){
     const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
     const muted=localStorage.getItem("arg-music-muted")==="true";
     baseVolumeRef.current=muted?0:Math.min(.58,master);
-    audio.currentTime=0;
     audio.volume=baseVolumeRef.current;
     elapsedBeforePauseRef.current=0;
     setTime(0);
@@ -226,7 +224,7 @@ export default function XiEndingPage(){
       <h1>第三结局 · 嫁</h1>
       <p>一纸红喜，盖不住她自己的名字。</p>
       <button type="button" onClick={start}>进入永安礼仪园　→</button>
-      <em>BGM · 葛东琪《囍》· 从头播放</em>
+      <em>BGM · 葛东琪《囍》</em>
     </section>}
 
     {status==="playing"&&<section className="xi-ending-cinema" aria-live="polite">
@@ -249,7 +247,7 @@ export default function XiEndingPage(){
       <article className="xi-ending-copy" key={`${beat.from}-${beat.text}`}>
         <small>{beat.chapter}</small>
         {beat.title&&<h1>{beat.title}</h1>}
-        <p>{beat.text}</p>
+        <p style={{whiteSpace:"pre-line"}}>{beat.text}</p>
         {beat.quote&&<blockquote>{beat.quote}</blockquote>}
       </article>
 
