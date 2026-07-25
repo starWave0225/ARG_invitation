@@ -119,6 +119,8 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
     localStorage.getItem("jia-womandriver-site-found")!=="true"?"根据老司机夜航群的提示查看远帆活动日历，按活动序号解出站内搜索词。":
     localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"打开远帆返回的隐藏网站，搜索YF-HQ-0214；再使用SD-8845127或HM-2217查找顾盼。":
+    localStorage.getItem("jia-hq-testimony-secured")!=="true"?(localStorage.getItem("jia-ending-one-complete")==="true"?"第一结局已经完成。回到郝倩微信，可从出庭选择处继续调查。":"返回郝倩微信，决定是否继续要求她出庭作证。"):
+    localStorage.getItem("jia-ending-two-complete")!=="true"?"打开刘涵发来的新消息，和他一起前往临川寻找顾盼。":
     localStorage.getItem("jia-liuhan-phone-obtained")!=="true"?"切换到刘涵电脑，利用残缺地址和IP记录定位顾盼。":
     localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查旧请柬和服务码，追查恒慕的方案变更。":
     localStorage.getItem("jia-liuhan-line-complete")!=="true"?"回到刘涵微信，使用陈放提供的协查授权，查看两条关联警情记录。":
@@ -176,6 +178,13 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("storage",syncMode);window.removeEventListener("jia-game-mode-change",syncMode)};
   },[]);
   useEffect(()=>{
+    const frame=window.requestAnimationFrame(()=>{
+      const params=new URLSearchParams(window.location.search);
+      if(params.get("app")==="wechat")setActive("wechat");
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[owner]);
+  useEffect(()=>{
     const update=()=>setSystemTime(new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date()));
     update();
     const timer=window.setInterval(update,1000);
@@ -189,6 +198,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       {key:"jia-yuanfan-site-access",seen:"jia-notified-yuanfan-access",title:"远帆网站权限",body:"韩铎已为你开通成员栏目与站内搜索"},
       {key:"jia-hq-added",seen:"jia-notified-hq",title:"H.Q. · 郝倩",body:"你们已经成为好友，可以开始聊天了"},
       {key:"jia-hd-added",seen:"jia-notified-hd",title:"韩铎",body:"新的联系人已出现在微信中"},
+      {key:"jia-ending-two-briefing-ready",seen:"jia-notified-ending-two-briefing",title:"刘涵",body:"沈望，你先别订回程。顾盼这边出事了。"},
     ];
     const check=()=>{
       const hasProgress=updates.some(item=>localStorage.getItem(item.key)==="true")||localStorage.getItem("jia-storage-reached")==="true"||localStorage.getItem("jia-gupan-pc-unlocked")==="true";
@@ -577,6 +587,14 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [sent,setSent]=useState<{who:string;text:string}[]>([]);
   const messagesRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{const sync=()=>{setAdded(localStorage.getItem("jia-hq-added")==="true");setHdAdded(localStorage.getItem("jia-hd-added")==="true");setDriverJoined(localStorage.getItem("jia-olddriver-group")==="true");setOpeningStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0))};sync();window.addEventListener("jia-progress",sync);window.addEventListener("storage",sync);return()=>{window.removeEventListener("jia-progress",sync);window.removeEventListener("storage",sync)}},[]);
+  useEffect(()=>{
+    if(owner!=="shen"||!added)return;
+    const frame=window.requestAnimationFrame(()=>{
+      const params=new URLSearchParams(window.location.search);
+      if(params.get("chat")==="haoqian"){setSection("chats");setChat("郝倩")}
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[owner,added]);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=messagesRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"})});return()=>window.cancelAnimationFrame(frame)},[chat,sent.length]);
   const people=owner==="shen"?[
     {name:"刘涵",src:"/characters/wechat-liu-han.png",note:"她回国了？"},
@@ -650,8 +668,8 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
       {!result&&query&&<p className="wx-no-result">未找到该用户。请检查完整微信号。</p>}
     </section>}
     {section==="moments"&&<section className="wx-moments"><div className="wx-moments-cover"><span><b>{momentName}</b><img alt={momentName} src={momentAvatar}/></span></div>{momentProfile?<><div className="wx-personal-moments-label"><button onClick={()=>{setMomentProfile(null);setSection("moments")}}>‹ 返回朋友圈</button><span>{momentName}的朋友圈</span></div>{personalMoments[momentName]?.length>0?personalMoments[momentName].map((item,index)=><Moment key={`${momentName}-${index}`} src={momentAvatar} name={momentName} {...item}/>):<div className="wx-empty-moments">该用户暂时没有公开动态。</div>}</>:<>{personalMoments[selfName].map((item,index)=><Moment key={`${selfName}-${index}`} src={profileData[selfName].src} name={selfName} {...item}/>)}{owner==="shen"&&hdAdded&&personalMoments.韩铎.map((item,index)=><Moment key={`韩铎-${index}`} src={profileData.韩铎.src} name="韩铎" {...item}/>) }{owner==="shen"&&added&&personalMoments.郝倩.map((item,index)=><Moment key={`郝倩-${index}`} src={profileData.郝倩.src} name="郝倩" {...item}/>)}</>}</section>}
-    {owner==="shen"&&section==="chats"&&current.name==="刘涵"&&<LiuHanOpeningDialogue/>}
-    {owner==="shen"&&section==="chats"&&current.name==="郝倩"&&<HaoQianConfrontation/>}
+    {owner==="shen"&&section==="chats"&&current.name==="刘涵"&&<LiuHanDialogue/>}
+    {owner==="shen"&&section==="chats"&&current.name==="郝倩"&&<HaoQianConfrontation onOpenLiuHan={()=>setChat("刘涵")}/>}
     {owner==="liuhan"&&section==="chats"&&current.name==="沈望"&&<ShenWangOpeningMirror/>}
     {owner==="shen"&&section==="chats"&&current.name==="韩铎"&&<HanDuoIdentityCheck/>}
     {owner==="shen"&&section==="chats"&&current.name==="老司机夜航群"&&<OldDriverGroup/>}
@@ -718,7 +736,7 @@ function TimedMessages({children,play,interval=700,onReveal,onComplete}:{childre
   return <>{items.slice(0,visibleCount)}</>;
 }
 
-function HaoQianConfrontation(){
+function HaoQianConfrontation({onOpenLiuHan}:{onOpenLiuHan:()=>void}){
   const [step,setStep]=useState(0);
   const [answer,setAnswer]=useState("");
   const [error,setError]=useState("");
@@ -739,9 +757,15 @@ function HaoQianConfrontation(){
       setHasMedical(Array.isArray(data.seen)&&data.seen.includes("hq-treatment"));
     }catch{setHasMedical(false)}
     const secured=localStorage.getItem("jia-hq-testimony-secured")==="true";
+    const savedTestimonyStep=Math.max(0,Math.min(9,Number(localStorage.getItem("jia-hq-testimony-step")||0)));
+    const testimonyFinished=secured||savedTestimonyStep>=9;
     setSealedEvidenceReady(localStorage.getItem("jia-sealed-evidence-unlocked")==="true");
-    setTestimonySecured(secured);
-    setTestimonyStep(Number(localStorage.getItem("jia-hq-testimony-step")||0)||(secured?9:0));
+    if(testimonyFinished&&!secured){
+      localStorage.setItem("jia-hq-testimony-secured","true");
+      localStorage.setItem("jia-hq-stage","2");
+    }
+    setTestimonySecured(testimonyFinished);
+    setTestimonyStep(testimonyFinished?9:savedTestimonyStep);
   };
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
@@ -823,14 +847,47 @@ function HaoQianConfrontation(){
     setTestimonyStep(next);
     window.dispatchEvent(new Event("jia-progress"));
   };
+  const rewindTestimonyChoice=()=>{
+    localStorage.setItem("jia-hq-testimony-step","7");
+    localStorage.removeItem("jia-hq-testimony-decision");
+    localStorage.removeItem("jia-hq-testimony-secured");
+    localStorage.removeItem("jia-ending-two-briefing-ready");
+    localStorage.removeItem("jia-ending-two-briefing-step");
+    localStorage.removeItem("jia-ending-two-briefing-intro-seen");
+    localStorage.removeItem("jia-ending-two-unlocked");
+    localStorage.removeItem("jia-ending-two-source");
+    if(localStorage.getItem("jia-hq-stage")==="2")localStorage.setItem("jia-hq-stage","1");
+    setAnimatedTestimonyStep(null);
+    setTestimonyDeliveryPending(false);
+    setTestimonySecured(false);
+    setTestimonyStep(7);
+    window.dispatchEvent(new Event("jia-progress"));
+  };
+  const continueForTestimony=()=>{
+    localStorage.setItem("jia-hq-testimony-decision","yes");
+    advanceTestimony(8);
+  };
+  const enterLetGoEnding=()=>{
+    localStorage.setItem("jia-hq-testimony-decision","no");
+    localStorage.setItem("jia-ending-one-unlocked","true");
+    localStorage.setItem("jia-ending-one-source","hq-testimony-declined");
+    window.location.assign("/ending/let-go");
+  };
   const finishTestimonyDelivery=(completedStep:number)=>{
     setTestimonyDeliveryPending(false);
     if(completedStep>=9){
       localStorage.setItem("jia-hq-testimony-secured","true");
       localStorage.setItem("jia-hq-stage","2");
+      localStorage.setItem("jia-ending-two-briefing-ready","true");
       setTestimonySecured(true);
       window.dispatchEvent(new Event("jia-progress"));
+      window.dispatchEvent(new Event("jia-wechat-notification"));
     }
+  };
+  const openFarewellBriefing=()=>{
+    localStorage.setItem("jia-ending-two-briefing-ready","true");
+    onOpenLiuHan();
+    window.dispatchEvent(new Event("jia-progress"));
   };
   const inputStyle={width:"100%",margin:"0 0 8px",padding:"10px 12px",border:"1px solid #c4c8c5",borderRadius:"4px",background:"#fff",outline:"none"};
   const optionStyle={width:"100%",margin:"0 0 6px",padding:"10px 12px",border:"1px solid #82aa70",borderRadius:"4px",background:"#e7f4df",color:"#395b31",textAlign:"left" as const};
@@ -910,8 +967,8 @@ function HaoQianConfrontation(){
       </>}
     </footer>}
     {step>=32&&<footer style={{maxHeight:"210px",overflowY:"auto"}}>
-      {deliveryPending||testimonyDeliveryPending?<small>对方正在输入…</small>:testimonySecured?<><small>郝倩已同意出庭作证</small></>:sealedEvidenceReady?<><small>{testimonyStep===0?"两组原始记录已经取得":"点击发送沈望的下一条消息"}</small><button style={optionStyle} onClick={()=>advanceTestimony(testimonyStep+1)}>{testimonyActions[testimonyStep]}</button></>:<><small>当前证据不足</small><button style={disabledOptionStyle} disabled>你愿意为顾盼出庭作证吗？</button><span>请先取得郝倩与顾盼的两组原始记录</span></>}
-      {!testimonySecured&&<button style={backOptionStyle} onClick={resetToneChoice}>返回上一个分叉重新选择</button>}
+      {deliveryPending||testimonyDeliveryPending?<small>对方正在输入…</small>:testimonySecured?<><small>郝倩已同意出庭作证 · 刘涵发来了一条新消息</small><button data-testid="hq-testimony-next" style={optionStyle} onClick={openFarewellBriefing}>查看刘涵的消息</button><button data-testid="hq-testimony-rewind" style={backOptionStyle} onClick={rewindTestimonyChoice}>重新选择是否要求出庭</button></>:sealedEvidenceReady?testimonyStep===7?<><small>是否继续要求郝倩出庭作证？</small><button style={optionStyle} onClick={continueForTestimony}>是。继续劝她说出真相。</button><button style={backOptionStyle} onClick={enterLetGoEnding}>否。到这里吧。</button></>:testimonyStep===8?<><small>点击发送沈望的下一条消息</small><button data-testid="hq-testimony-final-send" style={optionStyle} onClick={()=>advanceTestimony(9)}>{testimonyActions[8]}</button><button style={backOptionStyle} onClick={rewindTestimonyChoice}>返回“是否要求出庭”</button></>:<><small>{testimonyStep===0?"两组原始记录已经取得":"点击发送沈望的下一条消息"}</small><button style={optionStyle} onClick={()=>advanceTestimony(testimonyStep+1)}>{testimonyActions[testimonyStep]}</button></>:<><small>当前证据不足</small><button style={disabledOptionStyle} disabled>你愿意为顾盼出庭作证吗？</button><span>请先取得郝倩与顾盼的两组原始记录</span></>}
+      {!testimonySecured&&testimonyStep<7&&<button style={backOptionStyle} onClick={resetToneChoice}>返回上一个分叉重新选择</button>}
     </footer>}
   </section>
 }
@@ -992,6 +1049,107 @@ const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[
   {reply:"好。我去把那些东西收回来，也和过去好好告个别。\n谢了兄弟",response:"嗯。机票定了告诉我。要是在那边睹物思人了，随时找我，别一个人闷着。"}
 ];
 
+const liuHanFarewellExchanges:{reply:string;responses:string[]}[]=[
+  {
+    reply:"把地址发给我。我回临川。",
+    responses:[
+      "你还在北港，最快也要明天早上。",
+      "我不知道她现在是什么情况。但如果你还想见她，就回来。"
+    ]
+  },
+  {
+    reply:"我要去见她。至少，和她好好告别。",
+    responses:[
+      "好。我去机场接你。",
+      "这次你不是一个人去。"
+    ]
+  }
+];
+
+function LiuHanDialogue(){
+  const [farewellReady,setFarewellReady]=useState(false);
+  useEffect(()=>{
+    const sync=()=>setFarewellReady(
+      localStorage.getItem("jia-hq-testimony-secured")==="true"&&
+      localStorage.getItem("jia-ending-two-briefing-ready")==="true"
+    );
+    const frame=window.requestAnimationFrame(sync);
+    window.addEventListener("storage",sync);
+    window.addEventListener("jia-progress",sync);
+    return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
+  },[]);
+  return farewellReady?<LiuHanFarewellDialogue/>:<LiuHanOpeningDialogue/>;
+}
+
+function LiuHanFarewellDialogue(){
+  const [ready,setReady]=useState(false);
+  const [step,setStep]=useState(0);
+  const [introPlaying,setIntroPlaying]=useState(false);
+  const [animatedStep,setAnimatedStep]=useState<number|null>(null);
+  const [deliveryPending,setDeliveryPending]=useState(false);
+  const threadRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const frame=window.requestAnimationFrame(()=>{
+      setStep(Math.max(0,Math.min(liuHanFarewellExchanges.length,Number(localStorage.getItem("jia-ending-two-briefing-step")||0))));
+      const shouldPlayIntro=localStorage.getItem("jia-ending-two-briefing-intro-seen")!=="true";
+      setIntroPlaying(shouldPlayIntro);
+      setDeliveryPending(shouldPlayIntro);
+      setReady(true);
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[]);
+  useEffect(()=>{
+    const frame=window.requestAnimationFrame(()=>{
+      const panel=threadRef.current;
+      if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[step,ready]);
+  const scrollToLatest=()=>window.requestAnimationFrame(()=>{
+    const panel=threadRef.current;
+    if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
+  });
+  const finishIntro=()=>{
+    localStorage.setItem("jia-ending-two-briefing-intro-seen","true");
+    setIntroPlaying(false);
+    setDeliveryPending(false);
+  };
+  const advance=()=>{
+    const next=Math.min(liuHanFarewellExchanges.length,step+1);
+    localStorage.setItem("jia-ending-two-briefing-step",String(next));
+    setAnimatedStep(next);
+    setDeliveryPending(true);
+    setStep(next);
+    window.dispatchEvent(new Event("jia-progress"));
+  };
+  const enterLateFlowersEnding=()=>{
+    localStorage.setItem("jia-ending-two-unlocked","true");
+    localStorage.setItem("jia-ending-two-source","hq-testimony-secured");
+    window.location.assign("/ending/late-flowers");
+  };
+  if(!ready)return <section className="wx-lh-dialogue"><div className="wx-lh-thread"><div className="wx-system">正在接收刘涵的消息…</div></div></section>;
+  return <section className="wx-lh-dialogue wx-lh-farewell">
+    <header><button><img src="/characters/wechat-liu-han.png" alt="刘涵"/><span><b>刘涵</b><small>微信号：liuhan_lc</small></span></button></header>
+    <div className="wx-lh-thread" ref={threadRef}>
+      <div className="wx-system">今天 03:17</div>
+      <TimedMessages play={introPlaying} interval={820} onReveal={scrollToLatest} onComplete={finishIntro}>
+        <WxBubble src="/characters/liu-han.png" text="沈望，你先别订回程。"/>
+        <WxBubble src="/characters/liu-han.png" text="我妈刚去顾家问过。婚宴的说法根本不对，顾家这几天一直关着门。"/>
+        <WxBubble src="/characters/liu-han.png" text="陈放帮我确认，顾盼11月29日在临川青槐区有过一通只接通三秒的报警电话。之后，再没有任何活动记录。"/>
+        <WxBubble src="/characters/liu-han.png" text="沈望，我觉得事情不对。你还在北港吗？"/>
+      </TimedMessages>
+      {liuHanFarewellExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}>
+        <WxBubble src="/characters/shen-wang.png" mine text={exchange.reply}/>
+        <TimedMessages play={animatedStep===index+1} interval={780} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}>
+          {exchange.responses.map(response=><WxBubble key={response} src="/characters/liu-han.png" text={response}/>)}
+        </TimedMessages>
+      </div>)}
+      {step===liuHanFarewellExchanges.length&&<div className="wx-system">新目标：返回临川，与顾盼告别</div>}
+    </div>
+    <footer>{deliveryPending?<small>对方正在输入…</small>:step<liuHanFarewellExchanges.length?<><small>点击发送回复</small><button onClick={advance}>{liuHanFarewellExchanges[step].reply}</button></>:<><small>刘涵将在临川机场接你</small><button data-testid="enter-late-flowers-ending" onClick={enterLateFlowersEnding}>前往临川</button></>}</footer>
+  </section>;
+}
+
 function LiuHanOpeningDialogue(){
   const [step,setStep]=useState(0);
   const [animatedStep,setAnimatedStep]=useState<number|null>(null);
@@ -1022,9 +1180,13 @@ function LiuHanOpeningDialogue(){
 
 function ShenWangOpeningMirror(){
   const [step,setStep]=useState(0);
+  const [postEnding,setPostEnding]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{
-    const sync=()=>setStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0));
+    const sync=()=>{
+      setStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0));
+      setPostEnding(localStorage.getItem("jia-ending-two-complete")==="true");
+    };
     const frame=window.requestAnimationFrame(sync);
     window.addEventListener("storage",sync);
     window.addEventListener("jia-progress",sync);
@@ -1038,8 +1200,15 @@ function ShenWangOpeningMirror(){
       <WxBubble src="/characters/liu-han.png" mine text="还没休息？"/>
       {liuHanOpeningExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}><WxBubble src="/characters/shen-wang.png" text={exchange.reply}/><WxBubble src="/characters/liu-han.png" mine text={exchange.response}/>{exchange.followup&&<WxBubble src="/characters/liu-han.png" mine text={exchange.followup}/>}</div>)}
       {step===liuHanOpeningExchanges.length&&<div className="wx-system">对话结束 · 沈望已决定前往海外北港的寄存中心</div>}
+      {postEnding&&<>
+        <div className="wx-system">第二结局之后 · 2025年12月4日 05:52</div>
+        <WxBubble src="/characters/shen-wang.png" text="她为什么会死？"/>
+        <WxBubble src="/characters/liu-han.png" mine text="我不知道。但11月29日那通没有接完的报警电话，不该只有三秒。"/>
+        <WxBubble src="/characters/liu-han.png" mine text="我会从那通电话开始，把她最后经历过的事情一件件查清楚。"/>
+        <div className="wx-system">你现在是刘涵 · 调查目标已更新：还原顾盼死亡前的全部记录</div>
+      </>}
     </div>
-    <footer><span>聊天记录与沈望端同步 · 只读</span></footer>
+    <footer><span>{postEnding?"以刘涵的身份继续调查 · 当前聊天只读":"聊天记录与沈望端同步 · 只读"}</span></footer>
   </section>
 }
 
