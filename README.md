@@ -2,7 +2,8 @@
 
 ## 在线游玩
 
-[点击进入《嫁》](https://starwave0225.github.io/ARG_invitation/)
+- [稳定托管版《嫁》](https://jia-investigation.bean-starmoon.chatgpt.site)
+- [GitHub Pages 公开镜像](https://starwave0225.github.io/ARG_invitation/)
 
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
