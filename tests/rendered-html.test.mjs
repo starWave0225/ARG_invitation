@@ -39,6 +39,13 @@ test("rewrites GitHub Pages paths without corrupting framework root literals", (
   assert.match(rewritten, /href="\/ARG_invitation\/"/);
 });
 
+test("enters the first computer without applying the Pages base path twice", async () => {
+  const home = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(home, /window\.location\.assign\("\/computer\/shen"\)/);
+  assert.doesNotMatch(home, /router\.push\("\/computer\/shen"\)/);
+});
+
 test("server-renders the game opening screen", async () => {
   const response = await render();
   assert.equal(response.status, 200);
