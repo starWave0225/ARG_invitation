@@ -1,0 +1,58 @@
+/*
+ * The opening originally moved one static walk pose across the screen.
+ * Split that pose at the coat hem and alternate the lower half so the
+ * characters visibly change stride while their upper bodies stay stable.
+ */
+.opening-pixel-parallel .pose-walk {
+  background-image: none;
+}
+
+.opening-pixel-parallel .pose-walk::before,
+.opening-pixel-parallel .pose-walk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 33.333% center;
+  background-size: 400% 100%;
+  image-rendering: pixelated;
+}
+
+.opening-pixel-parallel .pixel-shen.pose-walk::before,
+.opening-pixel-parallel .pixel-shen.pose-walk::after {
+  background-image: url("/opening/shen-pixel-sprites.png");
+}
+
+.opening-pixel-parallel .pixel-gupan.pose-walk::before,
+.opening-pixel-parallel .pixel-gupan.pose-walk::after {
+  background-image: url("/opening/gupan-pixel-sprites.png");
+}
+
+.opening-pixel-parallel .pose-walk::before {
+  clip-path: inset(0 0 32% 0);
+}
+
+.opening-pixel-parallel .pose-walk::after {
+  clip-path: inset(64% 0 0 0);
+  transform-origin: 50% 66%;
+  animation: opening-leg-stride .46s steps(1, end) infinite;
+  will-change: transform;
+}
+
+@keyframes opening-leg-stride {
+  0%,
+  49% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+
+  50%,
+  100% {
+    transform: translate3d(0, 1.2%, 0) scaleX(-1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening-pixel-parallel .pose-walk::after {
+    animation: none;
+  }
+}

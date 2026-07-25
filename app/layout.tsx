@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./opening-walk.css";
 import OpeningMusic from "./OpeningMusic";
 
 export const metadata: Metadata = {
