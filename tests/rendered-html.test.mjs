@@ -106,6 +106,9 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
   assert.match(desktop, /gupanComputerAvailable&&<a href="\/computer\/gupan"/);
   assert.match(desktop, /liuHanComputerAvailable&&<a href="\/computer\/liuhan"/);
   assert.match(desktop, /setLiuHanComputerAvailable\(localStorage\.getItem\("jia-liuhan-flashback-complete"\)==="true"\)/);
+  assert.match(desktop, /汽车黑话并非讨论驾驶，而是留学生从事迷奸并上传偷拍视频的非法勾当。/);
+  assert.match(desktop, /NIGHTDRIVE 隐藏站记录/);
+  assert.match(desktop, /两组记录相关联并互相印证。/);
   assert.match(ending, /const ENDING_DURATION=40/);
   assert.match(ending, /from:38,to:40[\s\S]*刘涵扭过头去。天已经亮了。/);
   assert.match(ending, /XX公寓。路上再说。/);
