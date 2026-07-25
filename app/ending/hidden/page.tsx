@@ -82,6 +82,25 @@ export default function HiddenEndingPage(){
 
   useEffect(()=>()=>audioRef.current?.pause(),[]);
   useEffect(()=>{
+    if(!unlocked||status!=="gate")return;
+    const audio=audioRef.current;
+    if(!audio)return;
+    const stored=Number(localStorage.getItem("arg-music-volume")??.45);
+    const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
+    const muted=localStorage.getItem("arg-music-muted")==="true";
+    baseVolumeRef.current=muted?0:Math.min(.58,master*.9);
+    audio.currentTime=0;
+    audio.volume=baseVolumeRef.current;
+    const playGateMusic=()=>{if(audio.paused)void audio.play().catch(()=>{})};
+    playGateMusic();
+    document.addEventListener("pointerdown",playGateMusic,{once:true});
+    document.addEventListener("keydown",playGateMusic,{once:true});
+    return()=>{
+      document.removeEventListener("pointerdown",playGateMusic);
+      document.removeEventListener("keydown",playGateMusic);
+    };
+  },[status,unlocked]);
+  useEffect(()=>{
     if(status!=="complete")return;
     const audio=audioRef.current;
     if(audio&&!audio.ended&&audio.paused)void audio.play().catch(()=>{});
@@ -126,7 +145,7 @@ export default function HiddenEndingPage(){
   if(!unlocked)return <main className="hidden-ending-route hidden-ending-locked"><section><small>ENDING LOCKED</small><h1>这里还没有可以抵达的梦。</h1><p>完成刘涵调查线后，返回顾盼旧电脑，在回收站中读完《希望_未寄出.txt》。</p><a href="/computer/gupan">返回顾盼的旧电脑</a></section></main>;
 
   return <main className={`hidden-ending-route hidden-ending-film ${paused?"is-paused":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="auto"/>
+    <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
     <div className="hidden-ending-film-grain"/>
 
     {status==="gate"&&<section className="hidden-ending-gate">
@@ -174,7 +193,7 @@ export default function HiddenEndingPage(){
 
     {status==="complete"&&<section className="hidden-ending-finale">
       <small>隐藏结局 · 镜花水月</small>
-      <h1>死亡没有被改写。</h1>
+      <h1>死亡没有被改写</h1>
       <p>但在无人能够夺走的梦里，<br/>他们曾有过完整的一生。</p>
       <blockquote>左望，右盼。<br/>而右边的人，终于回过了头。</blockquote>
       <div><button type="button" onClick={start}>重新播放</button><a href="/">醒来　→</a></div>

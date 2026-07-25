@@ -143,6 +143,25 @@ export default function XiEndingPage(){
   },[paused,status]);
 
   useEffect(()=>()=>audioRef.current?.pause(),[]);
+  useEffect(()=>{
+    if(!unlocked||status!=="gate")return;
+    const audio=audioRef.current;
+    if(!audio)return;
+    const stored=Number(localStorage.getItem("arg-music-volume")??.45);
+    const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
+    const muted=localStorage.getItem("arg-music-muted")==="true";
+    baseVolumeRef.current=muted?0:Math.min(.58,master);
+    audio.currentTime=0;
+    audio.volume=baseVolumeRef.current;
+    const playGateMusic=()=>{if(audio.paused)void audio.play().catch(()=>{})};
+    playGateMusic();
+    document.addEventListener("pointerdown",playGateMusic,{once:true});
+    document.addEventListener("keydown",playGateMusic,{once:true});
+    return()=>{
+      document.removeEventListener("pointerdown",playGateMusic);
+      document.removeEventListener("keydown",playGateMusic);
+    };
+  },[status,unlocked]);
 
   const start=()=>{
     const audio=audioRef.current;
@@ -199,7 +218,7 @@ export default function XiEndingPage(){
   if(!unlocked)return <main className="xi-ending xi-ending-locked"><section><small>ENDING LOCKED</small><h1>喜乐还没有响起。</h1><p>取得警方调查档案后，回到刘涵微信，与恒慕特别委托组完成最终对质。</p><a href="/computer/liuhan?app=wechat&chat=hengmu-plan">返回刘涵微信</a></section></main>;
 
   return <main className={`xi-ending is-${status} ${paused?"is-paused":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="auto"/>
+    <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
     <div className="xi-ending-grain" aria-hidden="true"/>
 
     {status==="gate"&&<section className="xi-ending-gate">
