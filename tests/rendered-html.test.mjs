@@ -103,6 +103,9 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
   assert.match(desktop, /data-testid="enter-late-flowers-ending"/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/late-flowers"\)/);
   assert.match(desktop, /你现在是刘涵 · 调查目标已更新/);
+  assert.match(desktop, /gupanComputerAvailable&&<a href="\/computer\/gupan"/);
+  assert.match(desktop, /liuHanComputerAvailable&&<a href="\/computer\/liuhan"/);
+  assert.match(desktop, /setLiuHanComputerAvailable\(localStorage\.getItem\("jia-liuhan-flashback-complete"\)==="true"\)/);
   assert.match(ending, /const ENDING_DURATION=40/);
   assert.match(ending, /from:38,to:40[\s\S]*刘涵扭过头去。天已经亮了。/);
   assert.match(ending, /XX公寓。路上再说。/);

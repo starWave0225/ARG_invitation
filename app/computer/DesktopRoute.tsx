@@ -106,20 +106,20 @@ function readPrototypeSeen(){
 }
 
 function getInvestigationNextHint(){
-  if(typeof window==="undefined")return "完成与刘涵的微信对话，确认B-17寄存仓的存在。";
+  if(typeof window==="undefined")return "完成与刘涵的微信对话。";
   const prototypeSeen=readPrototypeSeen();
   const openingStep=Number(localStorage.getItem("jia-lh-opening-step-v3")||0);
-  return openingStep<8?"完成与刘涵的微信对话，确认B-17寄存仓的存在。":
-    localStorage.getItem("jia-storage-reached")!=="true"?"读取B-17到期邮件，在地图中搜索寄存中心地址。":
+  return openingStep<8?"完成与刘涵的微信对话。":
+    localStorage.getItem("jia-storage-reached")!=="true"?"读取寄存仓到期邮件，在地图中搜索寄存中心地址。":
     localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
-    localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"从“我的日记”确认恋爱纪念日，尝试登录顾盼旧电脑。":
-    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"先查询顾盼的医疗记录；再从顾盼微博进入H.Q.微博确认真实姓名，用账单编号查询郝倩的康复记录。":
-    localStorage.getItem("jia-hq-first-round-complete")!=="true"?"使用医疗记录与郝倩完成首轮对质，取得她发送的远帆官网链接。":
-    localStorage.getItem("jia-hd-added")!=="true"?"打开远帆“联系我们”，取得韩铎的微信号，再到微信“添加”中搜索。":
+    localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"尝试登录顾盼旧电脑。":
+    !prototypeSeen.includes("medical")||!prototypeSeen.includes("hq-treatment")?"查询遗留的医疗记录和账单；看看旧电脑上还有无可用信息。":
+    localStorage.getItem("jia-hq-first-round-complete")!=="true"?"使用相关证据和郝倩完成首轮对质，获悉当年事件的相关组织。":
+    localStorage.getItem("jia-hd-added")!=="true"?"与远帆取得联系。":
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":
-    localStorage.getItem("jia-womandriver-site-found")!=="true"?"根据老司机夜航群的提示查看远帆活动日历，按活动序号解出站内搜索词。":
-    localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"打开远帆返回的隐藏网站，搜索YF-HQ-0214；再使用SD-8845127或HM-2217查找顾盼。":
-    localStorage.getItem("jia-hq-testimony-secured")!=="true"?(localStorage.getItem("jia-ending-one-complete")==="true"?"第一结局已经完成。回到郝倩微信，可从出庭选择处继续调查。":"返回郝倩微信，决定是否继续要求她出庭作证。"):
+    localStorage.getItem("jia-womandriver-site-found")!=="true"?"根据老司机夜航群的提示解锁关键词。":
+    localStorage.getItem("jia-sealed-evidence-unlocked")!=="true"?"打开远帆下的隐藏网站，搜索郝倩、顾盼关联的ID，证据都在顾盼的旧电脑上。":
+    localStorage.getItem("jia-hq-testimony-secured")!=="true"?(localStorage.getItem("jia-ending-one-complete")==="true"?"第一结局已经完成。回到郝倩微信，可从出庭选择处继续调查。":"决定是否继续要求郝倩出庭作证。"):
     localStorage.getItem("jia-ending-two-complete")!=="true"?"打开刘涵发来的新消息，和他一起前往临川寻找顾盼。":
     localStorage.getItem("jia-liuhan-phone-obtained")!=="true"?"切换到刘涵电脑，利用残缺地址和IP记录定位顾盼。":
     localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查旧请柬和服务码，追查恒慕的方案变更。":
@@ -139,6 +139,8 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const [wechatNotice,setWechatNotice]=useState<{title:string;body:string}|null>(null);
   const [recoveredLetterNotice,setRecoveredLetterNotice]=useState(false);
   const [extracted,setExtracted]=useState(false);
+  const [gupanComputerAvailable,setGupanComputerAvailable]=useState(false);
+  const [liuHanComputerAvailable,setLiuHanComputerAvailable]=useState(false);
   const [progressRevision,setProgressRevision]=useState(0);
   const openDesktopApp=(id:string)=>{
     if(owner==="gupan"&&id==="weibo"){
@@ -198,7 +200,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       {key:"jia-yuanfan-site-access",seen:"jia-notified-yuanfan-access",title:"远帆网站权限",body:"韩铎已为你开通成员栏目与站内搜索"},
       {key:"jia-hq-added",seen:"jia-notified-hq",title:"H.Q. · 郝倩",body:"你们已经成为好友，可以开始聊天了"},
       {key:"jia-hd-added",seen:"jia-notified-hd",title:"韩铎",body:"新的联系人已出现在微信中"},
-      {key:"jia-ending-two-briefing-ready",seen:"jia-notified-ending-two-briefing",title:"刘涵",body:"沈望，你先别订回程。顾盼这边出事了。"},
+      {key:"jia-ending-two-briefing-ready",seen:"jia-notified-ending-two-briefing",title:"刘涵",body:"沈望，还在吗？事情不对。你还在北港吗？"},
     ];
     const check=()=>{
       const hasProgress=updates.some(item=>localStorage.getItem(item.key)==="true")||localStorage.getItem("jia-storage-reached")==="true"||localStorage.getItem("jia-gupan-pc-unlocked")==="true";
@@ -234,11 +236,16 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   useEffect(()=>{if(recoveredLetterNotice)void playNotificationSound("mail")},[recoveredLetterNotice]);
   useEffect(()=>{if(gameMode==="hardcore"&&active==="case")setActive(null)},[gameMode,active]);
   useEffect(()=>{
-    const refreshObjective=()=>setProgressRevision(value=>value+1);
-    window.addEventListener("storage",refreshObjective);
-    window.addEventListener("jia-progress",refreshObjective);
-    window.addEventListener("jia-wechat-notification",refreshObjective);
-    return()=>{window.removeEventListener("storage",refreshObjective);window.removeEventListener("jia-progress",refreshObjective);window.removeEventListener("jia-wechat-notification",refreshObjective)};
+    const refreshProgress=()=>{
+      setProgressRevision(value=>value+1);
+      setGupanComputerAvailable(localStorage.getItem("jia-gupan-pc-unlocked")==="true");
+      setLiuHanComputerAvailable(localStorage.getItem("jia-liuhan-flashback-complete")==="true");
+    };
+    refreshProgress();
+    window.addEventListener("storage",refreshProgress);
+    window.addEventListener("jia-progress",refreshProgress);
+    window.addEventListener("jia-wechat-notification",refreshProgress);
+    return()=>{window.removeEventListener("storage",refreshProgress);window.removeEventListener("jia-progress",refreshProgress);window.removeEventListener("jia-wechat-notification",refreshProgress)};
   },[]);
   useEffect(()=>{document.documentElement.dataset.desktop=owner;return()=>{delete document.documentElement.dataset.desktop}},[owner]);
   void progressRevision;
@@ -263,7 +270,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       <span className="pc-tray">⌃　⌨　◉　⌁　🔊　 <b>{systemTime}<small>{cfg.date.replace(" 星期三","").replace(" 星期四","")}</small></b></span>
     </footer>
     {start&&<div className="pc-startmenu"><div className="pc-start-search">⌕　在应用、设置和文档中搜索</div><header><b>已固定</b><span>所有应用　›</span></header><div>{cfg.apps.map(([label,icon,id])=><button key={id} onClick={()=>{openDesktopApp(id);setStart(false)}}><i>{icon}</i><span>{label}</span></button>)}</div><footer><span>●　{cfg.owner}</span><button onClick={()=>{location.href="/"}}>关机</button></footer></div>}
-    <div className="pc-route-switch"><span>{cfg.owner}的电脑</span>{gameMode&&<button type="button" className={`pc-mode-label ${gameMode}`} onClick={toggleGameMode} aria-label={`当前为${gameMode==="normal"?"通灵模式":"真实模式"}，点击切换为${gameMode==="normal"?"真实模式":"通灵模式"}`} title="点击切换游戏模式">{gameMode==="normal"?"通灵模式":"真实模式"} <small>⇄</small></button>}<a href="/computer/shen" target="_blank" rel="noopener noreferrer">沈望</a><a href="/computer/gupan" target="_blank" rel="noopener noreferrer">顾盼</a><a href="/computer/liuhan" target="_blank" rel="noopener noreferrer">刘涵</a><a href="/" target="_blank" rel="noopener noreferrer">返回主选单</a><button type="button" onClick={resetGame}>↻ 重置进度</button></div>
+    <div className="pc-route-switch"><span>{cfg.owner}的电脑</span>{gameMode&&<button type="button" className={`pc-mode-label ${gameMode}`} onClick={toggleGameMode} aria-label={`当前为${gameMode==="normal"?"通灵模式":"真实模式"}，点击切换为${gameMode==="normal"?"真实模式":"通灵模式"}`} title="点击切换游戏模式">{gameMode==="normal"?"通灵模式":"真实模式"} <small>⇄</small></button>}<a href="/computer/shen" target="_blank" rel="noopener noreferrer">沈望</a>{gupanComputerAvailable&&<a href="/computer/gupan" target="_blank" rel="noopener noreferrer">顾盼</a>}{liuHanComputerAvailable&&<a href="/computer/liuhan" target="_blank" rel="noopener noreferrer">刘涵</a>}<a href="/" target="_blank" rel="noopener noreferrer">返回主选单</a><button type="button" onClick={resetGame}>↻ 重置进度</button></div>
   </main>
 }
 
@@ -1049,19 +1056,25 @@ const liuHanOpeningExchanges:{reply:string;response:string;followup?:string}[]=[
   {reply:"好。我去把那些东西收回来，也和过去好好告个别。\n谢了兄弟",response:"嗯。机票定了告诉我。要是在那边睹物思人了，随时找我，别一个人闷着。"}
 ];
 
-const liuHanFarewellExchanges:{reply:string;responses:string[]}[]=[
+const liuHanFarewellExchanges:{action:string;replies:string[];responses:string[]}[]=[
   {
-    reply:"把地址发给我。我回临川。",
+    action:"还在，发生什么事了？",
+    replies:["还在，发生什么事了？"],
     responses:[
-      "你还在北港，最快也要明天早上。",
       "我不知道她现在是什么情况。但如果你还想见她，就回来。"
     ]
   },
   {
-    reply:"我要去见她。至少，和她好好告别。",
+    action:"把地址发给我。我回临川。",
+    replies:[
+      "把地址发给我。我回临川。",
+      "我终于知道了过去发生的一切。",
+      "我要去见她，我坐今晚的红眼航班，明早到。\n至少，要和她好好告别。"
+    ],
     responses:[
+      "......",
       "好。我去机场接你。",
-      "这次你不是一个人去。"
+      "见面了聊吧"
     ]
   }
 ];
@@ -1143,20 +1156,18 @@ function LiuHanFarewellDialogue(){
       {openingStep===liuHanOpeningExchanges.length&&<div className="wx-system">沈望已前往海外北港的寄存中心</div>}
       <div className="wx-system">今天 03:17</div>
       <TimedMessages play={introPlaying} interval={820} onReveal={scrollToLatest} onComplete={finishIntro}>
-        <WxBubble src="/characters/liu-han.png" text="沈望，你先别订回程。"/>
-        <WxBubble src="/characters/liu-han.png" text="我妈刚去顾家问过。婚宴的说法根本不对，顾家这几天一直关着门。"/>
-        <WxBubble src="/characters/liu-han.png" text="陈放帮我确认，顾盼11月29日在临川青槐区有过一通只接通三秒的报警电话。之后，再没有任何活动记录。"/>
-        <WxBubble src="/characters/liu-han.png" text="沈望，我觉得事情不对。你还在北港吗？"/>
+        <WxBubble src="/characters/liu-han.png" text="沈望，还在吗？"/>
+        <WxBubble src="/characters/liu-han.png" text="事情不对。你还在北港吗？"/>
       </TimedMessages>
       {liuHanFarewellExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}>
-        <WxBubble src="/characters/shen-wang.png" mine text={exchange.reply}/>
+        {exchange.replies.map(reply=><WxBubble key={reply} src="/characters/shen-wang.png" mine text={reply}/>)}
         <TimedMessages play={animatedStep===index+1} interval={780} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}>
           {exchange.responses.map(response=><WxBubble key={response} src="/characters/liu-han.png" text={response}/>)}
         </TimedMessages>
       </div>)}
       {step===liuHanFarewellExchanges.length&&<div className="wx-system">新目标：返回临川，与顾盼告别</div>}
     </div>
-    <footer>{deliveryPending?<small>对方正在输入…</small>:step<liuHanFarewellExchanges.length?<><small>点击发送回复</small><button onClick={advance}>{liuHanFarewellExchanges[step].reply}</button></>:<><small>刘涵将在临川机场接你</small><button data-testid="enter-late-flowers-ending" onClick={enterLateFlowersEnding}>前往临川</button></>}</footer>
+    <footer>{deliveryPending?<small>对方正在输入…</small>:step<liuHanFarewellExchanges.length?<><small>点击发送回复</small><button onClick={advance}>{liuHanFarewellExchanges[step].action}</button></>:<><small>刘涵将在临川机场接你</small><button data-testid="enter-late-flowers-ending" onClick={enterLateFlowersEnding}>前往临川 - 第二结局</button></>}</footer>
   </section>;
 }
 
@@ -1190,15 +1201,12 @@ function LiuHanOpeningDialogue(){
 
 function ShenWangOpeningMirror(){
   const [step,setStep]=useState(0);
-  const [farewellStep,setFarewellStep]=useState(0);
   const [postEnding,setPostEnding]=useState(false);
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const sync=()=>{
       setStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0));
       const endingComplete=localStorage.getItem("jia-ending-two-complete")==="true";
-      const savedFarewellStep=Number(localStorage.getItem("jia-ending-two-briefing-step")||0);
-      setFarewellStep(endingComplete?liuHanFarewellExchanges.length:Math.max(0,Math.min(liuHanFarewellExchanges.length,savedFarewellStep)));
       setPostEnding(endingComplete);
     };
     const frame=window.requestAnimationFrame(sync);
@@ -1206,7 +1214,7 @@ function ShenWangOpeningMirror(){
     window.addEventListener("jia-progress",sync);
     return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
   },[]);
-  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"auto"})});return()=>window.cancelAnimationFrame(frame)},[step,farewellStep,postEnding]);
+  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=threadRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"auto"})});return()=>window.cancelAnimationFrame(frame)},[step,postEnding]);
   return <section className="wx-lh-dialogue wx-lh-mirror">
     <header><button><img src="/characters/wechat-shen-wang.png" alt="沈望"/><span><b>沈望</b><small>微信号：zw_1021</small></span></button></header>
     <div className="wx-lh-thread" ref={threadRef}>
@@ -1215,20 +1223,10 @@ function ShenWangOpeningMirror(){
       {liuHanOpeningExchanges.slice(0,step).map((exchange,index)=><div className="wx-exchange" key={index}><WxBubble src="/characters/shen-wang.png" text={exchange.reply}/><WxBubble src="/characters/liu-han.png" mine text={exchange.response}/>{exchange.followup&&<WxBubble src="/characters/liu-han.png" mine text={exchange.followup}/>}</div>)}
       {step===liuHanOpeningExchanges.length&&<div className="wx-system">对话结束 · 沈望已决定前往海外北港的寄存中心</div>}
       {postEnding&&<>
-        <div className="wx-system">第二结局之前 · 今天 03:17</div>
-        <WxBubble src="/characters/liu-han.png" mine text="沈望，你先别订回程。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="我妈刚去顾家问过。婚宴的说法根本不对，顾家这几天一直关着门。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="陈放帮我确认，顾盼11月29日在临川青槐区有过一通只接通三秒的报警电话。之后，再没有任何活动记录。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="沈望，我觉得事情不对。你还在北港吗？"/>
-        {liuHanFarewellExchanges.slice(0,farewellStep).map((exchange,index)=><div className="wx-exchange" key={`farewell-${index}`}>
-          <WxBubble src="/characters/shen-wang.png" text={exchange.reply}/>
-          {exchange.responses.map(response=><WxBubble key={response} src="/characters/liu-han.png" mine text={response}/>)}
-        </div>)}
-        <div className="wx-system">第二结局之后 · 2025年12月4日 05:52</div>
-        <WxBubble src="/characters/shen-wang.png" text="她为什么会死？"/>
-        <WxBubble src="/characters/liu-han.png" mine text="我不知道。但11月29日那通没有接完的报警电话，不该只有三秒。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="我会从那通电话开始，把她最后经历过的事情一件件查清楚。"/>
-        <div className="wx-system">你现在是刘涵 · 调查目标已更新：还原顾盼死亡前的全部记录</div>
+        <div className="wx-system">沈望前往北港前</div>
+        <WxBubble src="/characters/shen-wang.png" text="先查下顾盼现在住哪里？"/>
+        <WxBubble src="/characters/liu-han.png" mine text="行。我先从她爸妈和老小区这边问起，有消息告诉你。"/>
+        <div className="wx-system">你现在是刘涵 · 调查目标已更新：确认顾盼目前的住址</div>
       </>}
     </div>
     <footer><span>{postEnding?"以刘涵的身份继续调查 · 当前聊天只读":"聊天记录与沈望端同步 · 只读"}</span></footer>
