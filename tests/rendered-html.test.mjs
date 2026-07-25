@@ -30,6 +30,9 @@ test("rewrites GitHub Pages paths without corrupting framework root literals", (
     'const route = "/computer/shen";',
     'const asset = "/opening/evidence-table.png";',
     '<a href="/">返回主选单</a>',
+    'const wakeButton = jsx("a", {href:"/", children:"醒来"});',
+    'window.location.assign("/");',
+    'location.href="/";',
   ].join("\n");
   const rewritten = rewriteGitHubPagesPaths(source);
 
@@ -37,6 +40,9 @@ test("rewrites GitHub Pages paths without corrupting framework root literals", (
   assert.match(rewritten, /route = "\/ARG_invitation\/computer\/shen";/);
   assert.match(rewritten, /asset = "\/ARG_invitation\/opening\/evidence-table\.png";/);
   assert.match(rewritten, /href="\/ARG_invitation\/"/);
+  assert.match(rewritten, /href:"\/ARG_invitation\/"/);
+  assert.match(rewritten, /window\.location\.assign\("\/ARG_invitation\/"\)/);
+  assert.match(rewritten, /location\.href="\/ARG_invitation\/"/);
 });
 
 test("enters the first computer without applying the Pages base path twice", async () => {

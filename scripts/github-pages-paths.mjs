@@ -38,10 +38,16 @@ const escapedRoots = internalRoots
 const quotedRootPath = new RegExp(`(["'])/(${escapedRoots})(?=[/"'?&#]|$)`, "g");
 const unquotedCssPath = new RegExp(`(url\\(\\s*)/(${escapedRoots})(?=[/)'"]|$)`, "g");
 const rootNavigationAttribute = /(\b(?:href|action)=)(["'])\/\2/g;
+const rootNavigationProperty = /(\b(?:href|action):)(["'])\/\2/g;
+const rootLocationCall = /(\b(?:window\.)?location\.assign\()(["'])\/\2/g;
+const rootLocationAssignment = /(\b(?:window\.)?location\.href=)(["'])\/\2/g;
 
 export function rewriteGitHubPagesPaths(original) {
   return original
     .replace(quotedRootPath, `$1${basePath}/$2`)
     .replace(unquotedCssPath, `$1${basePath}/$2`)
-    .replace(rootNavigationAttribute, `$1$2${basePath}/$2`);
+    .replace(rootNavigationAttribute, `$1$2${basePath}/$2`)
+    .replace(rootNavigationProperty, `$1$2${basePath}/$2`)
+    .replace(rootLocationCall, `$1$2${basePath}/$2`)
+    .replace(rootLocationAssignment, `$1$2${basePath}/$2`);
 }
