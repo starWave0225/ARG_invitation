@@ -138,12 +138,14 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const [selected,setSelected]=useState<string|null>(null);
   const [start,setStart]=useState(false);
   const [notice,setNotice]=useState(false);
-  const [wechatNotice,setWechatNotice]=useState<{title:string;body:string}|null>(null);
+  const [wechatNotices,setWechatNotices]=useState<Array<{seen:string;title:string;body:string}>>([]);
   const [recoveredLetterNotice,setRecoveredLetterNotice]=useState(false);
   const [extracted,setExtracted]=useState(false);
   const [gupanComputerAvailable,setGupanComputerAvailable]=useState(false);
   const [liuHanComputerAvailable,setLiuHanComputerAvailable]=useState(false);
   const [progressRevision,setProgressRevision]=useState(0);
+  const wechatNotice=wechatNotices[0]??null;
+  const dismissWechatNotice=()=>setWechatNotices(current=>current.slice(1));
   const openDesktopApp=(id:string)=>{
     if(owner==="gupan"&&id==="weibo"){
       window.open("/weibo/gupan","_blank","noopener,noreferrer");
@@ -197,11 +199,9 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   useEffect(()=>{
     const notify=()=>{
       const b17AlreadyHandled=localStorage.getItem("jia-gupan-pc-unlocked")==="true";
-      if(owner==="shen"&&b17AlreadyHandled)localStorage.setItem("jia-notified-b17-arrival","true");
       const shouldShowB17Notice=owner==="shen"&&
         localStorage.getItem("jia-storage-reached")==="true"&&
-        !b17AlreadyHandled&&
-        localStorage.getItem("jia-notified-b17-arrival")!=="true";
+        localStorage.getItem("jia-notified-b17-arrival-v2")!=="true";
       if(shouldShowB17Notice)setNotice(true);
       setExtracted(b17AlreadyHandled);
     };
@@ -220,15 +220,16 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     ];
     const check=()=>{
       const hasProgress=updates.some(item=>localStorage.getItem(item.key)==="true")||localStorage.getItem("jia-storage-reached")==="true"||localStorage.getItem("jia-gupan-pc-unlocked")==="true";
-      if(!hasProgress&&localStorage.getItem("jia-notified-opening-wechat-v3")!=="true"){
-        localStorage.setItem("jia-notified-opening-wechat-v3","true");
-        setWechatNotice({title:"刘涵",body:"还没休息？"});
-        return;
-      }
+      const opening=!hasProgress&&localStorage.getItem("jia-notified-opening-wechat-v3")!=="true"
+        ?[{seen:"jia-notified-opening-wechat-v3",title:"刘涵",body:"还没休息？"}]
+        :[];
       const fresh=updates.filter(item=>localStorage.getItem(item.key)==="true"&&localStorage.getItem(item.seen)!=="true");
-      if(fresh.length===0)return;
-      fresh.forEach(item=>localStorage.setItem(item.seen,"true"));
-      setWechatNotice({title:fresh[0].title,body:fresh[0].body});
+      const incoming=[...opening,...fresh];
+      if(incoming.length===0)return;
+      setWechatNotices(current=>{
+        const queued=new Set(current.map(item=>item.seen));
+        return [...current,...incoming.filter(item=>!queued.has(item.seen)&&localStorage.getItem(item.seen)!=="true")];
+      });
     };
     check();
     window.addEventListener("storage",check);
@@ -236,10 +237,14 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     window.addEventListener("jia-wechat-notification",check);
     return()=>{window.removeEventListener("storage",check);window.removeEventListener("jia-progress",check);window.removeEventListener("jia-wechat-notification",check)};
   },[owner]);
-  useEffect(()=>{if(wechatNotice)void playNotificationSound("wechat")},[wechatNotice]);
+  useEffect(()=>{
+    if(!wechatNotice)return;
+    localStorage.setItem(wechatNotice.seen,"true");
+    void playNotificationSound("wechat");
+  },[wechatNotice]);
   useEffect(()=>{
     if(!notice||wechatNotice||owner!=="shen")return;
-    localStorage.setItem("jia-notified-b17-arrival","true");
+    localStorage.setItem("jia-notified-b17-arrival-v2","true");
     void playNotificationSound("mail");
   },[notice,wechatNotice,owner]);
   useEffect(()=>{
@@ -279,7 +284,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
       {owner==="liuhan"&&<button onDoubleClick={()=>window.open("/hengmu","_blank","noopener,noreferrer")} onClick={()=>setSelected("hengmu")} className={selected==="hengmu"?"selected":""}><i>囍</i><span>恒慕官网.url</span></button>}
     </section>
     {gameMode==="normal"&&<aside className="pc-sticky"><small>当前目标</small><b>{currentObjective}</b><span>与调查档案同步 · 线索确认后自动更新</span><button type="button" className="pc-sticky-case" onClick={()=>setActive("case")}><i>◫</i><strong>调查档案</strong><em>查看已经收集的证据</em></button></aside>}
-    {wechatNotice&&<div className="pc-toast pc-wechat-toast"><button className="pc-toast-open" onClick={()=>{setWechatNotice(null);setActive("wechat")}}><i>微</i><span><small>微信 · 现在</small><b>{wechatNotice.title}</b><em>{wechatNotice.body}</em></span></button><button className="pc-toast-close" aria-label="关闭微信通知" onClick={()=>setWechatNotice(null)}>×</button></div>}
+    {wechatNotice&&<div className="pc-toast pc-wechat-toast"><button className="pc-toast-open" onClick={()=>{dismissWechatNotice();setActive("wechat")}}><i>微</i><span><small>微信 · 现在</small><b>{wechatNotice.title}</b><em>{wechatNotice.body}</em></span></button><button className="pc-toast-close" aria-label="关闭微信通知" onClick={dismissWechatNotice}>×</button></div>}
     {notice&&!wechatNotice&&<div className="pc-toast"><button className="pc-toast-open" onClick={()=>{setNotice(false);setActive("mail")}}><i>✉</i><span><small>Outlook · 现在</small><b>B-17现场物品清单.zip</b><em>身份核验已完成，请下载现场物品清单</em></span></button><button className="pc-toast-close" aria-label="关闭通知" onClick={()=>setNotice(false)}>×</button></div>}
     {recoveredLetterNotice&&<div className="pc-toast pc-file-toast"><button className="pc-toast-open" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false);setActive("trash")}}><i>♲</i><span><small>文件恢复 · 现在</small><b>回收站中出现一个恢复文件</b><em>给望_未寄出.txt · 来自手机同步缓存</em></span></button><button className="pc-toast-close" aria-label="关闭文件恢复通知" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false)}}>×</button></div>}
     {active&&<PcWindow owner={owner} app={active} gameMode={gameMode} close={()=>setActive(null)}/>}
