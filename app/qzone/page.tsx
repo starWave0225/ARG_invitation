@@ -9,6 +9,7 @@ export default function QzonePage(){
   const [view,setView]=useState<QzoneView>("daily");
   const [archiveDate,setArchiveDate]=useState("");
   const [unlockError,setUnlockError]=useState(false);
+  const [previewImage,setPreviewImage]=useState<{src:string;alt:string}|null>(null);
 
   const recordAnonymousIp=()=>{
     localStorage.setItem("jia-qzone-message-read","true");
@@ -69,13 +70,32 @@ export default function QzonePage(){
 
     {view==="daily"?<section className="qz-archive-daily">
       <article>
-        <header><img src="/characters/gu-pan.png" alt="顾盼"/><div><b>顾盼</b><small>2021年8月17日</small></div></header>
-        <p>下一站还没决定，但地图已经画好了。等我们都忙完，就从海边开始。</p>
-        <div className="qz-memory">照片已无法从服务器载入<br/><small>IMG_20210817_旅行地图.jpg</small></div>
+        <header><img src="/characters/gu-pan.png" alt="顾盼"/><div><b>顾盼</b><small>2020年10月21日</small></div></header>
+        <p>两个人第一次一起做晚饭。一个人负责看菜谱，一个人负责把厨房弄得一团糟。最后居然还挺好吃。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/cooking-together.png",alt:"沈望与顾盼在家中一起做饭"})}>
+          <img src="/qzone/cooking-together.png" alt="沈望与顾盼在家中一起做饭"/>
+        </button>
       </article>
       <article>
-        <header><img src="/characters/shen-wang.png" alt="沈望"/><div><b>沈望</b><small>2020年10月21日</small></div></header>
-        <p>左边的人继续等，右边的人记得回头。</p>
+        <header><img src="/characters/shen-wang.png" alt="沈望"/><div><b>沈望</b><small>2021年4月4日</small></div></header>
+        <p>路线由她画，迷路由我负责。下一站还没决定，但地图上已经有了很多想一起去的地方。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/lakeside-map-picnic.png",alt:"沈望与顾盼在湖边查看旅行地图"})}>
+          <img src="/qzone/lakeside-map-picnic.png" alt="沈望与顾盼在湖边查看旅行地图"/>
+        </button>
+      </article>
+      <article>
+        <header><img src="/characters/gu-pan.png" alt="顾盼"/><div><b>顾盼</b><small>2021年8月17日</small></div></header>
+        <p>散步到很晚。他买了两杯热饮，却还是只空出一只手给我牵。左边的人继续等，右边的人记得回头。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/campus-night-walk.png",alt:"沈望与顾盼夜晚在校园散步"})}>
+          <img src="/qzone/campus-night-walk.png" alt="沈望与顾盼夜晚在校园散步"/>
+        </button>
+      </article>
+      <article>
+        <header><img src="/characters/shen-wang.png" alt="沈望"/><div><b>沈望</b><small>2021年12月31日</small></div></header>
+        <p>她那里比我晚十三个小时，所以今年可以说两次新年快乐。屏幕有点小，幸好想念没有距离限制。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/long-distance-video-call.png",alt:"沈望与顾盼跨越时差视频通话"})}>
+          <img src="/qzone/long-distance-video-call.png" alt="沈望与顾盼跨越时差视频通话"/>
+        </button>
       </article>
     </section>:<section className="qz-board qz-archive-board">
       <header><div><h2>留言板</h2><p>共 19 条留言</p></div></header>
@@ -93,5 +113,10 @@ export default function QzonePage(){
         <div><b>刘涵</b><small>2020年6月9日</small><p>你俩什么时候回来请吃饭？</p></div>
       </article>
     </section>}
+    {previewImage&&<div className="qz-photo-lightbox" role="dialog" aria-modal="true" aria-label="照片预览" onClick={()=>setPreviewImage(null)}>
+      <button type="button" aria-label="关闭照片预览" onClick={()=>setPreviewImage(null)}>×</button>
+      <img src={previewImage.src} alt={previewImage.alt} onClick={event=>event.stopPropagation()}/>
+      <p>{previewImage.alt}</p>
+    </div>}
   </main>;
 }

@@ -488,9 +488,6 @@ function QQDesktop(){
           <p>群聊　18</p>
           <button type="button" onClick={()=>openChat("classmates")}><img src="/characters/qq-class-group.svg" alt=""/><span><b>临川理工 · 计科16级</b><small>45人 · 消息免打扰</small></span></button>
         </div>}
-        <button type="button" className="qq-space-card" onClick={()=>setView("space")}>
-          <i>★</i><span><b>QQ空间</b><small>您的好友有新动态</small></span><em>1</em>
-        </button>
       </aside>
 
       <section className="qq-conversation">
@@ -547,11 +544,13 @@ function ChenFangChat(){
     <header>陈放</header>
     <div className="wx-messages">
       <div className="wx-system">2025年12月1日　21:16</div>
-      <WxBubble src="/characters/liu-han.png" mine text="老陈，我在找一个失联的朋友。她回临川后家里一直对外说她在疗养，但没人真正见过她。"/>
-      <WxBubble src="/characters/chen-fang.png" text="先别把“联系不上”直接写成失踪。把最后确认时间、原始账号、原始页面和你亲眼见到的情况分别记清楚，截图不要裁，网页地址和时间都要留。"/>
-      <WxBubble src="/characters/liu-han.png" mine text="如果我找到她发出的求救呢？"/>
-      <WxBubble src="/characters/chen-fang.png" text="先固定原始记录，再走正式查询。不要在微信里反复转发，也不要自己去质问她家里人。线索一旦惊动对方，现场和电子记录都可能被清掉。"/>
-      {!ipFound&&<WxBubble src="/characters/chen-fang.png" text="先把原始留言、页面时间和IP完整保存下来。有实证再找我。"/>}
+      <WxBubble src="/characters/liu-han.png" mine text="老陈，我在找一个失联的朋友。"/>
+      <WxBubble src="/characters/chen-fang.png" text="临川很大，你要找个人可不容易，知道大概方位吗？"/>
+      <WxBubble src="/characters/liu-han.png" mine text="暂时还不知道，姓名是顾盼，女性，年龄和我们相仿。"/>
+      <WxBubble src="/characters/chen-fang.png" text="停停停，你把我当土地公使了。"/>
+      <WxBubble src="/characters/chen-fang.png" text="你先找找线索，最好有IP什么的。"/>
+      <WxBubble src="/characters/chen-fang.png" text="关于我们公安可以公开的消息，都可以通过我们的官网搜索到。"/>
+      <a className="wx-shared-link" href="/police" target="_blank" rel="noopener noreferrer"><i>警</i><span><b>临川公安 · 公众线索协查</b><small>公开信息与档案查询 · 在新标签页打开</small></span><em>打开 ↗</em></a>
       {ipFound&&<>
         <div className="wx-system">2025年12月3日　02:51</div>
         <WxBubble src="/characters/liu-han.png" mine text="陈放，我在一个封存的QQ情侣空间里看到一条刚刚出现的匿名求救。留言不完整，但留下了时间和异常IP。"/>

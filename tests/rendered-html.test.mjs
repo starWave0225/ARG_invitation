@@ -161,6 +161,12 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
 
   assert.match(desktop, /if\(app==="qq"\)return <QQDesktop\/>/);
   assert.match(desktop, /aria-label="QQ功能栏"/);
+  assert.doesNotMatch(desktop, /className="qq-space-card"/);
+  assert.match(qzone, /\/qzone\/cooking-together\.png/);
+  assert.match(qzone, /\/qzone\/lakeside-map-picnic\.png/);
+  assert.match(qzone, /\/qzone\/campus-night-walk\.png/);
+  assert.match(qzone, /\/qzone\/long-distance-video-call\.png/);
+  assert.match(qzone, /qz-photo-lightbox/);
   assert.match(desktop, /您的好友有新动态/);
   assert.doesNotMatch(desktop, /左望右盼的情侣空间出现了一条新的访客留言。/);
   assert.match(desktop, /href="\/qzone" target="_blank" rel="noopener noreferrer"/);
@@ -177,7 +183,10 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.match(desktop, /url:"\/police"/);
   assert.match(desktop, /在浏览器搜索“临川公安 档案查询”/);
   assert.doesNotMatch(desktop, /placeholder="输入完整IP地址"|发送给陈放|IP节点协查回执\.pdf/);
-  assert.doesNotMatch(desktop, /href="\/police"/);
+  assert.match(desktop, /临川很大，你要找个人可不容易，知道大概方位吗？/);
+  assert.match(desktop, /停停停，你把我当土地公使了。/);
+  assert.match(desktop, /关于我们公安可以公开的消息，都可以通过我们的官网搜索到。/);
+  assert.match(desktop, /href="\/police" target="_blank" rel="noopener noreferrer"/);
   assert.match(desktop, /jia-ip-node-report-downloaded/);
   assert.match(desktop, /青槐区长宁路117号/);
   assert.match(desktop, /临川公安的公众线索协查端提供脱敏节点表/);
@@ -233,5 +242,9 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
     access(new URL("../public/evidence/liuhan-scene/04-cracked-phone.png", import.meta.url)),
     access(new URL("../public/evidence/liuhan-scene/05-invitation.png", import.meta.url)),
     access(new URL("../public/evidence/liuhan-scene/06-plan-fragment.png", import.meta.url)),
+    access(new URL("../public/qzone/cooking-together.png", import.meta.url)),
+    access(new URL("../public/qzone/lakeside-map-picnic.png", import.meta.url)),
+    access(new URL("../public/qzone/campus-night-walk.png", import.meta.url)),
+    access(new URL("../public/qzone/long-distance-video-call.png", import.meta.url)),
   ]);
 });
