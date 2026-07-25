@@ -194,7 +194,21 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     const timer=window.setInterval(update,1000);
     return()=>window.clearInterval(timer);
   },[]);
-  useEffect(()=>{const notify=()=>{if(owner==="shen"&&localStorage.getItem("jia-storage-reached")==="true")setNotice(true);setExtracted(localStorage.getItem("jia-gupan-pc-unlocked")==="true")};notify();window.addEventListener("jia-progress",notify);return()=>window.removeEventListener("jia-progress",notify)},[owner]);
+  useEffect(()=>{
+    const notify=()=>{
+      const b17AlreadyHandled=localStorage.getItem("jia-gupan-pc-unlocked")==="true";
+      if(owner==="shen"&&b17AlreadyHandled)localStorage.setItem("jia-notified-b17-arrival","true");
+      const shouldShowB17Notice=owner==="shen"&&
+        localStorage.getItem("jia-storage-reached")==="true"&&
+        !b17AlreadyHandled&&
+        localStorage.getItem("jia-notified-b17-arrival")!=="true";
+      if(shouldShowB17Notice)setNotice(true);
+      setExtracted(b17AlreadyHandled);
+    };
+    notify();
+    window.addEventListener("jia-progress",notify);
+    return()=>window.removeEventListener("jia-progress",notify);
+  },[owner]);
   useEffect(()=>{
     if(owner!=="shen")return;
     const updates=[
@@ -223,7 +237,11 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     return()=>{window.removeEventListener("storage",check);window.removeEventListener("jia-progress",check);window.removeEventListener("jia-wechat-notification",check)};
   },[owner]);
   useEffect(()=>{if(wechatNotice)void playNotificationSound("wechat")},[wechatNotice]);
-  useEffect(()=>{if(notice&&!wechatNotice)void playNotificationSound("mail")},[notice,wechatNotice]);
+  useEffect(()=>{
+    if(!notice||wechatNotice||owner!=="shen")return;
+    localStorage.setItem("jia-notified-b17-arrival","true");
+    void playNotificationSound("mail");
+  },[notice,wechatNotice,owner]);
   useEffect(()=>{
     if(owner!=="gupan")return;
     const check=()=>{
