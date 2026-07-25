@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile, stat } from "node:fs/promises";
 import test from "node:test";
+import { rewriteGitHubPagesPaths } from "../scripts/github-pages-paths.mjs";
 
 async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -22,6 +23,21 @@ async function render(pathname = "/") {
     },
   );
 }
+
+test("rewrites GitHub Pages paths without corrupting framework root literals", () => {
+  const source = [
+    'const frameworkRoot = "/";',
+    'const route = "/computer/shen";',
+    'const asset = "/opening/evidence-table.png";',
+    '<a href="/">返回主选单</a>',
+  ].join("\n");
+  const rewritten = rewriteGitHubPagesPaths(source);
+
+  assert.match(rewritten, /frameworkRoot = "\/";/);
+  assert.match(rewritten, /route = "\/ARG_invitation\/computer\/shen";/);
+  assert.match(rewritten, /asset = "\/ARG_invitation\/opening\/evidence-table\.png";/);
+  assert.match(rewritten, /href="\/ARG_invitation\/"/);
+});
 
 test("server-renders the game opening screen", async () => {
   const response = await render();
