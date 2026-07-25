@@ -1,0 +1,93 @@
+/* Two complete walk poses avoid seams through the legs and coat hem. */
+.opening-pixel-parallel .pose-walk {
+  background-image: none;
+}
+
+.opening-pixel-parallel .pose-walk::before,
+.opening-pixel-parallel .pose-walk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  will-change: opacity;
+}
+
+.opening-pixel-parallel .pose-walk::before {
+  background-position: 33.333% center;
+  background-size: 400% 100%;
+  animation: opening-walk-frame-a .46s steps(1, end) infinite;
+}
+
+.opening-pixel-parallel .pixel-shen.pose-walk::before {
+  background-image: url("/opening/shen-pixel-sprites.png");
+}
+
+.opening-pixel-parallel .pixel-gupan.pose-walk::before {
+  background-image: url("/opening/gupan-pixel-sprites.png");
+}
+
+.opening-pixel-parallel .pose-walk::after {
+  background-position: center;
+  background-size: 100% 100%;
+  animation: opening-walk-frame-b .46s steps(1, end) infinite;
+}
+
+.opening-pixel-parallel .pixel-shen.pose-walk::after {
+  background-image: url("/opening/shen-walk-alt.png");
+}
+
+.opening-pixel-parallel .pixel-gupan.pose-walk::after {
+  background-image: url("/opening/gupan-walk-alt.png");
+}
+
+/* Gu Pan's source walk frame already faces left, toward Shen Wang. */
+.opening-pixel-parallel .pixel-parallel-gupan {
+  transform: none;
+  animation: pixel-walk-left-facing-center 5.7s 31.5s linear both;
+}
+
+@keyframes opening-walk-frame-a {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes opening-walk-frame-b {
+  0%,
+  49% {
+    opacity: 0;
+  }
+
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pixel-walk-left-facing-center {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-138vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening-pixel-parallel .pose-walk::before,
+  .opening-pixel-parallel .pose-walk::after {
+    animation: none;
+  }
+
+  .opening-pixel-parallel .pose-walk::after {
+    opacity: 0;
+  }
+}
