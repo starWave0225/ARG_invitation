@@ -68,7 +68,7 @@ export default function NightDrivePage(){
         {result==="empty"&&<div className="nightdrive-empty"><small>SEARCH COMPLETE</small><h1>0 RESULTS</h1><p>没有与“{query}”匹配的公开索引。请根据转介记录或汇款单的 ID 进行检索。</p><button onClick={()=>{setQuery("");setResult("idle")}}>BACK TO INDEX</button></div>}
 
         {result==="gp"&&<section className="nightdrive-case">
-          <header><div><small>1 HIDDEN RESULT · ARCHIVED 2022-11-02</small><h1>HM-2217 · GU PAN</h1><p>Uploader: <b>HD_047</b>　Category: NEW CAR / PRIVATE DROP</p></div><em>ARCHIVED</em></header>
+          <header><div><small>1 HIDDEN RESULT · ARCHIVED 2022-11-13</small><h1>HM-2217 · GU PAN</h1><p>Uploader: <b>HD_047</b>　Category: NEW CAR / PRIVATE DROP</p></div><em>ARCHIVED</em></header>
 
           <div className="nightdrive-case-hero">
             <div className="nightdrive-video-stub"><img src="/moments/han-duo/party-1.webp" alt="被遮挡的偷拍视频索引画面"/><span>PUBLIC MIRROR · CENSORED</span><small>ORIGINAL MEDIA RETAINED · PLAYER PREVIEW DISABLED</small></div>
@@ -77,9 +77,9 @@ export default function NightDrivePage(){
               <dt>本票编号</dt><dd>SD-8845127</dd>
               <dt>关联姓名</dt><dd>GU PAN</dd>
               <dt>关联档案</dt><dd>YF-GP-0214-A</dd>
-              <dt>事件时间</dt><dd>2022-10-27 23:48—2022-10-28 04:11</dd>
+              <dt>事件时间</dt><dd>2022-11-08 23:48—2022-11-09 04:11</dd>
               <dt>来源账号</dt><dd>HD-047 / VERIFIED UPLOADER</dd>
-              <dt>补偿本票</dt><dd>2022-11-02 · USD 20,000 · VOID</dd>
+              <dt>补偿本票</dt><dd>2022-11-13 · USD 20,000 · VOID</dd>
             </dl>
           </div>
 
@@ -88,10 +88,10 @@ export default function NightDrivePage(){
             <h2>HM-2217：顾盼</h2>
             <p>2022年2月14日凌晨，顾盼强行将状态异常的郝倩带离聚会地点，并把她送往港湾康复中心。远帆通过康复转介和付款资料，确认了顾盼的姓名以及她与郝倩的关系。</p>
             <p>2022年9月19日，组织以照片、视频和病历胁迫郝倩获得了顾盼的住址，且她持有顾盼房间的备用钥匙。随后将这些信息并入远帆关联表，并把顾盼标记为 <b>HM-2217</b>。</p>
-            <p>2022年10月27日晚，顾盼抵达了为她专门安排的留学生结业聚会。服务器保留了可公开播放的原始画面。</p>
-            <p>10月28日03:57，胁迫郝倩同我们一起将顾盼送回其住处。</p>
-            <p>10月30日，远帆账目向H.Q.关联账户支付了 <b>USD 12,000</b>，备注为“最终协作 / 保密”。</p>
-            <p>11月2日，组织另行准备了一张金额为 <b>USD 20,000</b> 的补偿本票，由H.Q.转交顾盼。本票编号为 <b>SD-8845127</b>，备注 <b>HM-2217</b>，最终没有兑现，顾盼疑似离开北港。</p>
+            <p>2022年11月8日晚，顾盼抵达了为她专门安排的留学生结业聚会。服务器保留了可公开播放的原始画面。</p>
+            <p>11月9日03:57，胁迫郝倩同我们一起将顾盼送回其住处。</p>
+            <p>11月11日，远帆账目向H.Q.关联账户支付了 <b>USD 12,000</b>，备注为“最终协作 / 保密”。</p>
+            <p>11月13日，组织另行准备了一张金额为 <b>USD 20,000</b> 的补偿本票，由H.Q.转交顾盼。本票编号为 <b>SD-8845127</b>，备注 <b>HM-2217</b>，最终没有兑现，顾盼疑似离开北港。</p>
           </article>
 
           <div className="nightdrive-file-index">
@@ -103,7 +103,7 @@ export default function NightDrivePage(){
             <article><span>11/02</span><b>SD-8845127.pdf</b><em>USD 20,000 · 补偿本票 · 未兑现</em><i>VOID</i></article>
           </div>
 
-          <article className="nightdrive-moderator-note"><small>PINNED MODERATOR NOTE</small><p>“新车”已送回原位。三份原始画面保留在站内公开镜像；真实姓名仍禁止出现在评论区。11月2日本票未兑现，目标疑似离开北港。</p></article>
+          <article className="nightdrive-moderator-note"><small>PINNED MODERATOR NOTE</small><p>“新车”已送回原位。三份原始画面保留在站内公开镜像；真实姓名仍禁止出现在评论区。11月13日本票未兑现，目标疑似离开北港。</p></article>
         </section>}
 
         {result==="hq"&&<section className="nightdrive-case">
@@ -129,9 +129,9 @@ export default function NightDrivePage(){
             <p>2022年2月13日晚，郝倩再次出现意识异常。现场人员担心闹出人命，使用她的手机联系了紧急联系人顾盼。顾盼赶到后，不顾管理员阻拦，将她带离现场，并独自承担了后续治疗费用。</p>
             <p>郝倩结束治疗后，组织开始密切观察这名施救者。通过康复转介和付款资料，我们确认了顾盼的姓名与学校。她的照片被发进群里后，有成员为她开出了不低的价格。</p>
             <p>2022年9月19日，组织以照片、视频和病历相威胁，迫使郝倩重新参加活动，并再次向她提供药物。意识不清期间，她说出了顾盼的住址，也承认自己仍持有顾盼房间的备用钥匙。</p>
-            <p>10月27日，郝倩将“毕业前聚会”的邀请转发给顾盼。我们替换了邀请中的地址，将集合地点改到夜航群使用的私人场所。</p>
+            <p>11月8日，郝倩将“毕业前聚会”的邀请转发给顾盼。我们替换了邀请中的地址，将集合地点改到夜航群使用的私人场所。</p>
             <p>顾盼抵达后，聚会正式变成夜航群的“欢聚时刻”。郝倩一直坐在摄像机后方，浑身发抖，却没有离开。这场成功的双女主演出点燃了在场每一名群友的热情。</p>
-            <p>10月30日，H.Q.关联账户收到 <b>USD 12,000</b>。结算备注：最终协作 / 保密。</p>
+            <p>11月11日，H.Q.关联账户收到 <b>USD 12,000</b>。结算备注：最终协作 / 保密。</p>
             <p>另有一张金额为 <b>USD 20,000</b> 的银行本票，由组织经H.Q.转交顾盼，作为事件补偿。该本票最终未兑现。</p>
           </article>
 

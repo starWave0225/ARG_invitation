@@ -398,7 +398,7 @@ export default function OpeningMusic() {
       <audio ref={openingRef} src="/audio/opening-theme.mp3" preload="auto" />
       <audio ref={deckARef} preload="none" />
       <audio ref={deckBRef} preload="none" />
-      {playerVisible && !pathname.startsWith("/ending/hidden") && (
+      {playerVisible && !pathname.startsWith("/ending/hidden") && !pathname.startsWith("/ending/xi") && (
         <aside className={`bgm-player ${panelOpen ? "open" : ""}`} aria-label="背景音乐控制">
           {panelOpen && (
             <section className="bgm-panel">

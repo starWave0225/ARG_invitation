@@ -15,7 +15,7 @@ const portraits: Record<number, {src:string;name:string;note:string}> = {
   4:{src:"/characters/hao-qian.png",name:"郝倩",note:"拒绝正式作证"},
   6:{src:"/characters/liu-han.png",name:"刘涵",note:"国内调查端"},
   8:{src:"/characters/shao-minghui.png",name:"邵明辉",note:"原婚约新郎"},
-  10:{src:"/characters/han-duo.png",name:"专属顾问：韩铎",note:"圆满方案负责人"},
+  10:{src:"/characters/hengmu-case-manager.svg",name:"恒慕特别委托组",note:"圆满方案企业服务账号"},
   11:{src:"/characters/chen-fang.png",name:"陈放",note:"临川公安"},
   13:{src:"/characters/hao-qian.png",name:"郝倩",note:"关键证人"},
   14:{src:"/characters/gu-pan.png",name:"顾盼",note:"《向阳处》作者"}
@@ -76,35 +76,35 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       </Scene>}
       {step===6 && <Scene eyebrow="左右分屏开启" title="匿名访客">
         <p>左侧沈望快速重取国外原始证据；右侧刘涵找到QQ情侣空间。匿名留言正文残破，但异常记录保留完整IP。刘涵在浏览器搜索临川公安档案查询网站，用IP调出公共网络节点一览。</p>
-        <pre>匿名访客 · 2025年11月29日 02:47\n沈望，救我。我被锁在……\n临川……17号\n……4栋……02室\n异常 IP：183.214.76.119\n节点登记：青槐区长宁路117号</pre>
-        <div className="route-launcher"><small>临川公安 · 公众线索协查端</small><h2>公共网络节点查询</h2><p>输入完整IP后显示18条同期节点记录；目标行指向晴川公寓公共无线网络。</p><a href="/police" target="_blank" rel="noopener noreferrer">在新标签页打开档案查询网站 ↗</a></div>
-        <label>结合工作地点与候选地址，输入准确住址</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="晴川公寓4栋602室"/>
-        <button disabled={answer!=="晴川公寓4栋602室"} onClick={()=>go(7)}>前往拘禁现场</button>
+        <pre>匿名访客 · 2025年11月29日 02:47\n沈望，救我。我被锁在……\n临川……17号\n……4栋 一单...402室\n异常 IP：183.214.76.119\n节点登记：青槐区长宁路117号</pre>
+        <div className="route-launcher"><small>临川公安 · 公众线索协查端</small><h2>公共网络节点查询</h2><p>页面直接展示18条同期节点记录，不提供输入框、结果提示或目标行高亮；玩家需要自行比对完整IP与时段。</p><a href="/police" target="_blank" rel="noopener noreferrer">在新标签页打开档案查询网站 ↗</a></div>
+        <label>结合工作地点与候选地址，输入准确住址</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="晴川公寓4栋1单元402室"/>
+        <button disabled={answer!=="晴川公寓4栋1单元402室"} onClick={()=>go(7)}>前往拘禁现场</button>
       </Scene>}
-      {step===7 && <Scene eyebrow="晴川公寓 · 4栋602" title="这里发生过什么">
-        <div className="evidence-wall"><Card title="突然离开" text="护照、工作证、日常衣物和复学申请全部留下"/><Card title="非法拘禁" text="门框残留外锁孔洞；三天失败网络连接"/><Card title="明确拒绝" text="撕碎合同一角：我不同意"/><Card title="紧急清理" text="局部清洁；恒慕车辆凌晨进入"/><Card title="旧手机" text="匿名求救成功；后续消息上传失败"/><Card title="旧请柬" text="顾盼 × 邵明辉\n云庭酒店·锦华厅"/></div>
+      {step===7 && <Scene eyebrow="晴川公寓 · 4栋1单元402" title="这里发生过什么">
+        <div className="evidence-wall"><Card title="突然离开" text="护照、工作证、日常衣物和复学申请全部留下"/><Card title="非法拘禁" text="门框残留外锁孔洞；三天失败网络连接"/><Card title="明确拒绝" text="撕碎合同一角：我不同意"/><Card title="紧急清理" text="局部清洁；警方完成处置后恒慕车辆进入"/><Card title="旧手机" text="匿名求救成功；后续消息上传失败"/><Card title="旧请柬" text="顾盼 × 邵明辉\n云庭酒店·锦华厅"/></div>
         <button onClick={()=>go(8)}>调查请柬</button>
       </Scene>}
       {step===8 && <Scene eyebrow="旧请柬" title="原来的新郎">
         <p>搜索显示邵明辉是当地富豪独子，长期需要照护；邵家公开寻找“温顺、能够照顾家庭”的伴侣。云庭酒店则确认原定宴席已经取消。</p>
         <div className="source-grid"><Card title="搜索结果" text="邵家愿支付高额彩礼\n本人很少公开露面"/><Card title="酒店档期" text="2025.12.06 锦华厅\n原预约已取消 / 当前空档"/><Card title="二维码" text="恒慕婚姻家庭服务集团\n状态：方案变更"/></div>
         <div className="route-launcher"><small>二维码识别结果 · hengmu-family.cn</small><h2>恒慕婚姻家庭服务集团</h2><p>婚恋服务、家庭顾问与会员专属服务中心。</p><a href="/hengmu" target="_blank" rel="noopener noreferrer">在新标签页打开恒慕官网 ↗</a></div>
-        <button onClick={()=>go(9)}>拼合婚约变更单</button>
+        <button onClick={()=>go(9)}>查看婚介合同残页</button>
       </Scene>}
-      {step===9 && <Scene eyebrow="变更单底部封边" title="摩斯电码">
+      {step===9 && <Scene eyebrow="婚介合同底部封边" title="摩斯电码">
         <pre>-.--  --.-  --...  ...--  -----  ....-  .----  ----.</pre>
         <label>输入解出的专属服务码</label><input value={answer} onChange={e=>setAnswer(e.target.value.toUpperCase())} placeholder="YQ-730419"/>
-        <button disabled={answer!=="YQ-730419"} onClick={()=>go(10)}>添加恒慕企业微信</button>
+        <button disabled={answer.replaceAll("-","")!=="YQ730419"} onClick={()=>go(10)}>打开圆满方案</button>
       </Scene>}
       {step===10 && <Scene eyebrow="恒慕家庭顾问" title="圆满方案">
         <p>返回恒慕官网的“服务进度查询”，同时输入合同号 <b>HM-W-251206-117</b> 与刚刚解出的服务码，取得变更时间线和内部结算摘要。</p>
-        <div className="dialogue"><p><b>自动客服：</b>订单 HM-W-251206-117 已进入特殊变更流程。</p><p><b>刘涵：</b>服务码 YQ-730419。查询家属委托物。</p><p><b>私人顾问：</b>委托标的已接收，恒温保存；新匹配完成。家属分成50%。</p></div>
+        <div className="dialogue"><p><b>自动客服：</b>订单 HM-W-251206-117 已进入特殊变更流程。</p><p><b>刘涵：</b>服务码 YQ-730419。查询家属委托物。</p><p><b>恒慕特别委托组：</b>委托标的已接收，恒温保存；新匹配完成。家属分成50%。</p></div>
         <p>转运单将“委托标的”写成顾盼，接收地为永安礼仪园。她已经死亡；父母正在出售她的遗体。</p>
         <button onClick={()=>{addProof(4);go(11)}}>返回警方档案查询网站</button>
       </Scene>}
       {step===11 && <Scene eyebrow="临川公安 · 档案查询网站" title="让真相进入程序">
-        <p>陈放不通过微信泄露数据库。他把QQ求救、拘禁现场和恒慕转运单正式登记为关联材料后，网站自动开放两份脱敏警情档案。</p>
-        <pre>02:13 周秀兰拨打报警电话\n02:14 通话中断\n02:16 顾建国回拨称误触\n02:19 顾建国联系韩铎\n02:31 恒慕车辆进入小区</pre>
+        <p>从现场物品登记表下载附件，取得档案编号 <b>LC-QH-1129-402</b>。在公安网站输入该编号后，系统直接返回两份关联警情档案，不受其他调查材料的取得进度限制。</p>
+        <pre>07:46 周秀兰拨打110\n08:03 警方到达晴川公寓\n08:11 现场确认顾盼死亡\n09:26 完成现场勘验\n11:42 家属接管后续处置\n12:06 恒慕在晴川公寓接收委托标的</pre>
         <button onClick={()=>{addProof(3);go(12)}}>锁定永安礼仪园</button>
       </Scene>}
       {step===12 && <Scene eyebrow="转运倒计时 03:00:00" title="最后的证据链">
@@ -120,7 +120,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       {step===14 && <Scene eyebrow="真结局 · 向阳而生" title="她终于以自己的名字被看见">
         <div className="asset-slot large">后续图片素材：未迟书店画展 / 《向阳处》系列 / 空着的右侧位置</div>
         <p>顾盼的画作在“未迟”展出。沈望没有替她活着，而是带着她曾经活过的证明，继续两人没有完成的旅行。`HengMu`仍有节点运行，也有人开始盯上他。</p>
-        <p>隐藏结局不再由信物数量解锁。完成刘涵线后，返回顾盼旧电脑，在回收站阅读恢复出的《给望_未寄出.txt》。</p>
+        <p>完成刘涵线后会出现两条独立的结局入口：读完《希望_未寄出.txt》，从信末直接进入隐藏结局“镜花水月”；回到刘涵微信，以恒慕特别委托组的机构账号完成最终对质，则进入第三结局“嫁”。</p>
       </Scene>}
       </main>
     </div>

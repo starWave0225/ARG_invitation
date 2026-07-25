@@ -52,7 +52,7 @@ test("server-renders the game opening screen", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>嫁｜双周目网页调查叙事<\/title>/);
+  assert.match(html, /<title>嫁｜网页调查叙事<\/title>/);
   assert.match(html, /点击播放《嫁》游戏片头/);
   assert.match(html, /CLICK TO BEGIN · 建议使用耳机/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
@@ -167,6 +167,10 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.match(qzone, /\/qzone\/campus-night-walk\.png/);
   assert.match(qzone, /\/qzone\/long-distance-video-call\.png/);
   assert.match(qzone, /qz-photo-lightbox/);
+  assert.match(qzone, /一个人负责看菜谱，一个人负责帮倒忙/);
+  assert.match(qzone, /地图上已经太阳密布了，天气真好/);
+  assert.match(qzone, /我俩天下第一最最好：）/);
+  assert.match(qzone, /还是不想只和你视频，你一个人真的辛苦了/);
   assert.match(desktop, /您的好友有新动态/);
   assert.doesNotMatch(desktop, /左望右盼的情侣空间出现了一条新的访客留言。/);
   assert.match(desktop, /href="\/qzone" target="_blank" rel="noopener noreferrer"/);
@@ -187,19 +191,40 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.match(desktop, /停停停，你把我当土地公使了。/);
   assert.match(desktop, /关于我们公安可以公开的消息，都可以通过我们的官网搜索到。/);
   assert.match(desktop, /href="\/police" target="_blank" rel="noopener noreferrer"/);
+  assert.doesNotMatch(desktop, /2025年12月3日　02:51|节点表里对应的是长宁路117号|现场资料收到了|我已经把你固定的原始页面/);
+  assert.match(desktop, /我昨晚在酒吧出了一些事情，身体很不舒服/);
+  assert.match(desktop, /我不知道你们的爱到底是什么/);
+  assert.match(desktop, /顾盼退出了群聊/);
+  assert.match(desktop, /这里面一定有误会，顾盼，你好几天没有来学校上课/);
+  assert.doesNotMatch(desktop, /臭B，谁会要你|该记录包含受害者指责/);
   assert.match(desktop, /jia-ip-node-report-downloaded/);
   assert.match(desktop, /青槐区长宁路117号/);
-  assert.match(desktop, /临川公安的公众线索协查端提供脱敏节点表/);
+  assert.match(desktop, /normalized\.includes\("晴川公寓"\).*normalized\.includes\("青槐区长宁路117号"\).*normalized\.includes\("长宁路117号"\)/s);
+  assert.match(desktop, /补充具体门牌/);
+  assert.match(desktop, /几栋/);
+  assert.match(desktop, /几单元/);
+  assert.match(desktop, /几零几/);
+  assert.match(desktop, /\["4","四"\].*\["1","一"\].*\["402","四零二","四〇二"\]/s);
+  assert.match(qzone, /……4栋 一单\.\.\.402室/);
   assert.match(desktop, /晴川公寓现场资料\.zip/);
   assert.match(desktop, /jia-liuhan-scene-package-extracted/);
   assert.match(desktop, /晴川公寓_现场证据/);
-  assert.match(desktop, /01_现场勘查摘要\.pdf/);
+  assert.doesNotMatch(desktop, /01_现场勘查摘要\.pdf|02_警方协查回执单\.pdf|档案调阅编号|LC-XZ-251203-17/);
   assert.match(desktop, /03_室内全景\.jpg/);
   assert.match(desktop, /04_碎屏旧手机\.jpg/);
   assert.match(desktop, /05_请柬\.jpg/);
-  assert.match(desktop, /06_方案变更单残页\.jpg/);
+  assert.match(desktop, /"05_请柬\.jpg":\{[\s\S]*?imageHotspotHref:"\/hengmu"/);
+  assert.doesNotMatch(desktop, /扫描请柬上的二维码|打开恒慕官网 ↗/);
+  assert.match(desktop, /06_婚庆合同\.jpg/);
+  assert.match(desktop, /"06_婚庆合同\.jpg":\{[\s\S]*?hideCaption:true/);
+  assert.doesNotMatch(desktop, /现场恢复件|合同编号位于抬头信息区|纸张底部的窄封边残留一串点划符号/);
   assert.match(desktop, /07_现场物品登记表\.pdf/);
-  assert.match(desktop, /备忘录_密码\.txt/);
+  assert.match(desktop, /旧手机备忘录\.jpg/);
+  assert.match(desktop, /08-password-note\.png/);
+  assert.match(desktop, /hideCaption:true,hideSourceLink:true/);
+  assert.match(desktop, /download="LC-QH-1129-402\.txt"/);
+  assert.match(desktop, /jia-police-investigation-id-downloaded/);
+  assert.doesNotMatch(desktop, /该密码指向顾盼旧电脑上的微信离线备份|返回顾盼旧电脑，解锁微信备份/);
   assert.doesNotMatch(desktop, /顾盼的手机_本地数据提取|刘涵电脑.*下载/);
   assert.match(qzone, /空间已封存/);
   assert.match(qzone, /请输入封存的日期。/);
@@ -217,22 +242,34 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.doesNotMatch(qzone, />相册<\/button>|>纪念日<\/button>|>主人管理/);
   assert.doesNotMatch(qzone, /1488|相伴了多少天/);
   assert.match(police, /公共网络节点查询/);
-  assert.match(police, /networkQuery\.trim\(\)==="183\.214\.76\.119"/);
   assert.match(police, /localStorage\.setItem\("jia-ip-node-report-downloaded","true"\)/);
   assert.match(police, /青槐区公共网络节点一览表/);
   assert.match(police, /青槐区长宁路117号/);
   assert.match(police, /晴川公寓公共无线网络/);
-  assert.match(police, /localStorage\.getItem\("jia-hengmu-unlocked"\)==="true"/);
-  assert.match(police, /警情档案权限已开放|死亡警情与现场记录已开放/);
+  assert.doesNotMatch(police, /networkQuery|networkSearched|networkMatch|lookupNetwork|className=\{row\[1\].*matched|目标IP对应|查询节点一览/);
+  assert.match(police, /const ARCHIVE_ID="LC-QH-1129-402"/);
+  assert.match(police, /按档案编号检索/);
+  assert.doesNotMatch(police, /requiredEvidenceReady|关联材料尚未完成归档|jia-gp-wechat-unlocked-v5|jia-hengmu-unlocked/);
+  assert.match(police, /jia-police-call-read/);
+  assert.match(police, /jia-police-scene-read/);
+  assert.doesNotMatch(police, /archiveUnlocked|jia-police-archive-unlocked|姓名、地址或警情关键词|type="date"/);
   assert.doesNotMatch(police, /CF-1203-LH|协查授权码|一次性协查入口/);
   assert.match(guide, /情侣空间留言板<\/td><td><code>2022\/11\/18<\/code>/);
   assert.match(guide, /浏览器搜索“临川公安 档案查询”/);
+  assert.match(guide, /直接展示完整列表，不提供输入框、结果提示或目标行高亮/);
   assert.doesNotMatch(guide, /返回刘涵微信，打开陈放|CF-1203-LH|IP节点协查回执\.pdf/);
   assert.match(guide, /晴川公寓_现场证据/);
-  assert.match(guide, /备忘录_密码\.txt/);
+  assert.doesNotMatch(guide, /02_警方协查回执单\.pdf|LC-XZ-251203-17|输入回执编号/);
+  assert.match(guide, /在“警情档案检索”中直接输入 <code>LC-QH-1129-402<\/code>/);
+  assert.match(guide, /不再要求姓名、地址或日期二次查询/);
+  assert.match(guide, /旧手机备忘录\.jpg/);
   assert.match(styles, /\.qq-app\{[^}]*grid-template-columns:64px 250px minmax\(0,1fr\)/);
   assert.match(styles, /\.qq-space-panel\{[^}]*grid-column:2\/-1/);
   assert.match(styles, /\.police-network-table\{/);
+  assert.match(styles, /\.pc-invitation-qr-hotspot\s*\{[^}]*cursor:pointer/);
+  assert.match(styles, /\.police-archive-gate\{/);
+  assert.match(styles, /\.pc-file-preview>article\{[^}]*height:100%[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
+  assert.match(styles, /\.police-route\{[^}]*height:100dvh[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
   assert.match(styles, /\.qz-route\{[^}]*height:100dvh[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
 
   await Promise.all([
@@ -247,4 +284,80 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
     access(new URL("../public/qzone/campus-night-walk.png", import.meta.url)),
     access(new URL("../public/qzone/long-distance-video-call.png", import.meta.url)),
   ]);
+});
+
+test("keeps the November incident, ending routes, and three-day rewind on one timeline", async () => {
+  const [desktop, nightdrive, hengmu, ending, xiEnding, hiddenEnding, prototype, guide] = await Promise.all([
+    readFile(new URL("../app/computer/DesktopRoute.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/nightdrive/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/hengmu/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ending/late-flowers/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ending/xi/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ending/hidden/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/FullInvestigation.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/story-guide.html", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(nightdrive, /2022-11-08 23:48—2022-11-09 04:11/);
+  assert.match(nightdrive, /2022-11-13 · USD 20,000 · VOID/);
+  assert.doesNotMatch(nightdrive, /2022-10-27|2022-10-28|2022-11-02|10月27日|10月30日|11月2日/);
+  assert.match(desktop, /2022年11月8日。/);
+  assert.match(hengmu, /最近更新：2025-11-29 12:26/);
+  assert.match(hengmu, /replaceAll\("-",""\)/);
+  assert.match(hengmu, /normalizedCode==="YQ730419"/);
+  assert.match(hengmu, /恒慕特别委托组 · 官方企业服务账号/);
+  assert.doesNotMatch(hengmu, /HengMu-FamilyPlan|企业微信：/);
+  assert.doesNotMatch(hengmu, /韩铎 \/ HD-047|HengMu-HD047/);
+  assert.match(hengmu, /jia-hengmu-contact/);
+  assert.match(desktop, /current\.name==="恒慕特别委托组"&&<HengmuCaseConfrontation\/>/);
+  assert.match(desktop, /jia-gp-final-letter-read/);
+  assert.match(desktop, /希望_未寄出\.txt/);
+  assert.match(desktop, /<h1>希望<\/h1>/);
+  assert.match(desktop, /我其实无限需要你/);
+  assert.doesNotMatch(desktop, /给望_未寄出\.txt/);
+  assert.match(hiddenEnding, /如果时间肯在那一晚，向相爱的人偏一点/);
+  assert.match(hiddenEnding, /“别说话，抱紧我。”/);
+  assert.match(hiddenEnding, /2022—2025 · 未走完的地图/);
+  assert.match(hiddenEnding, /她成为了沈望的新娘/);
+  assert.match(hiddenEnding, /左望，右盼/);
+  assert.doesNotMatch(hiddenEnding, /const fade=next>98/);
+  assert.doesNotMatch(hiddenEnding, /if\(next>=ENDING_DURATION\)\{\s*audio\.pause\(\)/);
+  assert.doesNotMatch(hiddenEnding, /const finish=\(\)=>\{\s*audioRef\.current\?\.pause\(\)/);
+  assert.match(hiddenEnding, /if\(status!==\"complete\"\)return;[\s\S]*audio&&!audio\.ended&&audio\.paused/);
+  assert.match(desktop, /不管你们在做什么，都立即终止！把顾盼现在的准确位置发给我，停止仪式，否则你们会知道/);
+  assert.match(desktop, /永安礼仪园[\s\S]*东区静安厅 · 转运登记处/);
+  assert.match(desktop, /闯入永安礼仪园 → 第三结局 · 嫁/);
+  assert.match(desktop, /jia-hengmu-confrontation-complete/);
+  assert.match(desktop, /jia-ending-xi-source","hengmu-confrontation/);
+  assert.match(desktop, /window\.location\.assign\("\/ending\/xi"\)/);
+  assert.match(desktop, /进入隐藏结局 · 镜花水月/);
+  assert.match(desktop, /window\.location\.assign\("\/ending\/hidden"\)/);
+  assert.match(xiEnding, /葛东琪《囍》· 从头播放/);
+  assert.match(xiEnding, /父母收走了她的护照和手机/);
+  assert.match(xiEnding, /警方控制现场并封存证据/);
+  assert.doesNotMatch(xiEnding, /if\(audio&&next>84\)/);
+  assert.doesNotMatch(xiEnding, /if\(next>=ENDING_DURATION\)\{\s*audio\?\.pause\(\)/);
+  assert.doesNotMatch(xiEnding, /const finish=\(\)=>\{\s*audioRef\.current\?\.pause\(\)/);
+  assert.doesNotMatch(desktop, /HengMu-FamilyPlan|企业微信：/);
+  assert.match(guide, /恒慕特别委托组[\s\S]*不对应韩铎或其他具体员工/);
+  assert.match(guide, /不需要搜索或输入账号/);
+  assert.match(guide, /与恒慕机构完成最终对质/);
+  assert.match(guide, /第三结局：嫁/);
+  assert.match(guide, /隐藏结局只能从这封信的底部进入/);
+  assert.match(guide, /YQ-730419<\/code> 或 <code>YQ730419/);
+  assert.match(hengmu, /11:42完成现场处置|现场处置结束后/);
+  assert.match(hengmu, /<time>11:48<\/time>[\s\S]*?<time>12:06<\/time>[\s\S]*?<time>12:26<\/time>/);
+  assert.match(desktop, /date:"2025年12月2日 星期二"/);
+  assert.match(ending, /<i>12\.02<\/i><i>12\.01<\/i><i>11\.30<\/i><i>11\.29<\/i>/);
+  assert.doesNotMatch(ending, /<i>12\.03<\/i>/);
+  assert.match(prototype, /页面直接展示18条同期节点记录，不提供输入框、结果提示或目标行高亮/);
+  assert.match(prototype, /输入该编号后，系统直接返回两份关联警情档案/);
+  assert.match(guide, /2022年11月8日|11月8日聚会侵害/);
+  assert.match(guide, /2025年12月2日/);
+  await access(new URL("../public/characters/hengmu-case-manager.svg", import.meta.url));
+  await access(new URL("../public/audio/bgm/ending-xi.mp3", import.meta.url));
+  await access(new URL("../public/ending/xi/01-forced-marriage.png", import.meta.url));
+  await access(new URL("../public/ending/xi/02-ghost-marriage.png", import.meta.url));
+  await access(new URL("../public/ending/xi/03-intervention.png", import.meta.url));
+  await access(new URL("../public/ending/xi/04-police-dawn.png", import.meta.url));
 });

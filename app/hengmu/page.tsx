@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
 
 type View = "home" | "services" | "status";
 
@@ -9,10 +9,20 @@ export default function HengmuSite() {
   const [order,setOrder]=useState("");
   const [code,setCode]=useState("");
   const [state,setState]=useState<"idle"|"error"|"unlocked">("idle");
+  const [contactAdded,setContactAdded]=useState(false);
+  useEffect(()=>setContactAdded(localStorage.getItem("jia-hengmu-contact")==="true"),[]);
   const check=()=>{
-    if(order.toUpperCase()==="HM-W-251206-117"&&code.toUpperCase()==="YQ-730419"){
+    const normalizedCode=code.trim().toUpperCase().replaceAll("-","");
+    if(order.toUpperCase()==="HM-W-251206-117"&&normalizedCode==="YQ730419"){
       setState("unlocked");localStorage.setItem("jia-hengmu-unlocked","true");
     } else setState("error");
+  };
+  const addCaseManager=()=>{
+    localStorage.setItem("jia-hengmu-contact","true");
+    setContactAdded(true);
+    window.dispatchEvent(new Event("jia-progress"));
+    window.dispatchEvent(new Event("jia-wechat-notification"));
+    window.location.assign("/computer/liuhan?app=wechat&chat=hengmu-plan");
   };
   return <main className={`route-page hengmu-route ${state==="unlocked"?"hm-unlocked":""}`}>
     <div className="hm-utility"><span>全国服务热线　400-716-0520</span><span>门店查询　合作加盟　人才招聘　集团官网</span></div>
@@ -32,19 +42,19 @@ export default function HengmuSite() {
 
     {view==="services"&&<div className="hm-inner">
       <section className="hm-page-title"><small>HENGMU SERVICES</small><h1>婚恋与家庭服务</h1><p>以会员真实需求为起点，提供从关系建立到家庭生活的全周期支持。</p></section>
-      <div className="hm-service-grid"><aside><b>服务分类</b><button className="active">臻选婚恋</button><button>家庭礼遇</button><button>关系顾问</button><button>特别委托</button></aside><section><h2>恒慕臻选会员服务</h2><p>专属顾问会在完成身份、家庭情况与服务偏好核验后，建立匹配档案。所有正式方案均使用唯一合同号进行追踪。</p><div className="hm-process"><span><b>01</b>需求访谈</span><span><b>02</b>资料审核</span><span><b>03</b>方案匹配</span><span><b>04</b>家庭协同</span><span><b>05</b>长期回访</span></div><div className="hm-notice"><b>已经签约？</b><p>扫描合同、请柬或方案变更单上的二维码，可进入专属服务页面。涉及方案变更时，还需输入纸质文件上的服务码。</p><button onClick={()=>setView("status")}>进入服务进度查询</button></div></section></div>
+      <div className="hm-service-grid"><aside><b>服务分类</b><button className="active">臻选婚恋</button><button>家庭礼遇</button><button>关系顾问</button><button>特别委托</button></aside><section><h2>恒慕臻选会员服务</h2><p>专属顾问会在完成身份、家庭情况与服务偏好核验后，建立匹配档案。所有正式方案均使用唯一合同号进行追踪。</p><div className="hm-process"><span><b>01</b>需求访谈</span><span><b>02</b>资料审核</span><span><b>03</b>方案匹配</span><span><b>04</b>家庭协同</span><span><b>05</b>长期回访</span></div><div className="hm-notice"><b>已经签约？</b><p>扫描请柬上的二维码可进入专属服务页面；合同号与服务码请以纸质婚介合同为准。</p><button onClick={()=>setView("status")}>进入服务进度查询</button></div></section></div>
     </div>}
 
     {view==="status"&&<div className={`hm-portal ${state==="unlocked"?"hm-special-mode":""}`}>
       <div className="hm-portal-top"><div><small>MEMBER SERVICE CENTER</small><h1>专属服务中心</h1></div><button onClick={()=>setView("home")}>返回集团官网</button></div>
-      {state!=="unlocked"?<section className="hm-query"><div className="hm-query-copy"><p className="hm-kicker">服务进度查询</p><h2>查看您的专属方案</h2><p>为保护会员及家庭隐私，请同时输入合同号与专属服务码。服务码通常位于方案变更文件底部。</p><ul><li>查询当前服务节点</li><li>下载变更文件与付款凭证</li><li>联系您的专属家庭顾问</li></ul></div><div className="hm-query-form"><span>🔒 加密会员通道</span><label>合同号<input value={order} onChange={e=>setOrder(e.target.value.toUpperCase())} placeholder="HM-…"/></label><label>专属服务码<input value={code} onChange={e=>setCode(e.target.value.toUpperCase())} placeholder="请输入8位服务码"/></label>{state==="error"&&<p>合同号或服务码不匹配，请核对纸质材料。</p>}<button onClick={check}>验证并查询</button><small>恒慕工作人员不会通过电话索取完整服务码。</small></div></section>:
+      {state!=="unlocked"?<section className="hm-query"><div className="hm-query-copy"><p className="hm-kicker">服务进度查询</p><h2>查看您的专属方案</h2><p>为保护会员及家庭隐私，请同时输入合同号与专属服务码。两项信息均印在婚介合同残页上，服务码位于底部封边。</p><ul><li>查询当前服务节点</li><li>下载变更文件与付款凭证</li><li>联系您的专属家庭顾问</li></ul></div><div className="hm-query-form"><span>🔒 加密会员通道</span><label>合同号<input value={order} onChange={e=>setOrder(e.target.value.toUpperCase())} placeholder="HM-…"/></label><label>专属服务码<input value={code} onChange={e=>setCode(e.target.value.toUpperCase())} placeholder="请输入8位服务码"/></label>{state==="error"&&<p>合同号或服务码不匹配，请核对纸质材料。</p>}<button onClick={check}>验证并查询</button><small>恒慕工作人员不会通过电话索取完整服务码。</small></div></section>:
       <><section className="hm-special-hero"><div><small>HENGMU · PRIVATE FAMILY PLAN</small><h2>笑容之外，<br/>仍须圆满。</h2><p>高隐私等级服务区域 · 所有访问已被记录</p></div><span>特殊家庭委托</span></section><section className="hm-case">
         <aside><b>恒慕会员中心</b><small>订单 HM-W-251206-117</small><button className="active">方案概览</button><button>变更记录 <i>1</i></button><button>付款与结算</button><button>文件中心 <i>3</i></button><button>专属顾问</button><hr/><span>服务状态<br/><strong>特殊变更处理中</strong></span></aside>
-        <div className="hm-case-main"><header><div><small>PRIVATE FAMILY PLAN</small><h2>圆满方案</h2><p>最近更新：2025-12-03 02:46</p></div><b>高隐私等级</b></header><div className="hm-warning">本方案已从「婚礼协同」转入「家庭特殊委托」，公开婚宴及原匹配对象已取消。</div>
-        <div className="hm-case-meta"><span><small>委托家庭</small>顾氏家庭</span><span><small>原计划日期</small>2025-12-06</span><span><small>原承办地点</small>云庭酒店 · 锦华厅</span><span><small>专属顾问</small>韩铎 / HD-047</span></div>
-        <h3>方案变更时间线</h3><div className="hm-timeline"><article><time>02:19</time><div><b>家属提出特殊变更</b><p>原婚约取消，要求评估其他家庭方案。</p></div></article><article><time>02:31</time><div><b>委托标的接收</b><p>接收地点：晴川公寓；状态：无自主确认。</p></div></article><article><time>02:46</time><div><b>跨部门转运已安排</b><p>恒温保存，接收地：永安礼仪园。新匹配家庭待完成仪式。</p></div></article></div>
+        <div className="hm-case-main"><header><div><small>PRIVATE FAMILY PLAN</small><h2>圆满方案</h2><p>最近更新：2025-11-29 12:26</p></div><b>高隐私等级</b></header><div className="hm-warning">本方案已从「婚礼协同」转入「家庭特殊委托」，公开婚宴及原匹配对象已取消。</div>
+        <div className="hm-case-meta"><span><small>委托家庭</small>顾氏家庭</span><span><small>原计划日期</small>2025-12-06</span><span><small>原承办地点</small>云庭酒店 · 锦华厅</span><span><small>方案负责人</small>恒慕特别委托组</span></div>
+        <h3>方案变更时间线 · 2025-11-29</h3><div className="hm-timeline"><article><time>11:48</time><div><b>家属提出特殊变更</b><p>现场处置结束后，原婚约取消，要求评估其他家庭方案。</p></div></article><article><time>12:06</time><div><b>委托标的接收</b><p>接收地点：晴川公寓；状态：无自主确认。</p></div></article><article><time>12:26</time><div><b>跨部门转运已安排</b><p>恒温保存，接收地：永安礼仪园。新匹配家庭待完成仪式。</p></div></article></div>
         <div className="hm-finance"><h3>内部结算摘要</h3><div><span><small>新匹配家庭付款</small><b>¥600,000</b></span><span><small>委托家庭分成</small><b>50%</b></span><span><small>恒慕服务分成</small><b>50%</b></span></div><p>备注：委托物交接后不支持撤回。相关表述不得出现在公开会员记录中。</p></div>
-        <div className="hm-contact"><div><b>您的专属顾问</b><p>韩铎 · 圆满方案负责人<br/>企业微信：HengMu-HD047</p></div><button onClick={()=>localStorage.setItem("jia-hengmu-contact","true")}>添加企业微信</button></div>
+        <div className="hm-contact"><div><b>圆满方案负责人</b><p>恒慕特别委托组 · 官方企业服务账号</p></div><button onClick={addCaseManager}>{contactAdded?"打开企业微信":"添加企业微信"}</button></div>
         </div>
       </section></>}
     </div>}

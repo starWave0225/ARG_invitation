@@ -214,7 +214,7 @@ export default function LateFlowersEndingPage(){
       <div className="late-flowers-corridor" aria-hidden="true">
         <span className="late-flowers-wall left"/>
         <span className="late-flowers-wall right"/>
-        <span className="late-flowers-door" aria-label="警方警戒线封锁的602室"><b>602</b>
+        <span className="late-flowers-door" aria-label="警方警戒线封锁的402室"><b>402</b>
           <i aria-hidden="true" className="late-flowers-police-tape tape-one">POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
           <i aria-hidden="true" className="late-flowers-police-tape tape-two">POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
           <i aria-hidden="true" className="late-flowers-police-tape tape-three">POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
@@ -266,7 +266,7 @@ export default function LateFlowersEndingPage(){
       <div className={transitionStyles.corridorEcho} aria-hidden="true">
         <span className={`${transitionStyles.wall} ${transitionStyles.left}`}/>
         <span className={`${transitionStyles.wall} ${transitionStyles.right}`}/>
-        <span className={transitionStyles.door} aria-label="警方警戒线封锁的602室"><b>602</b>
+        <span className={transitionStyles.door} aria-label="警方警戒线封锁的402室"><b>402</b>
           <i aria-hidden="true" className={`${transitionStyles.policeTape} ${transitionStyles.tapeOne}`}>POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
           <i aria-hidden="true" className={`${transitionStyles.policeTape} ${transitionStyles.tapeTwo}`}>POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
           <i aria-hidden="true" className={`${transitionStyles.policeTape} ${transitionStyles.tapeThree}`}>POLICE LINE · 警戒线 · 禁止进入 · POLICE LINE</i>
@@ -290,7 +290,7 @@ export default function LateFlowersEndingPage(){
         <span className={transitionStyles.rewindRing}/>
         <span className={transitionStyles.rewindRing}/>
         <div className={transitionStyles.rewindDates}>
-          <i>12.03</i><i>12.02</i><i>12.01</i><i>11.30</i><i>11.29</i>
+          <i>12.02</i><i>12.01</i><i>11.30</i><i>11.29</i>
         </div>
         <div className={transitionStyles.rewindSweep}/>
       </div>

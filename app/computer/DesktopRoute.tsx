@@ -7,12 +7,14 @@ type GameMode = "normal" | "hardcore";
 type PreviewImage = {
   src:string;
   alt:string;
+  imageHotspotHref?:string;
   tag?:string;
   title?:string;
   body?:ReactNode;
   link?:[string,string];
   backText?:string;
   hideCaption?:boolean;
+  hideSourceLink?:boolean;
 };
 type EdgeResult = {
   domain:string;
@@ -56,11 +58,13 @@ const directFileImages:Record<string,PreviewImage>={
   },
   "05_请柬.jpg":{
     src:"/evidence/liuhan-scene/05-invitation.png",alt:"顾盼与邵明辉原定婚礼请柬",hideCaption:true,
-    link:["/hengmu","扫描请柬上的二维码 · 打开恒慕官网 ↗"]
+    imageHotspotHref:"/hengmu"
   },
-  "06_方案变更单残页.jpg":{
-    src:"/evidence/liuhan-scene/06-plan-fragment.png",alt:"恒慕方案变更单残页",tag:"现场恢复件",title:"方案变更单残页",
-    body:<><p>纸张下缘残留一串点划符号：</p><code>-.-- --.- --... ...-- ----- ....- .---- ----. </code></>
+  "旧手机备忘录.jpg":{
+    src:"/evidence/liuhan-scene/08-password-note.png",alt:"顾盼旧手机中的备忘录截图",hideCaption:true,hideSourceLink:true
+  },
+  "06_婚庆合同.jpg":{
+    src:"/evidence/liuhan-scene/06-plan-fragment.png",alt:"现场发现的恒慕婚恋服务合同",hideCaption:true
   },
 };
 
@@ -103,7 +107,7 @@ const configs = {
     apps:[["此电脑","▣","files"],["个人文件","📁","personal"],["微信","💬","wechat"],["Outlook","✉","mail"],["微博","微","weibo"],["回收站","♲","trash"]],
   },
   liuhan:{
-    owner:"刘涵",device:"LIUHAN-DESKTOP",os:"Windows 11 家庭中文版",time:"22:06",date:"2025年12月3日 星期三",
+    owner:"刘涵",device:"LIUHAN-DESKTOP",os:"Windows 11 家庭中文版",time:"22:06",date:"2025年12月2日 星期二",
     wallpaper:"lh",quote:"她回国没人知道，也不在家乡。这事不对。",
     apps:[["微信","💬","wechat"],["QQ","Q","qq"],["Outlook","✉","mail"],["浏览器","◎","browser"],["文件资源管理器","📁","files"],["临川地图","⌖","map"]],
   }
@@ -139,13 +143,18 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-ending-two-complete")!=="true"?"打开刘涵发来的新消息，和他一起前往临川寻找顾盼。":
     localStorage.getItem("jia-qzone-secret-unlocked")!=="true"?"切换到刘涵电脑，从QQ进入情侣空间，输入封存日期解锁空间。":
     localStorage.getItem("jia-qzone-ip-found")!=="true"?"查看情侣空间中的匿名留言，记录留言时间和IP地址。":
-    localStorage.getItem("jia-ip-node-report-downloaded")!=="true"?"在浏览器搜索“临川公安 档案查询”，用匿名留言中的IP查询公共网络节点。":
+    localStorage.getItem("jia-ip-node-report-downloaded")!=="true"?"在浏览器搜索“临川公安 档案查询”，查看节点一览并比对匿名留言中的IP。":
     localStorage.getItem("jia-liuhan-address-reached")!=="true"?"对照IP节点协查表与残缺留言，在地图中定位顾盼。":
     localStorage.getItem("jia-liuhan-scene-package-extracted")!=="true"?"查看抵达后的新邮件，将晴川公寓现场资料解压到桌面。":
-    localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查现场证据文件夹中的请柬、变更单和备忘录。":
-    localStorage.getItem("jia-liuhan-line-complete")!=="true"?"返回临川公安档案查询网站，检索并查看两条关联警情记录。":
-    localStorage.getItem("jia-hidden-ending-unlocked")!=="true"?"返回顾盼旧电脑，打开回收站中新出现的《给望_未寄出.txt》。":
-    "所有调查线索已经确认，隐藏结局已经开启。";
+    localStorage.getItem("jia-gp-wechat-unlocked-v5")!=="true"?"打开旧手机备忘录，使用其中密码解锁顾盼旧电脑的微信记录。":
+    localStorage.getItem("jia-hengmu-unlocked")!=="true"?"检查现场证据文件夹中的请柬与婚庆合同，进入恒慕服务查询。":
+    localStorage.getItem("jia-hengmu-contact")!=="true"?"在圆满方案页面添加恒慕特别委托组的企业微信。":
+    localStorage.getItem("jia-police-investigation-id-downloaded")!=="true"?"打开现场物品登记表，下载档案编号附件。":
+    localStorage.getItem("jia-liuhan-line-complete")!=="true"?"返回临川公安档案查询网站，输入档案编号并查看两条关联警情记录。":
+    localStorage.getItem("jia-gp-final-letter-read")!=="true"&&localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"此处出现两条路：阅读顾盼的信可以进入隐藏结局；返回刘涵微信完成机构对质可以进入第三结局《嫁》。":
+    localStorage.getItem("jia-gp-final-letter-read")!=="true"?"返回顾盼旧电脑，阅读《希望_未寄出.txt》，从信末进入隐藏结局。":
+    localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"返回刘涵微信，与恒慕特别委托组完成最终对质，进入第三结局《嫁》。":
+    "常规结局与隐藏结局均已开启。";
 }
 
 export default function DesktopRoute({owner}:{owner:Owner}){
@@ -319,8 +328,8 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     {gameMode==="normal"&&<aside className="pc-sticky"><small>当前目标</small><b>{currentObjective}</b><span>与调查档案同步 · 线索确认后自动更新</span><button type="button" className="pc-sticky-case" onClick={()=>setActive("case")}><i>◫</i><strong>调查档案</strong><em>查看已经收集的证据</em></button></aside>}
     {wechatNotice&&<div className="pc-toast pc-wechat-toast"><button className="pc-toast-open" onClick={()=>{dismissWechatNotice();setActive("wechat")}}><i>微</i><span><small>微信 · 现在</small><b>{wechatNotice.title}</b><em>{wechatNotice.body}</em></span></button><button className="pc-toast-close" aria-label="关闭微信通知" onClick={dismissWechatNotice}>×</button></div>}
     {notice&&!wechatNotice&&<div className="pc-toast"><button className="pc-toast-open" onClick={()=>{setNotice(false);setActive("mail")}}><i>✉</i><span><small>Outlook · 现在</small><b>B-17现场物品清单.zip</b><em>身份核验已完成，请下载现场物品清单</em></span></button><button className="pc-toast-close" aria-label="关闭通知" onClick={()=>setNotice(false)}>×</button></div>}
-    {scenePackageNotice&&!wechatNotice&&<div className="pc-toast"><button className="pc-toast-open" onClick={()=>{setScenePackageNotice(false);setActive("mail")}}><i>✉</i><span><small>Outlook · 现在</small><b>晴川公寓现场资料.zip</b><em>现场勘查资料已完成脱敏，请下载证据包</em></span></button><button className="pc-toast-close" aria-label="关闭通知" onClick={()=>setScenePackageNotice(false)}>×</button></div>}
-    {recoveredLetterNotice&&<div className="pc-toast pc-file-toast"><button className="pc-toast-open" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false);setActive("trash")}}><i>♲</i><span><small>文件恢复 · 现在</small><b>回收站中出现一个恢复文件</b><em>给望_未寄出.txt · 来自手机同步缓存</em></span></button><button className="pc-toast-close" aria-label="关闭文件恢复通知" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false)}}>×</button></div>}
+    {scenePackageNotice&&!wechatNotice&&<div className="pc-toast"><button className="pc-toast-open" onClick={()=>{setScenePackageNotice(false);setActive("mail")}}><i>✉</i><span><small>Outlook · 现在</small><b>晴川公寓现场资料.zip</b><em>非正常死亡现场资料已完成脱敏，请下载证据包</em></span></button><button className="pc-toast-close" aria-label="关闭通知" onClick={()=>setScenePackageNotice(false)}>×</button></div>}
+    {recoveredLetterNotice&&<div className="pc-toast pc-file-toast"><button className="pc-toast-open" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false);setActive("trash")}}><i>♲</i><span><small>文件恢复 · 现在</small><b>回收站中出现一个恢复文件</b><em>希望_未寄出.txt · 来自手机同步缓存</em></span></button><button className="pc-toast-close" aria-label="关闭文件恢复通知" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false)}}>×</button></div>}
     {active&&<PcWindow owner={owner} app={active} gameMode={gameMode} close={()=>setActive(null)}/>}
     <footer className="pc-taskbar">
       <button className="pc-start" onClick={()=>setStart(!start)}>田</button>
@@ -349,7 +358,7 @@ function PcWindow({owner,app,gameMode,close}:{owner:Owner;app:string;gameMode:Ga
   return <section className={`pc-window ${app==="wechat"?"chat":""} ${app==="qq"?"qq-window":""} ${isExplorer?"explorer-window":""}`}>
     <header><span><i>{isExplorer?"📁":"●"}</i>{titles[app]||app}</span><div><button>—</button><button>□</button><button onClick={close}>×</button></div></header>
     <div className="pc-window-content" onClick={openImage}><WindowContent owner={owner} app={app} gameMode={gameMode} openImagePreview={image=>{setImageFlipped(false);setPreviewImage(image)}}/></div>
-    {previewImage&&<div className="pc-image-lightbox" role="dialog" aria-modal="true" aria-label={previewImage.title||previewImage.alt} onClick={()=>setPreviewImage(null)}><span className="pc-image-scroll-hint">滚轮或触控板查看完整图片</span><button type="button" aria-label="关闭图片预览" onClick={()=>setPreviewImage(null)}>×</button><div className="pc-image-lightbox-scroll" tabIndex={0} aria-label={`${previewImage.alt}，可滚动查看`}><figure onClick={event=>event.stopPropagation()}>{previewImage.backText?<button type="button" className={`pc-photo-flip ${imageFlipped?"flipped":""}`} onClick={()=>setImageFlipped(value=>!value)} aria-label={imageFlipped?"翻回照片正面":"翻到照片背面"}><span className="pc-photo-flip-inner"><span className="pc-photo-face pc-photo-front"><img src={previewImage.src} alt={previewImage.alt}/></span><span className="pc-photo-face pc-photo-back" aria-hidden={!imageFlipped}><em>{previewImage.backText}</em></span></span></button>:<img src={previewImage.src} alt={previewImage.alt}/>} {!previewImage.hideCaption&&<figcaption>{previewImage.backText?(imageFlipped?"照片背面 · 点击翻回正面":"点击照片查看背面"):previewImage.alt}</figcaption>}{(previewImage.tag||previewImage.title||previewImage.body||previewImage.link)&&<div className="pc-image-lightbox-notes">{previewImage.tag&&<small>{previewImage.tag}</small>}{previewImage.title&&<h2>{previewImage.title}</h2>}{previewImage.body}{previewImage.link&&<a className="primary" href={previewImage.link[0]} target="_blank" rel="noopener noreferrer">{previewImage.link[1]}</a>}</div>}<a href={previewImage.src} target="_blank" rel="noopener noreferrer">在新标签页打开原图 ↗</a></figure></div></div>}
+    {previewImage&&<div className="pc-image-lightbox" role="dialog" aria-modal="true" aria-label={previewImage.title||previewImage.alt} onClick={()=>setPreviewImage(null)}><span className="pc-image-scroll-hint">滚轮或触控板查看完整图片</span><button type="button" aria-label="关闭图片预览" onClick={()=>setPreviewImage(null)}>×</button><div className="pc-image-lightbox-scroll" tabIndex={0} aria-label={`${previewImage.alt}，可滚动查看`}><figure onClick={event=>event.stopPropagation()}>{previewImage.backText?<button type="button" className={`pc-photo-flip ${imageFlipped?"flipped":""}`} onClick={()=>setImageFlipped(value=>!value)} aria-label={imageFlipped?"翻回照片正面":"翻到照片背面"}><span className="pc-photo-flip-inner"><span className="pc-photo-face pc-photo-front"><img src={previewImage.src} alt={previewImage.alt}/></span><span className="pc-photo-face pc-photo-back" aria-hidden={!imageFlipped}><em>{previewImage.backText}</em></span></span></button>:previewImage.imageHotspotHref?<span className="pc-image-hotspot-shell"><img src={previewImage.src} alt={previewImage.alt}/><a className="pc-invitation-qr-hotspot" href={previewImage.imageHotspotHref} target="_blank" rel="noopener noreferrer" aria-label="扫描二维码，打开恒慕官网"/></span>:<img src={previewImage.src} alt={previewImage.alt}/>} {!previewImage.hideCaption&&<figcaption>{previewImage.backText?(imageFlipped?"照片背面 · 点击翻回正面":"点击照片查看背面"):previewImage.alt}</figcaption>}{(previewImage.tag||previewImage.title||previewImage.body||previewImage.link)&&<div className="pc-image-lightbox-notes">{previewImage.tag&&<small>{previewImage.tag}</small>}{previewImage.title&&<h2>{previewImage.title}</h2>}{previewImage.body}{previewImage.link&&<a className="primary" href={previewImage.link[0]} target="_blank" rel="noopener noreferrer">{previewImage.link[1]}</a>}</div>}{!previewImage.imageHotspotHref&&!previewImage.hideSourceLink&&<a href={previewImage.src} target="_blank" rel="noopener noreferrer">在新标签页打开原图 ↗</a>}</figure></div></div>}
   </section>
 }
 
@@ -391,7 +400,7 @@ function WindowContent({owner,app,gameMode,openImagePreview}:{owner:Owner;app:st
       :explorerView==="personal"
         ?gupanPersonalFiles
         :explorerView==="scene"
-            ?["01_现场勘查摘要.pdf","03_室内全景.jpg","04_碎屏旧手机.jpg","05_请柬.jpg","06_方案变更单残页.jpg","07_现场物品登记表.pdf","备忘录_密码.txt"]
+            ?["03_室内全景.jpg","04_碎屏旧手机.jpg","05_请柬.jpg","06_婚庆合同.jpg","07_现场物品登记表.pdf","旧手机备忘录.jpg"]
             :[];
     const rootFolders=owner==="shen"
       ?(gupanPcUnlocked?[{label:"B-17 寄存仓",view:"storage"}]:[])
@@ -524,22 +533,6 @@ function QQBubble({avatar,name,text,mine=false}:{avatar:string;name:string;text:
 }
 
 function ChenFangChat(){
-  const [ipFound,setIpFound]=useState(false);
-  const [ipChecked,setIpChecked]=useState(false);
-  const [sceneExtracted,setSceneExtracted]=useState(false);
-  const [hengmuUnlocked,setHengmuUnlocked]=useState(false);
-  useEffect(()=>{
-    const sync=()=>{
-      setIpFound(localStorage.getItem("jia-qzone-ip-found")==="true");
-      setIpChecked(localStorage.getItem("jia-ip-node-report-downloaded")==="true");
-      setSceneExtracted(localStorage.getItem("jia-liuhan-scene-package-extracted")==="true");
-      setHengmuUnlocked(localStorage.getItem("jia-hengmu-unlocked")==="true");
-    };
-    const frame=window.requestAnimationFrame(sync);
-    window.addEventListener("storage",sync);
-    window.addEventListener("jia-progress",sync);
-    return()=>{window.cancelAnimationFrame(frame);window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
-  },[]);
   return <section className="wx-conversation wx-chen-chat">
     <header>陈放</header>
     <div className="wx-messages">
@@ -551,65 +544,109 @@ function ChenFangChat(){
       <WxBubble src="/characters/chen-fang.png" text="你先找找线索，最好有IP什么的。"/>
       <WxBubble src="/characters/chen-fang.png" text="关于我们公安可以公开的消息，都可以通过我们的官网搜索到。"/>
       <a className="wx-shared-link" href="/police" target="_blank" rel="noopener noreferrer"><i>警</i><span><b>临川公安 · 公众线索协查</b><small>公开信息与档案查询 · 在新标签页打开</small></span><em>打开 ↗</em></a>
-      {ipFound&&<>
-        <div className="wx-system">2025年12月3日　02:51</div>
-        <WxBubble src="/characters/liu-han.png" mine text="陈放，我在一个封存的QQ情侣空间里看到一条刚刚出现的匿名求救。留言不完整，但留下了时间和异常IP。"/>
-        <WxBubble src="/characters/chen-fang.png" text="先别转发，也不要自己联系地址上的人。保留原页面、时间戳和完整IP。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="我只想确认这个IP对应哪里。发留言的人可能还活着。"/>
-        <WxBubble src="/characters/chen-fang.png" text="IP只能对应公共网络出口，不能直接证明是谁发的。我不能私下给你查具体终端，但临川公安的公众线索协查端提供脱敏节点表。你在浏览器搜索“临川公安 档案查询”，把完整IP录入公共网络节点查询，再和留言里的残缺地址自己核对。"/>
-      </>}
-      {ipChecked&&<>
-        <WxBubble src="/characters/liu-han.png" mine text="节点表里对应的是长宁路117号，晴川公寓公共无线网络。"/>
-        <WxBubble src="/characters/chen-fang.png" text="这只能把范围缩到公寓，不能单独锁定顾盼。把“17号”和“117号”的歧义、留言中的楼栋房号、现场可见信息都分别保留，别为了凑答案改写原文。"/>
-      </>}
-      {sceneExtracted&&<>
-        <WxBubble src="/characters/liu-han.png" mine text="现场资料收到了。门框有外锁痕迹，顾盼的护照和日常用品也都还在，碎屏手机、旧请柬和方案变更单残页已经登记。"/>
-        <WxBubble src="/characters/chen-fang.png" text="按文件原始编号看，不要只摘结论。门锁照片、室内全景、物品位置和备忘录导出是四类不同证据；以后如果需要重新鉴定，原始顺序很重要。"/>
-      </>}
-      {hengmuUnlocked&&<>
-        <div className="wx-system">2025年12月3日　22:18</div>
-        <WxBubble src="/characters/liu-han.png" mine text="手机、旧请柬和恒慕记录连上了。顾盼原来的婚礼被取消，家属却把“委托标的”转去了永安礼仪园。"/>
-        <WxBubble src="/characters/chen-fang.png" text="我复核了11月29日的接处警索引：早上确有一起非正常死亡警情，警方到过晴川公寓。家属当时说她把自己锁在房里，但现场记录提到门框有外锁痕迹。"/>
-        <WxBubble src="/characters/liu-han.png" mine text="所以警方知道她死了，却不知道她此前被关了三天？"/>
-        <WxBubble src="/characters/chen-fang.png" text="对。当时没有匿名求救、旧手机和恒慕内部单据，出警人员只能按现场与家属陈述登记。遗体后来由家属委托的礼仪协办单位接走，目的机构没有正常回传到达确认。"/>
-        <WxBubble src="/characters/chen-fang.png" text="我已经把你固定的原始页面、现场资料和恒慕单据加入本次协查。回到临川公安档案查询网站，警情档案权限会自动更新；在那里查看脱敏原始记录，不要通过微信传播。"/>
-      </>}
     </div>
     <footer><span>☺　📁　✂</span><textarea placeholder="对话内容只读" readOnly/><button disabled>发送</button></footer>
+  </section>;
+}
+
+function HengmuCaseConfrontation(){
+  const [step,setStep]=useState(0);
+  const [policeReady,setPoliceReady]=useState(false);
+  const threadRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const sync=()=>{
+      setStep(Math.max(0,Math.min(4,Number(localStorage.getItem("jia-hengmu-confrontation-step")||0))));
+      setPoliceReady(localStorage.getItem("jia-liuhan-line-complete")==="true");
+    };
+    sync();
+    window.addEventListener("storage",sync);
+    window.addEventListener("jia-progress",sync);
+    return()=>{window.removeEventListener("storage",sync);window.removeEventListener("jia-progress",sync)};
+  },[]);
+  useEffect(()=>{
+    const frame=window.requestAnimationFrame(()=>{
+      const panel=threadRef.current;
+      if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[step,policeReady]);
+  const advance=()=>{
+    const next=Math.min(4,step+1);
+    localStorage.setItem("jia-hengmu-confrontation-step",String(next));
+    setStep(next);
+    window.dispatchEvent(new Event("jia-progress"));
+  };
+  const enterEnding=()=>{
+    localStorage.setItem("jia-hengmu-confrontation-complete","true");
+    localStorage.setItem("jia-ending-xi-unlocked","true");
+    localStorage.setItem("jia-ending-xi-source","hengmu-confrontation");
+    window.dispatchEvent(new Event("jia-progress"));
+    window.location.assign("/ending/xi");
+  };
+  return <section className="wx-hd-check wx-hm-confrontation">
+    <header><img src="/characters/hengmu-case-manager.svg" alt="恒慕特别委托组"/><span><b>恒慕特别委托组</b><small>圆满方案 · 官方企业服务账号</small></span></header>
+    <div className="wx-hd-thread" ref={threadRef}>
+      <div className="wx-system">你已添加恒慕婚姻家庭服务集团的企业服务账号</div>
+      <WxBubble src="/characters/hengmu-case-manager.svg" text="您好。这里是恒慕特别委托组。为保护委托家庭隐私，本账号仅处理已经核验的圆满方案。"/>
+      {!policeReady&&<div className="wx-hm-lock"><b>当前证据不足</b><p>请先使用现场物品登记表中的警方调查ID，查阅两份关联警情记录。</p></div>}
+      {policeReady&&<>
+        {step>=1&&<><WxBubble src="/characters/liu-han.png" mine text="我需要知道圆满方案 HM-W-251206-117，以及顾盼的去向。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="您并非合同当事人。恒慕无法向无关人员披露会员家庭资料。"/></>}
+        {step>=2&&<><WxBubble src="/characters/liu-han.png" mine text="顾盼已经死亡。我已经掌握相关警方记录，随时可以证明你们的非法勾当。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="请注意措辞。“圆满方案”属于家属合法委托，系统中的“标的”和“匹配”仅为内部业务术语。"/></>}
+        {step>=3&&<><WxBubble src="/characters/liu-han.png" mine text="不管你们在做什么，都立即终止！把顾盼现在的准确位置发给我，停止仪式，否则你们会知道"/><WxBubble src="/characters/hengmu-case-manager.svg" text="您无权要求恒慕终止已生效的家庭委托。"/></>}
+        {step>=4&&<><WxBubble src="/characters/liu-han.png" mine text="警方调查档案、现场移交记录和你们的订单数据，我都已经保存。你们可以现在停下，或者等警方在现场将你们抓捕。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="…… 恒慕将保留追究责任的权利。"/><div className="wx-hm-location"><small>圆满方案 · 紧急处置位置</small><b>永安礼仪园</b><p>东区静安厅 · 转运登记处</p><em>仪式尚未开始</em></div><WxBubble src="/characters/hengmu-case-manager.svg" text="位置已经发给你。不要再通过这个账号联系恒慕。"/></>}
+      </>}
+    </div>
+    {policeReady&&<footer>
+      {step===0&&<button type="button" onClick={advance}>发送：我要确认圆满方案</button>}
+      {step===1&&<button type="button" onClick={advance}>展示警方档案与圆满方案记录</button>}
+      {step===2&&<button type="button" onClick={advance}>要求立即终止圆满方案</button>}
+      {step===3&&<button type="button" onClick={advance}>发送最后通牒</button>}
+      {step===4&&<button type="button" className="wx-hm-ending-entry" onClick={enterEnding}>闯入永安礼仪园 → 第三结局 · 嫁</button>}
+    </footer>}
   </section>;
 }
 
 function RecycleBin({owner,letterAvailable}:{owner:Owner;letterAvailable:boolean}){
   const [opened,setOpened]=useState(false);
   if(owner!=="gupan"||!letterAvailable)return <div className="pc-empty"><span>♲</span><p>此文件夹为空</p></div>;
-  const enterHiddenEnding=()=>{
+  const finishReading=()=>{
+    localStorage.setItem("jia-gp-final-letter-read","true");
     localStorage.setItem("jia-hidden-ending-unlocked","true");
     localStorage.setItem("jia-hidden-ending-source","gupan-final-letter");
+    window.dispatchEvent(new Event("jia-progress"));
     window.location.assign("/ending/hidden");
   };
   if(opened)return <article className="gp-final-letter">
-    <header><button type="button" onClick={()=>setOpened(false)}>← 返回回收站</button><span>给望_未寄出.txt</span><small>只读 · 已从手机同步缓存恢复</small></header>
+    <header><button type="button" onClick={()=>setOpened(false)}>← 返回回收站</button><span>希望_未寄出.txt</span><small>只读 · 已从手机同步缓存恢复</small></header>
     <div>
       <small>创建时间：2025年11月28日 23:41　·　原位置：文档\未寄出的信</small>
-      <h1>给望</h1>
+      <h1>希望</h1>
       <p>望：</p>
-      <p>回国以后，所有人都说我是回来疗养的。这个词听起来很安静，好像只要按时吃药、晒太阳，把过去忘掉，我就能重新变回他们希望我成为的样子。可我每天醒来，还是会先确认门能不能从里面打开，手机是不是还在手边。夜里有人从走廊经过，我会一直等到脚步声消失，才敢重新呼吸。</p>
-      <p>我没有把真正发生的事告诉你。那时我以为，只要把你推得足够远，他们就不会注意到你。分手的那些话，有些是真的——我确实累了，也确实不知道该怎样继续；但“我们不适合”是假的，“不要再找我”也是假的。我只是害怕你会立刻跨过半个世界来找我，害怕他们顺着我找到你。</p>
-      <p>我曾经以为自己救下了一个人，就证明我还有能力保护别人。后来才明白，郝倩获救的那一天，也有人记住了我的名字、住址和家人的电话。酒吧那晚以后，我把证据收好，把每一处异常都写下来，却没有勇气把它们交给任何人。我怕别人不相信，也怕他们相信以后，先问我为什么去了那里、为什么喝下那杯东西、为什么没有早点离开。</p>
-      <p>回到家以后，门外的人换了，门还是没有打开。他们收走护照和手机，替我安排婚礼，告诉所有亲戚我只是身体不好，需要安静休养。他们说这是为我好，说一个女孩子经历过那些事，往后有人肯要就应该知足。我试过解释，试过拒绝，也试过求他们让我给你打一通电话。最后我才明白，他们听见了，只是从来没有打算回答。</p>
-      <p>我常常想起大学的艺术展。摄影社的人让我们靠近一点，你站在左边，我站在右边。那时我们谁也不敢看镜头，却都在偷偷看对方。后来我在地图的海岸线上画了一颗太阳，以为只要两个人愿意，就一定能走到同一个地方。对不起，我先松开了手，也没有告诉你，我其实一直在回头。</p>
-      <p>别因为这封信惩罚自己。你说“以后还有很多时间，可以慢慢讲”，那时谁都不知道时间会怎样被拿走。你没有错过一个本来就能轻易救下我的瞬间；真正把我困住的，从来不是一句没说出口的话，而是许多人共同维持的沉默。</p>
-      <p>如果你最终知道了一切，请替我记得，我不是一桩婚约，不是谁家的女儿，也不是档案里的编号。我画过画，去过海边，怕冷却总忘记带围巾，也曾经很认真地爱过你。那些都是真的。</p>
-      <p>地图还有很多空白。我大概不能再陪你填完了。可如果世界上真有一个不会迟到的地方，如果在那里，左边的人仍然望着右边——</p>
-      <p className="gp-final-letter-sign">那就再来见我一次吧。<br/>顾盼</p>
-      <button type="button" className="gp-hidden-ending-entry" onClick={enterHiddenEnding}><span>进入隐藏结局</span><b>镜花水月　→</b></button>
+      <p>回国，我是带着疗养的心情。</p>
+      <p>这个词听起来很安静，好像只要按时吃药、晒太阳，把过去忘掉，我就能重新变回从前的样子。可我每天醒来，还是会先确认周边的环境，手机是不是还在手边，如果夜里有人从走廊经过，我会一直等到脚步声消失，才敢重新呼吸。</p>
+      <p>我找了份简单的工作，平淡的生活着，也许日子从来都可以这么过。</p>
+      <p>我不希望任何人找到我，除了你，我其实很想你能找到我，我想念你怀抱的温度，可是现在的我怎么奢求那些呢？</p>
+      <p>我没有把真正发生的事告诉你。那时我以为，只要把你推得足够远，你就不必再分担这种痛苦，你就不必在与我相处时，带着一种若有似无的同情。</p>
+      <p>就像我现在对待自己那样。</p>
+      <p>我需要一点时间，一丝喘息的机会，一点反击的希望，我其实无限需要你。</p>
+      <p>那晚以后，我把证据收好，却没有勇气把它们交给任何人。我怕别人不相信，也怕他们相信以后，先问我为什么去了那里、为什么喝下那杯东西、为什么没有早点离开，就像我的父母对我做的那样。</p>
+      <p>回家探亲这次，我感觉很陌生，他们收走护照和手机，替我安排婚礼的一切，告诉所有亲戚我只是身体不好，需要安静休养。</p>
+      <p>他们说这是为我好，说一个女孩子经历过那些事，往后有人肯要就应该知足。</p>
+      <p>我试过解释，试过拒绝，也试过求他们让我给你打一通电话。</p>
+      <p>最后我才明白，他们早就决定了一切，把我像贩卖人口一样卖出去。</p>
+      <p>我常常想起我们在一起的时候，那是我最快乐的时候。</p>
+      <p>对不起，是我先松开了手，也没有告诉你，我其实一直在等，等奇迹发生的那天，如果，如果能够回到过去，如果，如果我能够回到过去，如果我可以再选择一次。</p>
+      <p>现在好冷的天气，好在还有你送的围巾陪着我。</p>
+      <p>如果有来生，不知道人的重逢需要多久，那就再来见我一次吧。</p>
+      <p className="gp-final-letter-sign">顾盼</p>
+      <button type="button" className="gp-hidden-ending-entry" onClick={finishReading}><span>读完这封信</span><b>进入隐藏结局 · 镜花水月　→</b></button>
     </div>
   </article>;
   return <div className="pc-recycle-bin">
     <header><span>回收站</span><small>1 个项目　·　恢复来源：顾盼手机本地同步缓存</small></header>
     <div className="pc-recycle-list">
       <button type="button" onDoubleClick={()=>setOpened(true)} onClick={()=>setOpened(true)}>
-        <i>📄</i><span><b>给望_未寄出.txt</b><small>原位置：文档\未寄出的信　·　删除时间：2025/11/28 23:58</small></span><em>已恢复</em>
+        <i>📄</i><span><b>希望_未寄出.txt</b><small>原位置：文档\未寄出的信　·　删除时间：2025/11/28 23:58</small></span><em>已恢复</em>
       </button>
     </div>
   </div>;
@@ -628,7 +665,7 @@ function LiuHanMailbox({addressReached}:{addressReached:boolean}){
     setExtracted(true);
     window.dispatchEvent(new Event("jia-progress"));
   };
-  const sceneMail={from:"临川公安 · 线索协查",date:"刚刚",subject:"晴川公寓现场资料.zip",preview:"现场勘查资料已完成脱敏，请下载证据包",body:<><small>临川公安公众线索协查 &lt;archive@linchuan-police.example&gt;</small><h2>晴川公寓现场资料.zip</h2><p>你提交的匿名求救页面、网络节点与地址线索已经完成初步核验。经陈放申请，现向线索提供人发送一份脱敏现场资料副本。</p><p>附件仅用于继续核对顾盼失联线索。请保留文件名、编号与原始顺序，不要公开传播。</p><button className="pc-zip" disabled={extracted} onClick={extractScenePackage}>▣　{extracted?"已解压到桌面":"解压到桌面"}</button><p className="pc-mail-hint">解压后，桌面会出现“晴川公寓_现场证据”文件夹。</p></>};
+  const sceneMail={from:"临川公安 · 线索协查",date:"刚刚",subject:"晴川公寓现场资料.zip",preview:"非正常死亡现场资料已完成脱敏，请下载证据包",body:<><small>临川公安公众线索协查 &lt;archive@linchuan-police.example&gt;</small><h2>晴川公寓现场资料.zip</h2><p>你提交的匿名求救页面、网络节点与地址线索，已与2025年11月29日发生在晴川公寓的非正常死亡警情完成关联。死者身份已确认为顾盼。经陈放申请，现向线索提供人发送一份脱敏现场资料副本。</p><p>附件用于核对顾盼死亡前的活动轨迹、现场外锁痕迹及遗留物品。正式死因、非法拘禁嫌疑和遗体后续去向仍在调查。请保留文件名、编号与原始顺序，不要公开传播。</p><button className="pc-zip" disabled={extracted} onClick={extractScenePackage}>▣　{extracted?"已解压到桌面":"解压到桌面"}</button><p className="pc-mail-hint">解压后，桌面会出现“晴川公寓_现场证据”文件夹。</p></>};
   const ordinaryMails=[
     {from:"临川城市服务",date:"今天 10:20",subject:"长宁路片区临时交通调整",preview:"12月3日晚间部分道路分段施工",body:<><small>临川城市服务 &lt;notice@linchuan.example&gt;</small><h2>长宁路片区临时交通调整</h2><p>今晚22:00起，长宁路部分路段将进行道路维护，请绕行青槐路。</p></>},
     {from:"球赛约局",date:"昨天",subject:"周末球场预订成功",preview:"临川理工体育馆 · 周六19:00",body:<><small>球赛约局 &lt;booking@sports.example&gt;</small><h2>场地预订成功</h2><p>临川理工体育馆三号场，周六19:00—21:00。</p></>},
@@ -740,11 +777,12 @@ function CaseArchive({mode}:{mode:GameMode|null}){
     {ready:localStorage.getItem("jia-yuanfan-site-access")==="true",title:"远帆学生网站权限",detail:"韩铎核验学生资料后，为我们开通了成员栏目与站内搜索。"},
     {ready:localStorage.getItem("jia-olddriver-group")==="true",title:"老司机夜航群",detail:"汽车黑话并非讨论驾驶，而是留学生从事迷奸并上传偷拍视频的非法勾当。"},
     {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"NIGHTDRIVE 隐藏站记录",detail:"YF-HQ-0214指向郝倩的遭遇，汇款单编号SD-8845127指向顾盼；两组记录相关联并互相印证。"},
-    {ready:localStorage.getItem("jia-liuhan-address-reached")==="true",title:"晴川公寓4栋602室",detail:"残缺求救、IP节点和地址候选交叉指向同一地点。"},
+    {ready:localStorage.getItem("jia-liuhan-address-reached")==="true",title:"晴川公寓4栋1单元402室",detail:"残缺求救、IP节点和地址候选交叉指向同一地点。"},
     {ready:localStorage.getItem("jia-liuhan-phone-obtained")==="true",title:"顾盼的旧手机",detail:"手机保留了旧电脑微信密码，并提示沈望仍拥有情侣空间主人权限。"},
     {ready:localStorage.getItem("jia-hengmu-unlocked")==="true",title:"恒慕“圆满方案”",detail:"原婚礼已转为特殊家庭委托，委托标的被送往永安礼仪园。"},
     {ready:localStorage.getItem("jia-liuhan-line-complete")==="true",title:"死亡警情与遗体移交记录",detail:"两条警情记录证实顾盼死亡、房门存在外锁痕迹，遗体随后由家属委托的礼仪单位接走。"},
-    {ready:localStorage.getItem("jia-hidden-ending-unlocked")==="true",title:"给望_未寄出.txt",detail:"顾盼回国疗养期间写下的最后一封信，补全了她隐瞒真相、被家人控制以及仍在回望沈望的原因。"}
+    {ready:localStorage.getItem("jia-gp-final-letter-read")==="true",title:"希望_未寄出.txt",detail:"顾盼回国疗养期间写下的最后一封信，补全了她隐瞒真相、被家人控制以及仍在等待沈望的原因。"},
+    {ready:localStorage.getItem("jia-hengmu-confrontation-complete")==="true",title:"恒慕特别委托组的交代",detail:"恒慕在证据压力下终止圆满方案，并交出永安礼仪园的准确处置位置。"}
   ];
   const confirmed=facts.filter(item=>item.ready);
   const nextHint=getInvestigationNextHint();
@@ -802,22 +840,48 @@ function MapApp({owner}:{owner:Owner}){
   const [query,setQuery]=useState("");
   const [searched,setSearched]=useState("");
   const [reached,setReached]=useState(false);
+  const [destinationOpen,setDestinationOpen]=useState(false);
+  const [building,setBuilding]=useState("");
+  const [unit,setUnit]=useState("");
+  const [room,setRoom]=useState("");
+  const [destinationError,setDestinationError]=useState(false);
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
       const wasReached=localStorage.getItem(owner==="shen"?"jia-storage-reached":"jia-liuhan-address-reached")==="true";
       setReached(wasReached);
-      if(wasReached)setSearched(owner==="shen"?"北港寄存中心":"晴川公寓4栋602室");
+      if(wasReached)setSearched(owner==="shen"?"北港寄存中心":"晴川公寓");
     });
     return()=>window.cancelAnimationFrame(frame);
   },[owner]);
   const normalized=searched.replace(/\s/g,"").toLowerCase();
-  const valid=owner==="shen"?(normalized.includes("临港大道17号")||normalized.includes("17harborfrontavenue")||normalized.includes("北港寄存中心")||normalized.includes("northharborstoragecenter")):(normalized.includes("晴川公寓")&&(/602|4栋/.test(normalized)));
-  const search=()=>setSearched(query.trim());
-  const go=()=>{if(!valid)return;localStorage.setItem(owner==="shen"?"jia-storage-reached":"jia-liuhan-address-reached","true");setReached(true);window.dispatchEvent(new Event("jia-progress"))};
+  const valid=owner==="shen"
+    ?(normalized.includes("临港大道17号")||normalized.includes("17harborfrontavenue")||normalized.includes("北港寄存中心")||normalized.includes("northharborstoragecenter"))
+    :(normalized.includes("晴川公寓")||normalized.includes("青槐区长宁路117号")||normalized.includes("长宁路117号"));
+  const normalizePart=(value:string)=>value.replace(/\s/g,"").replace(/号楼|栋|单元|室/g,"");
+  const destinationValid=
+    ["4","四"].includes(normalizePart(building))&&
+    ["1","一"].includes(normalizePart(unit))&&
+    ["402","四零二","四〇二"].includes(normalizePart(room));
+  const search=()=>{
+    setSearched(query.trim());
+    setDestinationOpen(false);
+    setDestinationError(false);
+  };
+  const go=()=>{
+    if(!valid)return;
+    if(owner==="liuhan"&&!destinationValid){
+      setDestinationError(true);
+      return;
+    }
+    localStorage.setItem(owner==="shen"?"jia-storage-reached":"jia-liuhan-address-reached","true");
+    setReached(true);
+    setDestinationOpen(false);
+    window.dispatchEvent(new Event("jia-progress"));
+  };
   return <div className="pc-map-search">
     <header><b>{owner==="shen"?"North Harbor Map · 海外":"临川地图 · 国内"}</b><div><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()} placeholder="搜索地点、道路或完整地址"/><button onClick={search}>搜索</button></div></header>
     <section className="pc-map-canvas"><span className="map-road a"/><span className="map-road b"/><span className="map-water"/>{searched&&<i className={`map-result-pin ${valid?"useful":""}`}>●</i>}</section>
-    <aside>{searched?<><small>搜索结果</small><h2>{valid?(owner==="shen"?"North Harbor Storage Center · Zone B":"晴川公寓 · 4栋602室"):searched}</h2><p>{valid?(owner==="shen"?"17 Harborfront Avenue, Seabreeze District, North Harbor · OVERSEAS":"临川市青槐区长宁路117号"):"已在地图上显示该地点。当前任务与此地点没有关联。"}</p><button disabled={!valid||reached} onClick={go}>{reached?"已到达，剧情已更新":"前往这里"}</button>{reached&&<strong>{owner==="shen"?"海外到访身份核验完成。新的邮件已送达。":"现场已经封锁。警方补充资料已发送到刘涵邮箱。"}</strong>}</>:<div className="map-placeholder"><b>搜索任意地点</b><p>地图会显示结果；只有与当前线索相关的地址可以前往。</p></div>}</aside>
+    <aside>{searched?<><small>搜索结果</small><h2>{valid?(owner==="shen"?"North Harbor Storage Center · Zone B":reached?"晴川公寓 · 4栋1单元402室":"晴川公寓"):searched}</h2><p>{valid?(owner==="shen"?"17 Harborfront Avenue, Seabreeze District, North Harbor · OVERSEAS":"临川市青槐区长宁路117号"):"已在地图上显示该地点。当前任务与此地点没有关联。"}</p><button disabled={!valid||reached} onClick={()=>owner==="liuhan"?(setDestinationOpen(true),setDestinationError(false)):go()}>{reached?"已到达，剧情已更新":"前往这里"}</button>{destinationOpen&&!reached&&<div className="pc-map-destination-check"><b>补充具体门牌</b><p>请输入楼栋、单元和房号，确认要前往的具体位置。</p><div><label>楼栋<input value={building} onChange={event=>{setBuilding(event.target.value);setDestinationError(false)}} placeholder="几栋" inputMode="numeric"/></label><label>单元<input value={unit} onChange={event=>{setUnit(event.target.value);setDestinationError(false)}} placeholder="几单元" inputMode="numeric"/></label><label>房号<input value={room} onChange={event=>{setRoom(event.target.value);setDestinationError(false)}} onKeyDown={event=>event.key==="Enter"&&go()} placeholder="几零几" inputMode="numeric"/></label></div><button type="button" onClick={go}>确认门牌并前往</button>{destinationError&&<em>门牌信息不正确，请重新核对残缺留言。</em>}</div>}{reached&&<strong>{owner==="shen"?"海外到访身份核验完成。新的邮件已送达。":"现场已经封锁。警方补充资料已发送到刘涵邮箱。"}</strong>}</>:<div className="map-placeholder"><b>搜索任意地点</b><p>地图会显示结果；只有与当前线索相关的地址可以前往。</p></div>}</aside>
   </div>
 }
 
@@ -836,6 +900,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [query,setQuery]=useState("");
   const [added,setAdded]=useState(false);
   const [hdAdded,setHdAdded]=useState(false);
+  const [hmContactAdded,setHmContactAdded]=useState(false);
   const [driverJoined,setDriverJoined]=useState(false);
   const [openingStep,setOpeningStep]=useState(0);
   const [result,setResult]=useState<"hq"|"hd"|"driver"|null>(null);
@@ -854,7 +919,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [draft,setDraft]=useState("");
   const [sent,setSent]=useState<{who:string;text:string}[]>([]);
   const messagesRef=useRef<HTMLDivElement>(null);
-  useEffect(()=>{const sync=()=>{setAdded(localStorage.getItem("jia-hq-added")==="true");setHdAdded(localStorage.getItem("jia-hd-added")==="true");setDriverJoined(localStorage.getItem("jia-olddriver-group")==="true");setOpeningStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0))};sync();window.addEventListener("jia-progress",sync);window.addEventListener("storage",sync);return()=>{window.removeEventListener("jia-progress",sync);window.removeEventListener("storage",sync)}},[]);
+  useEffect(()=>{const sync=()=>{setAdded(localStorage.getItem("jia-hq-added")==="true");setHdAdded(localStorage.getItem("jia-hd-added")==="true");setHmContactAdded(localStorage.getItem("jia-hengmu-contact")==="true");setDriverJoined(localStorage.getItem("jia-olddriver-group")==="true");setOpeningStep(Number(localStorage.getItem("jia-lh-opening-step-v3")||0))};sync();window.addEventListener("jia-progress",sync);window.addEventListener("storage",sync);return()=>{window.removeEventListener("jia-progress",sync);window.removeEventListener("storage",sync)}},[]);
   useEffect(()=>{
     if(owner!=="shen"||!added)return;
     const frame=window.requestAnimationFrame(()=>{
@@ -863,15 +928,23 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     });
     return()=>window.cancelAnimationFrame(frame);
   },[owner,added]);
+  useEffect(()=>{
+    if(owner!=="liuhan"||!hmContactAdded)return;
+    const frame=window.requestAnimationFrame(()=>{
+      const params=new URLSearchParams(window.location.search);
+      if(params.get("chat")==="hengmu-plan"){setSection("chats");setChat("恒慕特别委托组")}
+    });
+    return()=>window.cancelAnimationFrame(frame);
+  },[owner,hmContactAdded]);
   useEffect(()=>{const frame=window.requestAnimationFrame(()=>{const panel=messagesRef.current;if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"})});return()=>window.cancelAnimationFrame(frame)},[chat,sent.length]);
   const people=owner==="shen"?[
     {name:"刘涵",src:"/characters/wechat-liu-han.png",note:"她回国了？"},
     ...(driverJoined?[{name:"老司机夜航群",src:"/olddriver-group.svg",note:"今晚的路书发群文件"}]:[]),
     ...(hdAdded?[{name:"韩铎",src:"/characters/han-duo.png",note:"朋友圈有点好东西，无聊可以看看"}]:[]),
     ...(added?[{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"顾盼最近还好吗？"}]:[])
-  ]:owner==="gupan"?[{name:"一家人",src:"/family-group.svg",note:"回来以后就听话"},{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"你怎么回到家的？"},{name:"沈望",src:"/characters/wechat-shen-wang.png",note:"语音通话 02:17"}]:[{name:"沈望",src:"/characters/wechat-shen-wang.png",note:openingStep>=liuHanOpeningExchanges.length?"嗯。机票定了告诉我。":"还没休息？"},{name:"陈放",src:"/characters/chen-fang.png",note:"有实证再找我"}];
+  ]:owner==="gupan"?[{name:"一家人",src:"/family-group.svg",note:"顾盼退出了群聊"},{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"找个地方，我们见一面吧。"},{name:"沈望",src:"/characters/wechat-shen-wang.png",note:"语音通话 02:17"}]:[{name:"沈望",src:"/characters/wechat-shen-wang.png",note:openingStep>=liuHanOpeningExchanges.length?"嗯。机票定了告诉我。":"还没休息？"},{name:"陈放",src:"/characters/chen-fang.png",note:"有实证再找我"},...(hmContactAdded?[{name:"恒慕特别委托组",src:"/characters/hengmu-case-manager.svg",note:"圆满方案 · 企业服务账号"}]:[])];
   const current=people.find(p=>p.name===chat)||people[0];
-  const specialized=(owner==="shen"&&["刘涵","郝倩","韩铎","老司机夜航群"].includes(current.name))||(owner==="liuhan"&&["沈望","陈放"].includes(current.name));
+  const specialized=(owner==="shen"&&["刘涵","郝倩","韩铎","老司机夜航群"].includes(current.name))||(owner==="liuhan"&&["沈望","陈放","恒慕特别委托组"].includes(current.name));
   const addFriend=()=>{if(offline)return;localStorage.setItem("jia-hq-added","true");setAdded(true);setChat("郝倩");setSection("chats");window.dispatchEvent(new Event("jia-wechat-notification"))};
   const searchContact=()=>{
     if(offline)return;
@@ -901,7 +974,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     window.dispatchEvent(new Event("jia-progress"));
   };
   const send=(value?:string)=>{if(offline)return;const text=(value??draft).trim();if(!text)return;setSent(v=>[...v,{who:current.name,text}]);setDraft("")};
-  const profileData:Record<string,{src:string;wx:string;intro:string}>={沈望:{src:"/characters/wechat-shen-wang.png",wx:"zw_1021",intro:"有些答案，值得等很久。"},顾盼:{src:"/characters/wechat-gu-pan.png",wx:"gpan_sunward",intro:"向阳处。"},刘涵:{src:"/characters/wechat-liu-han.png",wx:"liuhan_lc",intro:"临川，偶尔摄影。"},郝倩:{src:"/characters/wechat-hao-qian-wedding.png",wx:"hqian_17",intro:"现在的生活来之不易。"},韩铎:{src:"/characters/han-duo.png",wx:"hd_047_abroad",intro:"留学生活｜活动联络"},陈放:{src:"/characters/chen-fang.png",wx:"chenfang_1203",intro:"请勿通过微信报警。"}};
+  const profileData:Record<string,{src:string;wx:string;intro:string}>={沈望:{src:"/characters/wechat-shen-wang.png",wx:"zw_1021",intro:"有些答案，值得等很久。"},顾盼:{src:"/characters/wechat-gu-pan.png",wx:"gpan_sunward",intro:"向阳处。"},刘涵:{src:"/characters/wechat-liu-han.png",wx:"liuhan_lc",intro:"临川，偶尔摄影。"},郝倩:{src:"/characters/wechat-hao-qian-wedding.png",wx:"hqian_17",intro:"现在的生活来之不易。"},韩铎:{src:"/characters/han-duo.png",wx:"hd_047_abroad",intro:"留学生活｜活动联络"},陈放:{src:"/characters/chen-fang.png",wx:"chenfang_1203",intro:"请勿通过微信报警。"},恒慕特别委托组:{src:"/characters/hengmu-case-manager.svg",wx:"企业认证账号",intro:"恒慕婚姻家庭服务集团 · 特别委托企业服务账号"}};
   const personalMoments:Record<string,PersonalMoment[]> = {
     沈望:[{text:"忙完这阵，想把以前没整理完的照片都洗出来。硬盘里的东西越放越多，人倒是越来越懒。",time:"2025年11月23日"},{text:"艺术展撤展。谢谢每个来看作品的人。",time:"2018年10月28日"}],
     顾盼:[{text:"暂时离开一阵。不是放弃，只是想先把自己照顾好。",time:"2022年11月16日"},{text:"新画还没完成。向阳处没有窗，也可以自己凿一扇。",time:"2022年10月22日"}],
@@ -927,7 +1000,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const momentAvatar=profileData[momentName]?.src||profileData[selfName].src;
   return <div className={`wx-app ${offline?"wx-app-offline":""}`} onClick={e=>{const el=e.target as HTMLElement;const profileTarget=el.closest<HTMLElement>("[data-profile]");const name=profileTarget?.dataset.profile||(el.tagName==="IMG"?el.getAttribute("alt"):null);if(name&&name!=="本人"&&profileData[name])setProfile(name)}} onKeyDown={e=>{if(!offline&&e.key==="Enter"&&!e.shiftKey&&(e.target as HTMLElement).tagName==="TEXTAREA"){e.preventDefault();const textarea=e.target as HTMLTextAreaElement;send(textarea.value);textarea.value=""}}}>
     <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/wechat-shen-wang.png":owner==="gupan"?"/characters/wechat-gu-pan.png":"/characters/wechat-liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>setSection("chats")}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>setSection("contacts")}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments")}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>setSection("add")}>＋<small>添加</small></button></nav>
-    {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>setChat(p.name)}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
+    {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>setChat(p.name)}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/><WxBubble src="/characters/hao-qian.png" text="这里面一定有误会，顾盼，你好几天没有来学校上课，找个地方，我们见一面吧。"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
     {section==="contacts"&&<section className="wx-contacts"><header>通讯录</header><button onClick={()=>setSection("add")}>＋　新的朋友</button>{people.map(p=><div key={p.name}><img src={p.src} alt={p.name}/><b>{p.name}</b><small>{p.note}</small></div>)}</section>}
     {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false)}} onKeyDown={e=>e.key==="Enter"&&searchContact()} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
       {result==="hq"&&<article className="wx-driver-result"><img src="/characters/wechat-hao-qian-wedding.png" alt="H.Q."/><span><b>H.Q.</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
@@ -940,24 +1013,32 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     {owner==="shen"&&section==="chats"&&current.name==="郝倩"&&<HaoQianConfrontation onOpenLiuHan={()=>setChat("刘涵")}/>}
     {owner==="liuhan"&&section==="chats"&&current.name==="沈望"&&<ShenWangOpeningMirror/>}
     {owner==="liuhan"&&section==="chats"&&current.name==="陈放"&&<ChenFangChat/>}
+    {owner==="liuhan"&&section==="chats"&&current.name==="恒慕特别委托组"&&<HengmuCaseConfrontation/>}
     {owner==="shen"&&section==="chats"&&current.name==="韩铎"&&<HanDuoIdentityCheck/>}
     {owner==="shen"&&section==="chats"&&current.name==="老司机夜航群"&&<OldDriverGroup/>}
     {sent.filter(x=>x.who===current.name).length>0&&section==="chats"&&<div className="wx-live-sent">{sent.filter(x=>x.who===current.name).map((x,i)=><p key={i}>{x.text}</p>)}</div>}
-    {profile&&profileData[profile]&&<div className="wx-profile-modal" onClick={()=>setProfile(null)}><article onClick={e=>e.stopPropagation()}><button onClick={()=>setProfile(null)}>×</button><header><img src={profileData[profile].src} alt={profile}/><span><h2>{profile}</h2><small>微信号：{profileData[profile].wx}</small></span></header><dl><dt>个人简介</dt><dd>{profileData[profile].intro}</dd><dt>地区</dt><dd>{profile==="郝倩"||profile==="韩铎"?"海外":"中国"}</dd></dl><button className="wx-profile-moments" onClick={()=>{setMomentProfile(profile);setProfile(null);setSection("moments")}}>朋友圈　›</button></article></div>}
+    {profile&&profileData[profile]&&<div className="wx-profile-modal" onClick={()=>setProfile(null)}><article onClick={e=>e.stopPropagation()}><button onClick={()=>setProfile(null)}>×</button><header><img src={profileData[profile].src} alt={profile}/><span><h2>{profile}</h2><small>{profile==="恒慕特别委托组"?"恒慕官方企业账号":`微信号：${profileData[profile].wx}`}</small></span></header><dl><dt>账号说明</dt><dd>{profileData[profile].intro}</dd><dt>地区</dt><dd>{profile==="郝倩"||profile==="韩铎"?"海外":"中国"}</dd></dl>{profile!=="恒慕特别委托组"&&<button className="wx-profile-moments" onClick={()=>{setMomentProfile(profile);setProfile(null);setSection("moments")}}>朋友圈　›</button>}</article></div>}
   </div>
 }
 
 function GupanFamilyChat(){
   return <>
     <div className="wx-system">2022年11月9日　“一家人”群聊记录</div>
-    <WxBubble src="/characters/gu-pan.png" mine text="我昨晚在酒吧失去意识，醒来以后身体很不对。我已经到医院了。取证和检查要自费，你们能不能先借我一点？"/>
-    <WxBubble src="/family-mother.svg" text="谁让你一个女孩子去那种地方？出了事就找家里，你有没有想过自己的生活作风有问题？"/>
-    <WxBubble src="/family-father.svg" text="你真给家里丢脸。别指望我们给你钱。臭B，谁会要你？这种事不准再告诉别人。"/>
-    <WxBubble src="/family-brother.svg" text="那你这个月还能不能按时给我打生活费？"/>
-    <WxBubble src="/characters/gu-pan.png" mine text="我知道了。我会申请休学，回国工作，医疗费和后续检查我自己承担。"/>
-    <WxBubble src="/family-mother.svg" text="回来可以，回家以后就听话。我们给你安排相亲，你必须去见。"/>
+    <WxBubble src="/characters/gu-pan.png" mine text="我昨晚在酒吧出了一些事情，身体很不舒服。我已经到医院了。取证和检查要自费，爸妈你们能不能先借我一点？"/>
+    <WxBubble src="/family-mother.svg" text="谁让你一个女孩子去那种地方？出了事就找家里，你有没有想过是自己生活作风的问题？"/>
+    <WxBubble src="/family-father.svg" text="你真给家里丢脸。别指望我们给你钱。你这样的女孩子，谁会要你？这种事不准再提？！"/>
+    <WxBubble src="/family-brother.svg" text="姐，那你这个月还能不能按时给我打生活费？我看同学们都换了新iPhone"/>
+    <WxBubble src="/characters/gu-pan.png" mine text="我说我遭遇了事情，为什么你们会是这个反应？从我上大学开始，没有要过家里一分钱，我一直有做兼职，也有照顾弟弟。"/>
+    <WxBubble src="/family-father.svg" text="盼盼，你得体谅家里，最近生意很不顺利，找了大师，大师说都是因为家中长女没有成亲，人丁不够兴旺。"/>
+    <WxBubble src="/family-mother.svg" text="大师说得有道理的，盼盼，就当是为了家里好，你回国来结婚吧，我帮你物色一个。"/>
+    <WxBubble src="/family-father.svg" text="正好，那个大师也认识一些相关工作的人，推荐给我认识。"/>
+    <WxBubble src="/characters/gu-pan.png" mine text="我不知道，我不，还得用多久你们才能尊重我？我已经有男友，为什么你们一直在强迫我选择不愿踏上的道路？我会回国生活一段时间，调理身体，你们不要打扰我。"/>
+    <WxBubble src="/family-mother.svg" text="回来吧，这也是为你好。回家以后就听话，我们给你安排相亲，那个沈望，一看就没什么出息，你俩异地，他指不定已经找了新的女孩子。"/>
     <WxBubble src="/family-father.svg" text="别想回来以后还像在外面一样自由。家里养你这么大，不是让你给家里丢脸的。"/>
-    <div className="wx-system wx-sensitive-note">该记录包含受害者指责、言语侮辱与家庭控制内容</div>
+    <WxBubble src="/characters/gu-pan.png" mine text="我真的，对这个家，很失望...我不知道你们的爱到底是什么，我知道你们偏心，但怎么会做到在我需要你们帮助的时候仍然在向我索取。"/>
+    <WxBubble src="/family-brother.svg" text="姐！你这是什么话呢！我只是提一嘴新手机，你在国外吃香喝辣见世面，难道我就该在这小小的临川困着吗？"/>
+    <WxBubble src="/characters/gu-pan.png" mine text="我没什么好说的了。"/>
+    <div className="wx-system">顾盼退出了群聊</div>
   </>
 }
 
@@ -1184,7 +1265,7 @@ function HaoQianConfrontation({onOpenLiuHan}:{onOpenLiuHan:()=>void}){
       {step>=1&&<><WxBubble src="/characters/shen-wang.png" mine text="我是顾盼的朋友。"/><TimedMessages play={animatedStep===1} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你，你好。"/><WxBubble src="/characters/hao-qian.png" text="顾盼最近还好吗？"/></TimedMessages></>}
       {step>=2&&<WxBubble src="/characters/shen-wang.png" mine text="我……不知道她的近况。找你，是因为有些事情想向你确认。"/>}
       {step>=3&&<TimedMessages play={animatedStep===3} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="那天到底发生了什么？"/><WxBubble src="/characters/hao-qian.png" text="我不明白你在说什么。"/><div className="wx-system">她没有继续回复。输入事情发生的完整日期，证明你知道自己在问什么。</div></TimedMessages>}
-      {step>=4&&<><WxBubble src="/characters/shen-wang.png" mine text="2022年10月27日。"/><TimedMessages play={animatedStep===4} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你到底是谁？"/><WxBubble src="/characters/hao-qian.png" text="你是远帆互助会的人吗？"/></TimedMessages></>}
+      {step>=4&&<><WxBubble src="/characters/shen-wang.png" mine text="2022年11月8日。"/><TimedMessages play={animatedStep===4} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="你到底是谁？"/><WxBubble src="/characters/hao-qian.png" text="你是远帆互助会的人吗？"/></TimedMessages></>}
       {step>=5&&<><WxBubble src="/characters/shen-wang.png" mine text="不。那是什么？"/><TimedMessages play={animatedStep===5} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="不……"/><WxBubble src="/characters/hao-qian.png" text="我要怎么相信你？"/></TimedMessages></>}
 
       {evidence==="letter"&&step>=6&&<><WxBubble src="/characters/shen-wang.png" mine text="我知道这封信是你写的。"/><TimedMessages play={animatedStep===6} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/hao-qian.png" text="信里的话已经说得很清楚了。"/><WxBubble src="/characters/hao-qian.png" text="我没有什么可以再解释的。"/></TimedMessages></>}
@@ -1201,7 +1282,7 @@ function HaoQianConfrontation({onOpenLiuHan}:{onOpenLiuHan:()=>void}){
       {persistHistory&&step>=21&&<WxBubble src="/characters/shen-wang.png" mine text="听着，郝倩，我知道那段过去对你来说很痛苦。我猜到一定有不好的事情发生，也知道那痛苦一定蔓延到了顾盼身上。我是她当时的男朋友，但我居然什么都不知道，连她的求救都没有察觉。"/>}
       {persistHistory&&commonHistory&&<TimedMessages play={animatedStep===30} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="也许我做不到让一切回到原点，但我不能看到找到真相的机会，还继续装作什么都没有发生。"/><WxBubble src="/characters/hao-qian.png" text="对不起，我不知道……你是沈望，是吗？你和顾盼真的很像。"/><WxBubble src="/characters/hao-qian.png" text="明明没有人愿意帮我，她还是义无反顾。"/><WxBubble src="/characters/hao-qian.png" text="顾盼救过我。"/><WxBubble src="/characters/hao-qian.png" text="她本来可以不卷入这个漩涡。"/></TimedMessages>}
 
-      {step>=31&&<TimedMessages play={animatedStep===31} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="10月27日的聚会，是你让她去的？"/><WxBubble src="/characters/hao-qian.png" text="不是我安排的。"/><WxBubble src="/characters/hao-qian.png" text="你要的答案都在这里。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>官方网站 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/hao-qian.png" text="我知道他们还有一个群。"/><WxBubble src="/characters/hao-qian.png" text="我只知道这么多了。"/></TimedMessages>}
+      {step>=31&&<TimedMessages play={animatedStep===31} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="11月8日的聚会，是你让她去的？"/><WxBubble src="/characters/hao-qian.png" text="不是我安排的。"/><WxBubble src="/characters/hao-qian.png" text="你要的答案都在这里。"/><a className="wx-shared-link" href="/yuanfan" target="_blank" rel="noopener noreferrer"><i>远</i><span><b>远帆社区互助会</b><small>官方网站 · 在新标签页打开</small></span><em>打开 ↗</em></a><WxBubble src="/characters/hao-qian.png" text="我知道他们还有一个群。"/><WxBubble src="/characters/hao-qian.png" text="我只知道这么多了。"/></TimedMessages>}
       {step>=32&&<TimedMessages play={animatedStep===32} onReveal={scrollToLatest} onComplete={()=>setDeliveryPending(false)}><WxBubble src="/characters/shen-wang.png" mine text="谢谢。"/><WxBubble src="/characters/hao-qian.png" text="祝你好运。"/><div className="wx-system">首轮对话暂时结束</div></TimedMessages>}
       {step>=32&&testimonyStep>=1&&<><div className="wx-system">两组隐藏记录已并入本次对话</div><TimedMessages play={animatedTestimonyStep===1} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(1)}><WxBubble src="/characters/shen-wang.png" mine text="我找到了所有的记录。你接受了对方的封口费，对吗？"/><WxBubble src="/characters/hao-qian.png" text="……"/></TimedMessages></>}
       {step>=32&&testimonyStep>=2&&<TimedMessages play={animatedTestimonyStep===2} onReveal={scrollToLatest} onComplete={()=>finishTestimonyDelivery(2)}><WxBubble src="/characters/shen-wang.png" mine text="但你……你们的视频都在暗网上留了备份，你知道吗？"/><WxBubble src="/characters/hao-qian.png" text="……我，我不知道。"/></TimedMessages>}
@@ -1230,7 +1311,7 @@ function HaoQianConfrontation({onOpenLiuHan}:{onOpenLiuHan:()=>void}){
       {evidence==="medical"&&step===12&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(30)}>我没有资格替你决定。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
       {evidence==="medical"&&step===20&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(21)}>我知道那段过去很痛苦。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
       {evidence==="medical"&&step===21&&<><small>点击发送沈望的回应</small><button style={optionStyle} onClick={()=>advance(30)}>我不能继续装作什么都没有发生。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
-      {step===30&&<><small>点击发送沈望的追问</small><button style={optionStyle} onClick={()=>advance(31)}>10月27日的聚会，是你让她去的？</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
+      {step===30&&<><small>点击发送沈望的追问</small><button style={optionStyle} onClick={()=>advance(31)}>11月8日的聚会，是你让她去的？</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
       {step===31&&<><small>点击发送沈望的消息</small><button style={optionStyle} onClick={finishFirstRound}>谢谢。</button><button style={backOptionStyle} onClick={resetToneChoice}>返回态度选择</button></>}
       {error&&<small style={{display:"block",marginTop:"2px",color:"#a43b3b"}}>{error}</small>}
       </>}
@@ -1523,9 +1604,7 @@ function FilePreview({owner,file,close}:{owner:Owner;file:string;close:()=>void}
     "医院回执单.jpg":{tag:"扫描件",title:"North Harbor Medical Center",body:<><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></>},
     "账单.pdf":{tag:"付款订单 · 已结清",title:"Harborwell Recovery Center",body:<img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="Harborwell Recovery Center付款账单"/>},
     "HM-2217.pdf":{tag:"异常代号",title:"HM-2217",body:<><img className="pc-evidence-image document" src="/evidence/bank-draft-hm-2217.png" alt="附言为HM-2217的未兑付两万美元银行本票"/><p>两万美元支票，未兑现。</p></>},
-    "01_现场勘查摘要.pdf":{tag:"临川公安 · 脱敏副本",title:"现场勘查摘要",body:<><div className="scene-document-meta"><span><small>到场时间</small><b>2025年11月29日 08:03</b></span><span><small>现场位置</small><b>青槐区长宁路117号 · 4栋602室</b></span><span><small>资料编号</small><b>LC-QH-1129-602</b></span></div><p>到场时，楼层公共区域已拉设多道警方警戒线。入户门处于关闭状态，门框与锁舌外侧留有重复加锁和金属摩擦痕迹。</p><p>室内物品陈列明显经过整理和擦拭，但护照、工作材料、换季衣物及常用生活用品仍留在原处。现场状态与住户主动、长期搬离的情形不符。</p><p>本摘要仅陈述已确认的现场情况。涉及人员状态、调查结论与后续处置的信息不在本脱敏副本披露范围内。</p></>},
-    "07_现场物品登记表.pdf":{tag:"临川公安 · 现场物品",title:"现场物品登记表",body:<><table className="scene-evidence-table"><thead><tr><th>编号</th><th>物品</th><th>发现位置</th><th>状态</th></tr></thead><tbody><tr><td>LC-602-04</td><td>碎屏旧手机</td><td>卧室窗边矮柜后侧</td><td>关机 · 无SIM卡</td></tr><tr><td>LC-602-05</td><td>婚礼请柬</td><td>书桌抽屉第二层</td><td>纸面完整 · 二维码可识别</td></tr><tr><td>LC-602-06</td><td>方案变更单残页</td><td>碎纸篓夹层</td><td>下缘点划符号清晰</td></tr><tr><td>LC-602-09</td><td>浅色长围巾</td><td>室内悬挂点下方</td><td>已单独封存</td></tr></tbody></table><p>登记表仅列出与本次线索核验直接相关的现场物品。原物继续由办案单位封存。</p></>},
-    "备忘录_密码.txt":{tag:"旧手机本地备忘录导出",title:"备忘录_密码.txt",body:<><pre className="scene-password-note">2022年11月17日 03:36{"\n"}备份密码：gp2022wxpass</pre><p>该密码指向顾盼旧电脑上的微信离线备份。</p></>,link:["/computer/gupan","返回顾盼旧电脑，解锁微信备份 ↗"]},
+    "07_现场物品登记表.pdf":{tag:"临川公安 · 现场物品",title:"现场物品登记表",body:<><table className="scene-evidence-table"><thead><tr><th>编号</th><th>物品</th><th>发现位置</th><th>状态</th></tr></thead><tbody><tr><td>LC-402-04</td><td>碎屏旧手机</td><td>卧室窗边矮柜后侧</td><td>关机 · 无SIM卡</td></tr><tr><td>LC-402-05</td><td>婚礼请柬</td><td>书桌抽屉第二层</td><td>纸面完整 · 二维码可识别</td></tr><tr><td>LC-402-06</td><td>婚庆合同</td><td>碎纸篓夹层</td><td>纸张残损 · 封边校验清晰</td></tr><tr><td>LC-402-09</td><td>浅色长围巾</td><td>室内悬挂点下方</td><td>已单独封存</td></tr></tbody></table><p>登记表仅列出与本次线索核验直接相关的现场物品。原物继续由办案单位封存。</p><a className="scene-download" href="data:text/plain;charset=utf-8," download="LC-QH-1129-402.txt" onClick={()=>{localStorage.setItem("jia-police-investigation-id-downloaded","true");window.dispatchEvent(new Event("jia-progress"))}}>下载附件</a></>},
   };
   const item=content[file]||{tag:owner.toUpperCase(),title:file,body:<p>文件内容暂未恢复。</p>};
   return <div className="pc-file-preview"><header><span>{file}</span><button onClick={close}>×</button></header><article tabIndex={0} aria-label={`${file} 内容，可滚动查看`}><small>{item.tag}</small><h2>{item.title}</h2>{item.body}{item.link&&<a href={item.link[0]} target="_blank" rel="noopener noreferrer">{item.link[1]}</a>}</article></div>;

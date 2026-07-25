@@ -71,30 +71,30 @@ export default function QzonePage(){
     {view==="daily"?<section className="qz-archive-daily">
       <article>
         <header><img src="/characters/gu-pan.png" alt="顾盼"/><div><b>顾盼</b><small>2020年10月21日</small></div></header>
-        <p>两个人第一次一起做晚饭。一个人负责看菜谱，一个人负责把厨房弄得一团糟。最后居然还挺好吃。</p>
-        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/cooking-together.png",alt:"沈望与顾盼在家中一起做饭"})}>
-          <img src="/qzone/cooking-together.png" alt="沈望与顾盼在家中一起做饭"/>
+        <p>两个人第一次一起做晚饭。一个人负责看菜谱，一个人负责帮倒忙。最后居然还挺好吃。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/cooking-together.png",alt:"第一次diy晚餐"})}>
+          <img src="/qzone/cooking-together.png" alt="第一次diy晚餐"/>
         </button>
       </article>
       <article>
         <header><img src="/characters/shen-wang.png" alt="沈望"/><div><b>沈望</b><small>2021年4月4日</small></div></header>
-        <p>路线由她画，迷路由我负责。下一站还没决定，但地图上已经有了很多想一起去的地方。</p>
-        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/lakeside-map-picnic.png",alt:"沈望与顾盼在湖边查看旅行地图"})}>
-          <img src="/qzone/lakeside-map-picnic.png" alt="沈望与顾盼在湖边查看旅行地图"/>
+        <p>路线是她画的路线，而我负责挑选野餐的食材。<br/>下一站还没决定，但地图上已经太阳密布了，天气真好！</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/lakeside-map-picnic.png",alt:"在湖边"})}>
+          <img src="/qzone/lakeside-map-picnic.png" alt="在湖边"/>
         </button>
       </article>
       <article>
         <header><img src="/characters/gu-pan.png" alt="顾盼"/><div><b>顾盼</b><small>2021年8月17日</small></div></header>
-        <p>散步到很晚。他买了两杯热饮，却还是只空出一只手给我牵。左边的人继续等，右边的人记得回头。</p>
-        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/campus-night-walk.png",alt:"沈望与顾盼夜晚在校园散步"})}>
-          <img src="/qzone/campus-night-walk.png" alt="沈望与顾盼夜晚在校园散步"/>
+        <p>散步到很晚。他买了两杯热饮，还是只空出一只手给我挽着。<br/>我俩天下第一最最好：）</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/campus-night-walk.png",alt:"散步才是正经事。"})}>
+          <img src="/qzone/campus-night-walk.png" alt="散步才是正经事。"/>
         </button>
       </article>
       <article>
         <header><img src="/characters/shen-wang.png" alt="沈望"/><div><b>沈望</b><small>2021年12月31日</small></div></header>
-        <p>她那里比我晚十三个小时，所以今年可以说两次新年快乐。屏幕有点小，幸好想念没有距离限制。</p>
-        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/long-distance-video-call.png",alt:"沈望与顾盼跨越时差视频通话"})}>
-          <img src="/qzone/long-distance-video-call.png" alt="沈望与顾盼跨越时差视频通话"/>
+        <p>屏幕有点小，幸好想念没有距离限制。<br/>还是不想只和你视频，你一个人真的辛苦了。</p>
+        <button className="qz-daily-photo" type="button" onClick={()=>setPreviewImage({src:"/qzone/long-distance-video-call.png",alt:"爱能克服远距离"})}>
+          <img src="/qzone/long-distance-video-call.png" alt="爱能克服远距离"/>
         </button>
       </article>
     </section>:<section className="qz-board qz-archive-board">
@@ -104,7 +104,7 @@ export default function QzonePage(){
         <div>
           <b>匿名访客</b>
           <small>2025年11月29日 02:47 · · 来自手机网页</small>
-          <p>沈望，救我。我被锁在……<br/>临川……17号<br/>……4栋……02室</p>
+          <p>沈望，救我。我被锁在……<br/>临川……17号<br/>……4栋 一单...402室</p>
           <span>该留言可能因网络异常未完整提交，异常 IP：183.214.76.119</span>
         </div>
       </article>
