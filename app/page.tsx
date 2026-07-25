@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { FullInvestigation } from "./FullInvestigation";
 
 type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive" | "guFiles" | "guWechat" | "full";
@@ -36,7 +35,6 @@ const storyMap = [
 ];
 
 export default function Home() {
-  const router = useRouter();
   const [started, setStarted] = useState(false);
   const [choosingMode, setChoosingMode] = useState(false);
   const [openingPlaying, setOpeningPlaying] = useState(false);
@@ -55,7 +53,7 @@ export default function Home() {
 
   const enterGame=(mode:GameMode)=>{
     window.localStorage.setItem("jia-game-mode",mode);
-    router.push("/computer/shen");
+    window.location.assign("/computer/shen");
   };
 
   const finishOpening=()=>{
