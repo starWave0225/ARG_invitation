@@ -48,15 +48,19 @@ test("ships the reversible testimony branch and text-based first ending", async 
   assert.match(desktop, /查看刘涵的消息/);
   assert.match(desktop, /data-testid="hq-testimony-next"/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/let-go"\)/);
+  assert.match(desktop, /心脏像被骤然攥紧，沈望无法将那句话说完，视线在短暂的黑暗中失去焦点。/);
   assert.match(ending, /ending-one-sun-earth\.ogg/);
   assert.match(ending, /memories\/art-show-2018\.png/);
   assert.match(ending, /ending\/let-go\/shen-walking\.png/);
   assert.match(ending, /ending\/let-go\/gupan-walking\.png/);
   assert.match(ending, /let-go-reading-article/);
-  assert.match(ending, /这一次，输入框里没有出现新的文字。/);
+  assert.match(ending, /<small>01\/04<\/small>/);
+  assert.match(ending, /进入结局|audio\.currentTime=0/);
+  assert.match(ending, /沈望尽量不让自己哭出声/);
+  assert.match(ending, /至少，那张照片，替他们记得/);
   assert.doesNotMatch(ending, /ENDING_DURATION|narrativeBeats|let-go-controls/);
   assert.doesNotMatch(ending, /let-go-walker-wrap/);
-  assert.match(ending, /返回郝倩的对话，重新选择/);
+  assert.match(ending, /返回对话，重新选择/);
   assert.ok(audioInfo.size > 1_000_000);
 
   await Promise.all([
@@ -64,6 +68,26 @@ test("ships the reversible testimony branch and text-based first ending", async 
     access(new URL("../public/ending/let-go/shen-walking.png", import.meta.url)),
     access(new URL("../public/ending/let-go/gupan-walking.png", import.meta.url)),
   ]);
+});
+
+test("documents every secret archive query and enlarges emotional narration", async () => {
+  const [guide, styles] = await Promise.all([
+    readFile(new URL("../public/story-guide.html", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(guide, /郝倩秘密档案查询[\s\S]*YF-HQ-0214/);
+  assert.match(guide, /顾盼秘密档案查询[\s\S]*SD-8845127[\s\S]*HM-2217/);
+  assert.match(guide, /秘密档案网站入口[\s\S]*womandriver/);
+  assert.ok(
+    guide.indexOf("从H.Q.微博确认真实姓名") < guide.indexOf("查询郝倩康复记录"),
+    "H.Q.微博应当排在郝倩康复记录查询之前",
+  );
+  assert.doesNotMatch(guide, /<li><b>康复账单：<\/b><code>HAO QIAN/);
+  assert.match(styles, /\.wx-inner-voice\{[^}]*clamp\(14px,1\.05vw,16px\)\/2/);
+  assert.match(styles, /\.wx-inner-voice\.urgent\{[^}]*animation:hq-urgent-text-shake \.18s steps\(2,end\) infinite/);
+  assert.match(styles, /\.let-go-text-ending\.is-reading\{[^}]*height:100dvh[^}]*overflow-y:auto/);
+  assert.match(styles, /\.let-go-text-ending \.let-go-gate>small,\.let-go-reading-article>small\{font-size:16px/);
 });
 
 test("ships the late-flowers ending and Liu Han continuation handoff", async () => {

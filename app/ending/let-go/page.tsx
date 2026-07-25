@@ -23,7 +23,8 @@ export default function LetGoEndingPage(){
 
   useEffect(()=>()=>audioRef.current?.pause(),[]);
 
-  const startReading=()=>{
+  useEffect(()=>{
+    if(unlocked!==true)return;
     const audio=audioRef.current;
     if(!audio)return;
     const stored=Number(localStorage.getItem("arg-music-volume")??.45);
@@ -32,10 +33,20 @@ export default function LetGoEndingPage(){
     baseVolumeRef.current=muted?0:Math.min(.62,master);
     audio.currentTime=0;
     audio.volume=baseVolumeRef.current;
+    void audio.play().then(()=>setPaused(false)).catch(()=>setPaused(true));
+  },[unlocked]);
+
+  const startReading=()=>{
+    const audio=audioRef.current;
+    if(!audio)return;
     setStatus("reading");
-    setPaused(false);
     localStorage.setItem("jia-ending-one-complete","true");
-    void audio.play().catch(()=>setPaused(true));
+    if(audio.paused){
+      audio.currentTime=0;
+      audio.volume=baseVolumeRef.current;
+      setPaused(false);
+      void audio.play().catch(()=>setPaused(true));
+    }
   };
 
   const togglePause=()=>{
@@ -64,11 +75,10 @@ export default function LetGoEndingPage(){
     <audio ref={audioRef} src={ENDING_TRACK} preload="metadata"/>
 
     {status==="gate"&&<section className="let-go-gate">
-      <small>第一结局 · 终于放手</small>
-      <h1>那张合影里，<br/>他们还站得很近。</h1>
-      <p>点击开始阅读，背景音乐将从头播放。</p>
+      <small>01/04</small>
+      <h1>第一结局 · 终于放手</h1>
       <button type="button" onClick={startReading}>开始阅读　↘</button>
-      <button type="button" className="let-go-return" onClick={returnToChoice}>返回郝倩的对话，重新选择</button>
+      <button type="button" className="let-go-return" onClick={returnToChoice}>返回对话，重新选择</button>
       <em>BGM · 卢广仲《太阳与地球》</em>
     </section>}
 
@@ -92,31 +102,29 @@ export default function LetGoEndingPage(){
       <article className="let-go-reading-article">
         <small>第一结局</small>
         <h1>终于放手</h1>
-        <p className="let-go-reading-lead">2018年10月21日，照片把他们留在了同一天。</p>
+        <p className="let-go-reading-lead">2018年10月21日。<br/>那张合影里，<br/>他们还站得很近。</p>
 
-        <p>那时的沈望和顾盼还站得很近。画展的灯落在两个人肩上，他们相信地图是圆的，相信十三个小时的时差只是暂时，相信只要一直往前走，总会在世界的某处重新会合。</p>
+        <p>画展的灯温柔地落在两个人肩上，他们的爱情，也从那一刻开始。和所有恋人一样，他们争吵过、迷惘过，也被阴晴不定的生活推着向前。只是，哪怕在艰难的时刻，他们也不曾放弃彼此。</p>
 
-        <p>后来，顾盼去了更远的地方。</p>
+        <p>后来，顾盼去了更远的地方。他们相信地图是圆的，相信十三个小时的时差只是上天给予他们的考验，相信只要一直向前走，总会在世界的某个地方重新会合。</p>
 
-        <p>许多年以后，沈望终于找到了那段失踪的时间。他看见编号、账目、被隐藏的记录，也终于知道，在自己抱怨工作、疲惫和距离的时候，顾盼曾怎样独自站在一个没有人愿意相信她的夜晚里。</p>
+        <p>可是，后来，一切都变了。<br/>许多年以后，沈望终于找到了那段消失的时间。他看见一条条被人处心积虑隐藏的记录，也终于知道，顾盼曾怎样独自站在一个又一个无人可以求救的漫长黑夜里。</p>
 
-        <p>真相没有像他想象中那样带来答案。它只是把迟到的人重新带回原地，让他清楚地看见：当年的自己离她有多远。</p>
+        <p>真相没有像他想象中那样带来答案，反而让他更加迷惘。<br/>他开始怀疑这样刨根问底的意义。是不是只是把最黑暗的往事重新撕开，让它见光，也让那些结痂的伤口再次流血？是不是会毁掉郝倩好不容易得来的平静，也惊扰顾盼即将奔赴的新生活？</p>
 
-        <p>聊天窗口停在郝倩说害怕丈夫知道过去的那一刻。光标在输入框里闪烁。沈望还可以继续追问，可以要求她面对警察、法庭和那些不愿再想起的事情。</p>
+        <p>聊天窗口停在郝倩说害怕过去的那一刻。光标仍在输入框里闪烁。<br/>沈望想了很多、很多。他忽然觉得，既然顾盼已经决定结婚，也许她早已同过去和解，正在走向属于自己的新生活。</p>
 
-        <p>他也可以停下来。</p>
+        <p>在坚持之外，他也可以做另一种选择。</p>
 
-        <p>这一次，输入框里没有出现新的文字。</p>
+        <p>......<br/>沉默背后，沈望尽量不让自己哭出声。<br/>他分不清这些眼泪，究竟是为顾盼当年的遭遇而流，还是为两个人没能并肩面对这一切而流。<br/>但至少，那当年无从下落的眼泪，到今天，在这物是人非的异乡，终于是落在了地面上。</p>
 
-        <p>沈望没有原谅任何人。他也没有忘记顾盼经历过什么。所有证据依然留在硬盘里，按照日期排列，像一扇扇已经打开、却再也无法通往过去的门。</p>
+        <p>沈望不再对郝倩继续追问，却没有选择原谅。<br/>他决定用自己的方式，让那些伤害过顾盼的人付出代价。<br/>这也许称不上正义，只是一个迟到太久的旧情人，仍带着少年意气的拳头。</p>
 
-        <p>他只是忽然明白，知道全部真相，并不意味着能够把一个人带回来。继续站在原地，也不会让那封没有寄到的信重新抵达。</p>
+        <p>所有证据依然留在硬盘里，按照日期排列，像一扇扇已经打开、却再也无法通往过去的门。</p>
 
-        <p>他关掉微信，重新看了一遍那张合照。照片里的顾盼仍然微微偏着头，靠在他身旁。那一天没有改变，也永远不会继续向后发生。</p>
+        <p>再看一眼她的微博，就一眼吧。<br/>窗外天快亮了。</p>
 
-        <p>窗外天快亮了。沈望把照片放回文件夹，没有删除，也没有带走。</p>
-
-        <blockquote>他没有等到她回头。<br/>也终于不再站在原地。</blockquote>
+        <blockquote>至少，那张照片，替他们记得</blockquote>
 
         <footer>
           <small>ENDING 01 · FINALLY LETTING GO</small>

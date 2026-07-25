@@ -70,7 +70,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
       </Scene>}
       {step===5 && <Scene eyebrow="第一结局 · 终于放手" title="在坚持之外，他做了另一种选择">
         <p>两组隐藏记录齐全后，沈望再次要求郝倩出庭。她害怕过去毁掉现在的生活。如果玩家选择不再要求她作证，沈望会保留全部证据，并决定用自己的方式惩罚伤害过顾盼的人。随后进入可滚动的结局阅读页，《太阳与地球》从进入结局时自动播放。</p>
-        <blockquote>至少，那张合影里，两个人的距离还很近。</blockquote>
+        <blockquote>至少，那张照片，替他们记得。</blockquote>
         <div className="route-launcher"><small>第二结局 · 明日黄花</small><h2>如果继续要求郝倩出庭</h2><p>郝倩答应作证后，刘涵发来顾盼失联与三秒报警电话的消息。沈望返回临川，两人在晴川公寓确认顾盼已经去世。结局结束后，玩家可选择扮演刘涵；封门与落花画面快速回放，屏幕全黑显示“三天前”，再进入倒叙调查。两端此前的微信聊天记录全部保留。</p></div>
         <button onClick={()=>go(6)}>第二结局后，扮演刘涵继续调查</button>
       </Scene>}
