@@ -9,11 +9,15 @@ test("revisits the ending before entering Liu Han's three-days-earlier investiga
   ]);
 
   assert.match(ending,/type EndingStatus="gate"\|"film"\|"finale"\|"handoff"/);
-  assert.match(ending,/setHandoffStage\("flowers"\)/);
+  assert.match(ending,/setHandoffStage\("rewind"\)/);
+  assert.match(ending,/setHandoffStage\("blackout"\)/);
   assert.match(ending,/setHandoffStage\("title"\)/);
-  assert.match(ending,/>三天前<\/h1>/);
+  assert.match(ending,/<h1>三天前<\/h1>/);
+  assert.match(ending,/CASE TIMELINE REWOUND/);
   assert.match(ending,/jia-liuhan-flashback-complete/);
   assert.match(ending,/window\.location\.assign\("\/computer\/liuhan\?app=wechat"\)/);
-  assert.match(styles,/echo-door-recede/);
+  assert.match(styles,/\.rewindTunnel/);
+  assert.match(styles,/handoff-rewind-shake/);
   assert.match(styles,/three-days-title/);
+  assert.match(styles,/position:fixed/);
 });

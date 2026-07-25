@@ -97,14 +97,23 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
     stat(new URL("../public/audio/bgm/second-chance.mp3", import.meta.url)),
   ]);
 
-  assert.match(desktop, /沈望，你先别订回程。/);
-  assert.match(desktop, /这次你不是一个人去。/);
+  assert.match(desktop, /沈望，还在吗？/);
+  assert.match(desktop, /我终于知道了过去发生的一切。/);
+  assert.match(desktop, /前往临川 - 第二结局/);
   assert.match(desktop, /data-testid="enter-late-flowers-ending"/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/late-flowers"\)/);
   assert.match(desktop, /你现在是刘涵 · 调查目标已更新/);
-  assert.match(ending, /const ENDING_DURATION=38/);
-  assert.match(ending, /……顾盼已经去世了。/);
+  assert.match(ending, /const ENDING_DURATION=40/);
+  assert.match(ending, /from:38,to:40[\s\S]*刘涵扭过头去。天已经亮了。/);
+  assert.match(ending, /XX公寓。路上再说。/);
+  assert.doesNotMatch(ending, /晴川公寓/);
+  assert.match(ending, /POLICE LINE · 警戒线 · 禁止进入/);
+  assert.match(ending, /……顾盼可能已经不在了。/);
   assert.match(ending, /明日黄花/);
+  assert.match(ending, /late-flowers-finale-actions/);
+  assert.match(ending, /routeRevealed\?"扮演刘涵，继续调查全部真相　→":"？？？"/);
+  assert.match(ending, />重播结局<\/button>/);
+  assert.match(ending, />回到选择<\/button>/);
   assert.match(ending, /扮演刘涵，继续调查全部真相/);
   assert.match(ending, /window\.location\.assign\("\/computer\/liuhan\?app=wechat"\)/);
   assert.ok(audioInfo.size > 1_000_000);

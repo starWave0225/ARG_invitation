@@ -1,17 +1,21 @@
 .handoff{
-  position:relative;
-  width:100%;
-  height:100%;
+  position:fixed;
+  z-index:9999;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
   overflow:hidden;
   background:#020303;
+  isolation:isolate;
 }
 
-.corridorEcho,.flowerEcho,.blackCard{
+.corridorEcho,.flowerEcho,.rewindTunnel,.blackCard{
   position:absolute;
   inset:0;
   overflow:hidden;
   opacity:0;
-  transition:opacity .45s ease;
+  transition:opacity .36s ease;
 }
 
 .corridorEcho{
@@ -64,18 +68,26 @@
   transform:translateX(-50%);
 }
 
-.door i{
+.door .policeTape{
   position:absolute;
-  left:50%;
-  top:43%;
-  padding:13px 8px;
-  background:#d9d2c4e8;
-  color:#8f3030;
-  font:22px "KaiTi","STKaiti",serif;
+  left:-14%;
+  right:-14%;
+  overflow:hidden;
+  padding:9px 12px;
+  border:1px solid #ead83e;
+  background:repeating-linear-gradient(135deg,#e6cf24 0 18px,#f4df35 18px 36px);
+  color:#171712;
+  font:700 10px/1 Arial,sans-serif;
   font-style:normal;
-  box-shadow:0 5px 18px #0006;
-  transform:translate(-50%,-50%) rotate(-5deg);
+  letter-spacing:.16em;
+  text-align:center;
+  white-space:nowrap;
+  box-shadow:0 5px 18px #0009;
 }
+
+.door .tapeOne{top:30%;transform:rotate(8deg)}
+.door .tapeTwo{top:49%;transform:rotate(-10deg)}
+.door .tapeThree{top:68%;transform:rotate(6deg)}
 
 .door:after{
   content:"";
@@ -146,6 +158,103 @@
   animation:echo-copy .45s ease both;
 }
 
+.rewindTunnel{
+  z-index:7;
+  display:grid;
+  place-items:center;
+  background:
+    repeating-radial-gradient(ellipse at center,#b9aa7d1f 0 2px,transparent 3px 46px),
+    radial-gradient(ellipse at center,transparent 0 6%,#3b343190 31%,#070909ed 67%,#010202 100%);
+  perspective:700px;
+}
+
+.rewindCore{
+  position:absolute;
+  z-index:3;
+  left:50%;
+  top:50%;
+  display:grid;
+  justify-items:center;
+  color:#f0e8d8;
+  text-shadow:0 0 24px #b9a675;
+  transform:translate(-50%,-50%);
+  animation:rewind-core .58s ease-in-out infinite alternate;
+}
+
+.rewindCore small{
+  color:#b7aa8d;
+  font:10px/1 ui-monospace,monospace;
+  letter-spacing:.42em;
+  white-space:nowrap;
+}
+
+.rewindCore b{
+  margin:17px 0 11px;
+  font:clamp(38px,7vw,102px)/1 ui-monospace,monospace;
+  letter-spacing:.08em;
+}
+
+.rewindCore em{
+  color:#d6c38f;
+  font:clamp(20px,3vw,42px)/1 ui-monospace,monospace;
+  font-style:normal;
+  letter-spacing:.16em;
+}
+
+.rewindRing{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:18vw;
+  height:18vw;
+  min-width:180px;
+  min-height:180px;
+  border:2px solid #d7c79780;
+  border-radius:50%;
+  box-shadow:0 0 28px #b6a67445,inset 0 0 28px #b6a67424;
+  transform:translate(-50%,-50%);
+  animation:rewind-ring 1.15s linear infinite;
+}
+
+.rewindRing:nth-child(2){animation-delay:-.38s}
+.rewindRing:nth-child(3){animation-delay:-.76s}
+
+.rewindDates{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:#e9e2d3;
+  font:clamp(28px,6vw,92px)/1 ui-monospace,monospace;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-shadow:0 0 22px #a69263;
+}
+
+.rewindDates i{
+  position:absolute;
+  font-style:normal;
+  opacity:0;
+  animation:rewind-date 1.25s linear infinite;
+}
+
+.rewindDates i:nth-child(2){animation-delay:.25s}
+.rewindDates i:nth-child(3){animation-delay:.5s}
+.rewindDates i:nth-child(4){animation-delay:.75s}
+.rewindDates i:nth-child(5){animation-delay:1s}
+
+.rewindSweep{
+  position:absolute;
+  left:-20%;
+  top:50%;
+  width:140%;
+  height:3px;
+  background:#f2ead8;
+  box-shadow:0 0 18px 6px #b9a67599,0 -90px 0 #b9a67522,0 90px 0 #b9a67522;
+  transform:translateY(-50%) rotate(-7deg);
+  animation:rewind-sweep .54s ease-in-out infinite alternate;
+}
+
 .blackCard{
   z-index:10;
   display:grid;
@@ -153,17 +262,35 @@
   background:#000;
 }
 
-.blackCard h1{
+.blackCard article{
+  text-align:center;
+  opacity:0;
+}
+
+.blackCard small,.blackCard p{
+  display:block;
   margin:0;
+  color:#77736d;
+  font:9px/1.5 ui-monospace,monospace;
+  letter-spacing:.3em;
+}
+
+.blackCard h1{
+  margin:22px 0 18px;
   color:#e8e5df;
   font:clamp(35px,5vw,64px)/1 "Songti SC","STSong",serif;
   font-weight:400;
   letter-spacing:.28em;
   text-indent:.28em;
-  animation:three-days-title 2.5s ease both;
 }
 
-.corridor .corridorEcho,.flowers .flowerEcho,.title .blackCard{opacity:1}
+.echo .corridorEcho{opacity:1}
+.rewind .corridorEcho{opacity:.28;filter:blur(2px);transform:scale(1.08)}
+.rewind .flowerEcho{opacity:.58;mix-blend-mode:screen;animation:rewind-flower-flash .28s steps(2) infinite}
+.rewind .rewindTunnel{opacity:1}
+.rewind{animation:handoff-rewind-shake .14s steps(2) infinite}
+.blackout .blackCard,.title .blackCard{opacity:1}
+.title .blackCard article{animation:three-days-title 2.7s ease both}
 
 @keyframes echo-door-recede{
   from{transform:translateX(-50%) scale(1.15);filter:blur(0)}
@@ -186,10 +313,42 @@
   to{opacity:1;transform:none}
 }
 
+@keyframes handoff-rewind-shake{
+  0%{transform:translate3d(-2px,1px,0)}
+  50%{transform:translate3d(2px,-1px,0)}
+  100%{transform:translate3d(-1px,-2px,0)}
+}
+
+@keyframes rewind-ring{
+  from{opacity:.9;transform:translate(-50%,-50%) scale(.12) rotate(0)}
+  to{opacity:0;transform:translate(-50%,-50%) scale(5.8) rotate(-22deg)}
+}
+
+@keyframes rewind-core{
+  from{opacity:.62;filter:blur(1.5px);transform:translate(-50%,-50%) scale(.96)}
+  to{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1.035)}
+}
+
+@keyframes rewind-date{
+  0%{opacity:0;filter:blur(12px);transform:translate3d(0,45vh,-400px) scale(3)}
+  28%{opacity:.9;filter:blur(0)}
+  66%{opacity:.45}
+  100%{opacity:0;filter:blur(9px);transform:translate3d(0,-48vh,220px) scale(.22)}
+}
+
+@keyframes rewind-sweep{
+  from{opacity:.25;transform:translateY(-50%) rotate(-7deg) scaleX(.72)}
+  to{opacity:1;transform:translateY(-50%) rotate(7deg) scaleX(1.08)}
+}
+
+@keyframes rewind-flower-flash{
+  0%,100%{filter:invert(0);transform:scale(1)}
+  50%{filter:invert(1);transform:scale(1.03)}
+}
+
 @keyframes three-days-title{
-  0%,15%{opacity:0;filter:blur(8px)}
-  42%,78%{opacity:1;filter:blur(0)}
-  100%{opacity:0;filter:blur(3px)}
+  0%,8%{opacity:0;filter:blur(12px);transform:scale(1.13)}
+  30%,100%{opacity:1;filter:blur(0);transform:scale(1)}
 }
 
 @media(max-width:700px){
@@ -200,5 +359,6 @@
 
 @media(prefers-reduced-motion:reduce){
   .handoff *{animation-duration:.01ms!important;animation-iteration-count:1!important}
-  .corridorEcho,.flowerEcho,.blackCard{transition:none}
+  .corridorEcho,.flowerEcho,.rewindTunnel,.blackCard{transition:none}
+  .title .blackCard article{animation:none!important;opacity:1!important}
 }
