@@ -1,5 +1,9 @@
 # vinext-starter
 
+## 在线游玩
+
+[点击进入《嫁》](https://starwave0225.github.io/ARG_invitation/)
+
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
 Drizzle support.

@@ -39,7 +39,7 @@ export default function Page(){
   if(unlocked)return <DesktopRoute owner="gupan"/>;
 
   return <main className="gp-lock-screen">
-    <div className="gp-lock-time"><b>{systemTime}</b><span>2022年11月17日　星期四</span></div>
+    <div className="gp-lock-time"><b>{systemTime}</b><span>2022年11月18日　星期五</span></div>
     <section className="gp-login-card">
       <img src="/characters/gu-pan.png" alt="顾盼"/>
       <h1>顾盼</h1>

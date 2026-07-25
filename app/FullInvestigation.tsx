@@ -75,8 +75,9 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button onClick={()=>go(6)}>第二结局后，扮演刘涵继续调查</button>
       </Scene>}
       {step===6 && <Scene eyebrow="左右分屏开启" title="匿名访客">
-        <p>左侧沈望快速重取国外原始证据；右侧刘涵找到公开的QQ情侣空间。匿名留言残破，但所有者后台保留完整IP。</p>
-        <pre>沈望，救我。我被锁在……\n临川……青槐区长宁路……17号\n……4栋……02室\nIP归属节点：青槐区北部</pre>
+        <p>左侧沈望快速重取国外原始证据；右侧刘涵找到QQ情侣空间。匿名留言正文残破，但异常记录保留完整IP。刘涵在浏览器搜索临川公安档案查询网站，用IP调出公共网络节点一览。</p>
+        <pre>匿名访客 · 2025年11月29日 02:47\n沈望，救我。我被锁在……\n临川……17号\n……4栋……02室\n异常 IP：183.214.76.119\n节点登记：青槐区长宁路117号</pre>
+        <div className="route-launcher"><small>临川公安 · 公众线索协查端</small><h2>公共网络节点查询</h2><p>输入完整IP后显示18条同期节点记录；目标行指向晴川公寓公共无线网络。</p><a href="/police" target="_blank" rel="noopener noreferrer">在新标签页打开档案查询网站 ↗</a></div>
         <label>结合工作地点与候选地址，输入准确住址</label><input value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="晴川公寓4栋602室"/>
         <button disabled={answer!=="晴川公寓4栋602室"} onClick={()=>go(7)}>前往拘禁现场</button>
       </Scene>}
@@ -99,10 +100,10 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <p>返回恒慕官网的“服务进度查询”，同时输入合同号 <b>HM-W-251206-117</b> 与刚刚解出的服务码，取得变更时间线和内部结算摘要。</p>
         <div className="dialogue"><p><b>自动客服：</b>订单 HM-W-251206-117 已进入特殊变更流程。</p><p><b>刘涵：</b>服务码 YQ-730419。查询家属委托物。</p><p><b>私人顾问：</b>委托标的已接收，恒温保存；新匹配完成。家属分成50%。</p></div>
         <p>转运单将“委托标的”写成顾盼，接收地为永安礼仪园。她已经死亡；父母正在出售她的遗体。</p>
-        <button onClick={()=>{addProof(4);go(11)}}>联系微信列表里的陈放</button>
+        <button onClick={()=>{addProof(4);go(11)}}>返回警方档案查询网站</button>
       </Scene>}
-      {step===11 && <Scene eyebrow="陈放 · 临川公安" title="让真相进入程序">
-        <p>陈放不私下泄露数据库。他根据QQ求救、拘禁现场和恒慕转运单正式登记线索，查到死亡当晚的时间轴。</p>
+      {step===11 && <Scene eyebrow="临川公安 · 档案查询网站" title="让真相进入程序">
+        <p>陈放不通过微信泄露数据库。他把QQ求救、拘禁现场和恒慕转运单正式登记为关联材料后，网站自动开放两份脱敏警情档案。</p>
         <pre>02:13 周秀兰拨打报警电话\n02:14 通话中断\n02:16 顾建国回拨称误触\n02:19 顾建国联系韩铎\n02:31 恒慕车辆进入小区</pre>
         <button onClick={()=>{addProof(3);go(12)}}>锁定永安礼仪园</button>
       </Scene>}

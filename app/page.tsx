@@ -31,7 +31,7 @@ const storyMap = [
   { title: "明日黄花", body: "如果玩家继续要求郝倩出庭，郝倩最终答应作证。刘涵随即表示顾盼的情况不对，沈望返回临川。两人在一处暂以“XX公寓”标记的地点发现被撕掉的封条，只能判断顾盼已经失联、可能已经不在了。结局后选择扮演刘涵，封门与落花会短暂回放，屏幕全黑显示“三天前”，再进入倒叙调查；公寓的真实名称留待后续谜题解出。" },
   { title: "第二周目 · 双线", body: "玩家保留第一周目的记忆。左侧沈望快速重取国外证据；右侧刘涵从QQ情侣空间的匿名留言、完整IP与残破地址交叉定位晴川公寓。双桌面从这里同步推进。" },
   { title: "方案变更", body: "刘涵在拘禁现场找到旧请柬。新郎邵明辉来自当地富豪家庭，原宴席已经取消。请柬二维码通向恒慕官网；撕碎变更单底部的摩斯封边给出服务码 YQ-730419。" },
-  { title: "真相与结局", body: "合同号、服务码和付款记录解锁“圆满方案”。警方朋友陈放把中断接警、恒慕车辆与永安礼仪园纳入正式调查。读完刘涵线最后两份警方档案后，顾盼旧电脑会恢复一封被删除的绝笔信；信末通向隐藏结局《镜花水月》。" },
+  { title: "真相与结局", body: "合同号、服务码和付款记录解锁“圆满方案”。刘涵通过浏览器进入临川公安档案查询网站，把匿名留言IP与公共网络节点一览交叉核验；恒慕证据同步后，同一网站开放死亡警情与遗体移交记录。读完最后两份警方档案后，顾盼旧电脑会恢复一封被删除的绝笔信；信末通向隐藏结局《镜花水月》。" },
 ];
 
 export default function Home() {
@@ -494,7 +494,7 @@ function GuFiles({addEvidence}:{addEvidence:(e:Evidence)=>void}) {
       ].map(([label, id]) => <button key={id} onClick={() => { setFile(id); if(id==="check")addEvidence("draft"); }}>{label}<small>{id==="art"?"图片":"文件"}</small></button>)}
     </aside>
     <section>
-      {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月17日 03:42</p></div>}
+      {!file && <div className="empty-state"><span>2022</span><p>最后同步：2022年11月18日 03:42</p></div>}
       {file === "leave" && <article><p className="stamp">学校表单 · 已批准</p><h2>Temporary Leave of Absence</h2><img className="pc-evidence-image document" src="/evidence/gupan-temporary-leave.png" alt="顾盼的暂时休学申请批准表"/><p>学校名称：Northbridge University（北桥大学）</p></article>}
       {file === "receipt" && <article><p className="stamp">扫描件</p><h2>North Harbor Medical Center</h2><img className="pc-evidence-image document" src="/evidence/gupan-patient-portal-slip.png" alt="顾盼的医院患者编号与门户访问单"/><p>完整诊疗记录请前往医院门户查询</p></article>}
       {file === "bill" && <article><p className="stamp">付款订单 · 已结清</p><h2>Harborwell Recovery Center</h2><img className="pc-evidence-image document" src="/evidence/hao-qian-treatment-order.png" alt="Harborwell Recovery Center付款账单"/></article>}

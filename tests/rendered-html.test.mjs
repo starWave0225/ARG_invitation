@@ -149,3 +149,89 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
 
   await access(new URL("../app/ending/late-flowers/page.tsx", import.meta.url));
 });
+
+test("opens Liu Han's Qzone and police archive investigation through browser search", async () => {
+  const [desktop, qzone, police, guide, styles] = await Promise.all([
+    readFile(new URL("../app/computer/DesktopRoute.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/qzone/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/police/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/story-guide.html", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(desktop, /if\(app==="qq"\)return <QQDesktop\/>/);
+  assert.match(desktop, /aria-label="QQ功能栏"/);
+  assert.match(desktop, /您的好友有新动态/);
+  assert.doesNotMatch(desktop, /左望右盼的情侣空间出现了一条新的访客留言。/);
+  assert.match(desktop, /href="\/qzone" target="_blank" rel="noopener noreferrer"/);
+  assert.doesNotMatch(desktop, /<iframe src="\/qzone"/);
+  assert.match(desktop, /查看动态　↗/);
+  assert.doesNotMatch(desktop, /沈望与顾盼 · 受保护的共同回忆/);
+  assert.doesNotMatch(desktop, /name:"沈望",preview:"先查下顾盼现在住哪里？"/);
+  assert.doesNotMatch(desktop, /\{id:"chen",name:"陈放"/);
+  assert.doesNotMatch(desktop, /恒慕官网\.url/);
+  assert.doesNotMatch(desktop, /\["案件协作","盾","police"\]/);
+  assert.doesNotMatch(desktop, /if\(app==="police"\)/);
+  assert.match(desktop, /current\.name==="陈放"&&<ChenFangChat\/>/);
+  assert.match(desktop, /title:"临川公安｜线索协查与档案查询"/);
+  assert.match(desktop, /url:"\/police"/);
+  assert.match(desktop, /在浏览器搜索“临川公安 档案查询”/);
+  assert.doesNotMatch(desktop, /placeholder="输入完整IP地址"|发送给陈放|IP节点协查回执\.pdf/);
+  assert.doesNotMatch(desktop, /href="\/police"/);
+  assert.match(desktop, /jia-ip-node-report-downloaded/);
+  assert.match(desktop, /青槐区长宁路117号/);
+  assert.match(desktop, /临川公安的公众线索协查端提供脱敏节点表/);
+  assert.match(desktop, /晴川公寓现场资料\.zip/);
+  assert.match(desktop, /jia-liuhan-scene-package-extracted/);
+  assert.match(desktop, /晴川公寓_现场证据/);
+  assert.match(desktop, /01_现场勘查摘要\.pdf/);
+  assert.match(desktop, /03_室内全景\.jpg/);
+  assert.match(desktop, /04_碎屏旧手机\.jpg/);
+  assert.match(desktop, /05_请柬\.jpg/);
+  assert.match(desktop, /06_方案变更单残页\.jpg/);
+  assert.match(desktop, /07_现场物品登记表\.pdf/);
+  assert.match(desktop, /备忘录_密码\.txt/);
+  assert.doesNotMatch(desktop, /顾盼的手机_本地数据提取|刘涵电脑.*下载/);
+  assert.match(qzone, /空间已封存/);
+  assert.match(qzone, /请输入封存的日期。/);
+  assert.match(qzone, /qz-archive-brand/);
+  assert.match(qzone, />Qzone<\/b>/);
+  assert.match(qzone, /archiveDate\.replace\(\/\\D\/g,""\)==="20221118"/);
+  assert.match(qzone, /jia-qzone-ip-found/);
+  assert.match(qzone, /2025年11月29日 02:47 · · 来自手机网页/);
+  assert.match(qzone, /临川……17号/);
+  assert.match(qzone, /该留言可能因网络异常未完整提交，异常 IP：183\.214\.76\.119/);
+  assert.doesNotMatch(qzone, /临川……青槐区长宁路/);
+  assert.match(qzone, /aria-label="情侣空间栏目"/);
+  assert.match(qzone, />日常<\/button>/);
+  assert.match(qzone, />留言板<\/button>/);
+  assert.doesNotMatch(qzone, />相册<\/button>|>纪念日<\/button>|>主人管理/);
+  assert.doesNotMatch(qzone, /1488|相伴了多少天/);
+  assert.match(police, /公共网络节点查询/);
+  assert.match(police, /networkQuery\.trim\(\)==="183\.214\.76\.119"/);
+  assert.match(police, /localStorage\.setItem\("jia-ip-node-report-downloaded","true"\)/);
+  assert.match(police, /青槐区公共网络节点一览表/);
+  assert.match(police, /青槐区长宁路117号/);
+  assert.match(police, /晴川公寓公共无线网络/);
+  assert.match(police, /localStorage\.getItem\("jia-hengmu-unlocked"\)==="true"/);
+  assert.match(police, /警情档案权限已开放|死亡警情与现场记录已开放/);
+  assert.doesNotMatch(police, /CF-1203-LH|协查授权码|一次性协查入口/);
+  assert.match(guide, /情侣空间留言板<\/td><td><code>2022\/11\/18<\/code>/);
+  assert.match(guide, /浏览器搜索“临川公安 档案查询”/);
+  assert.doesNotMatch(guide, /返回刘涵微信，打开陈放|CF-1203-LH|IP节点协查回执\.pdf/);
+  assert.match(guide, /晴川公寓_现场证据/);
+  assert.match(guide, /备忘录_密码\.txt/);
+  assert.match(styles, /\.qq-app\{[^}]*grid-template-columns:64px 250px minmax\(0,1fr\)/);
+  assert.match(styles, /\.qq-space-panel\{[^}]*grid-column:2\/-1/);
+  assert.match(styles, /\.police-network-table\{/);
+  assert.match(styles, /\.qz-route\{[^}]*height:100dvh[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
+
+  await Promise.all([
+    access(new URL("../public/characters/qq-class-group.svg", import.meta.url)),
+    access(new URL("../public/characters/qq-device.svg", import.meta.url)),
+    access(new URL("../public/evidence/liuhan-scene/03-room-overview.png", import.meta.url)),
+    access(new URL("../public/evidence/liuhan-scene/04-cracked-phone.png", import.meta.url)),
+    access(new URL("../public/evidence/liuhan-scene/05-invitation.png", import.meta.url)),
+    access(new URL("../public/evidence/liuhan-scene/06-plan-fragment.png", import.meta.url)),
+  ]);
+});
