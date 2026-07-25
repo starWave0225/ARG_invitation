@@ -1,11 +1,13 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
+import transitionStyles from "./transition.module.css";
 
 const ENDING_DURATION=38;
 const ENDING_TRACK="/audio/bgm/second-chance.mp3";
 
-type EndingStatus="gate"|"film"|"finale";
+type EndingStatus="gate"|"film"|"finale"|"handoff";
+type HandoffStage="corridor"|"flowers"|"title";
 type EndingBeat={from:number;to:number;chapter:string;speaker?:string;text:string;subtext?:string};
 
 const endingBeats:EndingBeat[]=[
@@ -28,6 +30,7 @@ export default function LateFlowersEndingPage(){
   const [status,setStatus]=useState<EndingStatus>("gate");
   const [elapsed,setElapsed]=useState(0);
   const [paused,setPaused]=useState(false);
+  const [handoffStage,setHandoffStage]=useState<HandoffStage>("corridor");
   const elapsedRef=useRef(0);
   const audioRef=useRef<HTMLAudioElement|null>(null);
 
@@ -65,6 +68,24 @@ export default function LateFlowersEndingPage(){
   },[status,paused]);
 
   useEffect(()=>()=>audioRef.current?.pause(),[]);
+
+  useEffect(()=>{
+    if(status!=="handoff")return;
+    const flowersTimer=window.setTimeout(()=>setHandoffStage("flowers"),1900);
+    const titleTimer=window.setTimeout(()=>{
+      setHandoffStage("title");
+      audioRef.current?.pause();
+    },3700);
+    const routeTimer=window.setTimeout(()=>{
+      localStorage.setItem("jia-liuhan-flashback-complete","true");
+      window.location.assign("/computer/liuhan?app=wechat");
+    },6500);
+    return()=>{
+      window.clearTimeout(flowersTimer);
+      window.clearTimeout(titleTimer);
+      window.clearTimeout(routeTimer);
+    };
+  },[status]);
 
   const startFilm=()=>{
     const audio=audioRef.current;
@@ -108,8 +129,9 @@ export default function LateFlowersEndingPage(){
     localStorage.setItem("jia-ending-two-complete","true");
     localStorage.setItem("jia-second-route-unlocked","true");
     localStorage.setItem("jia-liuhan-route-unlocked","true");
-    audioRef.current?.pause();
-    window.location.assign("/computer/liuhan?app=wechat");
+    setHandoffStage("corridor");
+    setStatus("handoff");
+    void audioRef.current?.play().catch(()=>{});
   };
 
   const replay=()=>{
@@ -193,6 +215,23 @@ export default function LateFlowersEndingPage(){
         </div>
         <em>BGM · “Signal to Noise” by Scott Buckley · CC BY 4.0</em>
       </article>
+    </section>}
+
+    {status==="handoff"&&<section className={`${transitionStyles.handoff} ${transitionStyles[handoffStage]}`} aria-live="polite">
+      <div className={transitionStyles.corridorEcho} aria-hidden="true">
+        <span className={`${transitionStyles.wall} ${transitionStyles.left}`}/>
+        <span className={`${transitionStyles.wall} ${transitionStyles.right}`}/>
+        <span className={transitionStyles.door}><b>602</b><i>封</i></span>
+      </div>
+      <div className={transitionStyles.flowerEcho} aria-hidden="true">
+        <img src="/paintings/xiangyangchu.png" alt=""/>
+        <i/><i/><i/><i/><i/><i/>
+      </div>
+      <div className={transitionStyles.echoCopy}>
+        {handoffStage==="corridor"&&<p>……顾盼已经去世了。</p>}
+        {handoffStage==="flowers"&&<p>刘涵没有回答。天已经亮了。</p>}
+      </div>
+      <div className={transitionStyles.blackCard}><h1>三天前</h1></div>
     </section>}
   </main>;
 }
