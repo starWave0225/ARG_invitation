@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
+import EndingMusicControl from "../EndingMusicControl";
 
 const ENDING_DURATION=108;
 const ENDING_TRACK="/audio/bgm/hao-jiu-bu-jian.mp3";
@@ -49,6 +50,7 @@ export default function HiddenEndingPage(){
   const audioRef=useRef<HTMLAudioElement|null>(null);
   const frameRef=useRef<number|null>(null);
   const baseVolumeRef=useRef(.42);
+  const filmAudioOffsetRef=useRef(0);
 
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>setUnlocked(
@@ -63,7 +65,7 @@ export default function HiddenEndingPage(){
     const tick=()=>{
       const audio=audioRef.current;
       if(!audio)return;
-      const next=audio.currentTime;
+      const next=Math.max(0,audio.currentTime-filmAudioOffsetRef.current);
       setTime(next);
       audio.volume=Math.min(1,baseVolumeRef.current);
       if(next>=ENDING_DURATION){
@@ -113,8 +115,19 @@ export default function HiddenEndingPage(){
     const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
     const muted=localStorage.getItem("arg-music-muted")==="true";
     baseVolumeRef.current=muted?0:Math.min(.58,master*.9);
-    audio.currentTime=0;
+    filmAudioOffsetRef.current=audio.currentTime;
     audio.volume=baseVolumeRef.current;
+    setTime(0);
+    setPaused(false);
+    setStatus("playing");
+    void audio.play().catch(()=>setPaused(true));
+  };
+
+  const replay=()=>{
+    const audio=audioRef.current;
+    if(!audio)return;
+    audio.currentTime=0;
+    filmAudioOffsetRef.current=0;
     setTime(0);
     setPaused(false);
     setStatus("playing");
@@ -145,7 +158,16 @@ export default function HiddenEndingPage(){
   if(!unlocked)return <main className="hidden-ending-route hidden-ending-locked"><section><small>ENDING LOCKED</small><h1>这里还没有可以抵达的梦。</h1><p>完成刘涵调查线后，返回顾盼旧电脑，在回收站中读完《希望_未寄出.txt》。</p><a href="/computer/gupan">返回顾盼的旧电脑</a></section></main>;
 
   return <main className={`hidden-ending-route hidden-ending-film ${paused?"is-paused":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
+    <audio
+      ref={audioRef}
+      src={ENDING_TRACK}
+      preload="auto"
+      autoPlay
+      onPlay={()=>setPaused(false)}
+      onPause={()=>setPaused(true)}
+      onEnded={()=>setPaused(true)}
+    />
+    <EndingMusicControl paused={paused} onToggle={togglePause}/>
     <div className="hidden-ending-film-grain"/>
 
     {status==="gate"&&<section className="hidden-ending-gate late-flowers-gate">
@@ -184,7 +206,6 @@ export default function HiddenEndingPage(){
       <div className="hidden-ending-snow" aria-hidden="true">{Array.from({length:18},(_,index)=><i key={index}/>)}</div>
       <header className="hidden-ending-film-top"><span>镜花水月</span><em>2018　→　2026</em></header>
       <footer className="hidden-ending-controls">
-        <button type="button" onClick={togglePause}>{paused?"继续":"暂停"}</button>
         <div><i style={{width:`${time/ENDING_DURATION*100}%`}}/></div>
         <time>{clock(time)} / {clock(ENDING_DURATION)}</time>
         <button type="button" onClick={finish}>跳过</button>
@@ -196,7 +217,7 @@ export default function HiddenEndingPage(){
       <h1>死亡没有被改写</h1>
       <p>但在无人能够夺走的梦里，<br/>他们曾有过完整的一生。</p>
       <blockquote>左望，右盼。<br/>而右边的人，终于回过了头。</blockquote>
-      <div><button type="button" onClick={start}>重新播放</button><a href="/">醒来　→</a></div>
+      <div><button type="button" onClick={replay}>重新播放</button><a href="/">醒来　→</a></div>
       <span className="hidden-ending-credit">《好久不见》· 陈奕迅</span>
     </section>}
   </main>;

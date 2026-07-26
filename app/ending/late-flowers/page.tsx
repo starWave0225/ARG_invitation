@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
+import EndingMusicControl from "../EndingMusicControl";
 import transitionStyles from "./transition.module.css";
 
 const ENDING_DURATION=40;
@@ -30,12 +31,12 @@ export default function LateFlowersEndingPage(){
   const [unlocked,setUnlocked]=useState<boolean|null>(null);
   const [status,setStatus]=useState<EndingStatus>("gate");
   const [elapsed,setElapsed]=useState(0);
-  const [paused,setPaused]=useState(false);
+  const [paused,setPaused]=useState(true);
   const [handoffStage,setHandoffStage]=useState<HandoffStage>("echo");
-  const [routeRevealed,setRouteRevealed]=useState(false);
   const elapsedRef=useRef(0);
   const audioRef=useRef<HTMLAudioElement|null>(null);
   const handoffPreviewRef=useRef(false);
+  const baseVolumeRef=useRef(.45);
 
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{
@@ -80,13 +81,26 @@ export default function LateFlowersEndingPage(){
   useEffect(()=>()=>audioRef.current?.pause(),[]);
 
   useEffect(()=>{
-    if(status!=="finale"){
-      setRouteRevealed(false);
-      return;
-    }
-    const timer=window.setTimeout(()=>setRouteRevealed(true),1600);
-    return()=>window.clearTimeout(timer);
-  },[status]);
+    if(unlocked!==true||status!=="gate")return;
+    const audio=audioRef.current;
+    if(!audio)return;
+    const stored=Number(localStorage.getItem("arg-music-volume")??.45);
+    const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
+    const muted=localStorage.getItem("arg-music-muted")==="true";
+    baseVolumeRef.current=muted?0:Math.min(.5,master);
+    audio.currentTime=0;
+    audio.volume=baseVolumeRef.current;
+    const playGateMusic=()=>{
+      if(audio.paused)void audio.play().then(()=>setPaused(false)).catch(()=>setPaused(true));
+    };
+    playGateMusic();
+    document.addEventListener("pointerdown",playGateMusic,{once:true});
+    document.addEventListener("keydown",playGateMusic,{once:true});
+    return()=>{
+      document.removeEventListener("pointerdown",playGateMusic);
+      document.removeEventListener("keydown",playGateMusic);
+    };
+  },[status,unlocked]);
 
   useEffect(()=>{
     if(status!=="handoff")return;
@@ -111,11 +125,7 @@ export default function LateFlowersEndingPage(){
   const startFilm=()=>{
     const audio=audioRef.current;
     if(!audio)return;
-    const stored=Number(localStorage.getItem("arg-music-volume")??.45);
-    const master=Number.isFinite(stored)?Math.min(1,Math.max(0,stored)):.45;
-    const muted=localStorage.getItem("arg-music-muted")==="true";
-    audio.currentTime=0;
-    audio.volume=muted?0:Math.min(.5,master);
+    audio.volume=baseVolumeRef.current;
     elapsedRef.current=0;
     setElapsed(0);
     setStatus("film");
@@ -138,7 +148,6 @@ export default function LateFlowersEndingPage(){
   const finishNow=()=>{
     elapsedRef.current=ENDING_DURATION;
     setElapsed(ENDING_DURATION);
-    setPaused(false);
     localStorage.setItem("jia-ending-two-complete","true");
     localStorage.setItem("jia-second-route-unlocked","true");
     localStorage.setItem("jia-liuhan-route-unlocked","true");
@@ -152,7 +161,7 @@ export default function LateFlowersEndingPage(){
     localStorage.setItem("jia-liuhan-route-unlocked","true");
     setHandoffStage("echo");
     setStatus("handoff");
-    void audioRef.current?.play().catch(()=>{});
+    if(!paused)void audioRef.current?.play().catch(()=>setPaused(true));
   };
 
   const replay=()=>{
@@ -191,7 +200,15 @@ export default function LateFlowersEndingPage(){
   if(!unlocked)return <main className="late-flowers-ending late-flowers-locked"><section><small>ENDING LOCKED</small><h1>这趟返程还没有开始。</h1><p>只有在郝倩同意出庭作证后，刘涵才会发来这条消息。</p><a href="/computer/shen?app=wechat&chat=haoqian">返回郝倩的对话</a></section></main>;
 
   return <main className={`late-flowers-ending is-${status} ${paused?"is-paused":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="metadata"/>
+    <audio
+      ref={audioRef}
+      src={ENDING_TRACK}
+      preload="metadata"
+      onPlay={()=>setPaused(false)}
+      onPause={()=>setPaused(true)}
+      onEnded={()=>setPaused(true)}
+    />
+    <EndingMusicControl paused={paused} onToggle={togglePause}/>
     <div className="late-flowers-grain" aria-hidden="true"/>
 
     {status==="gate"&&<section className="late-flowers-gate">
@@ -239,7 +256,6 @@ export default function LateFlowersEndingPage(){
       </article>
 
       <footer className="late-flowers-controls">
-        <button type="button" onClick={togglePause}>{paused?"继续":"暂停"}</button>
         <div><i style={{width:`${progress}%`}}/></div>
         <time>{Math.floor(elapsed).toString().padStart(2,"0")} / {ENDING_DURATION}</time>
         <button type="button" onClick={finishNow}>跳过演出</button>
@@ -254,7 +270,7 @@ export default function LateFlowersEndingPage(){
         <p>花仍会开，只是开在无法抵达的明天。</p>
         <blockquote>他原本是来告别的。<br/>到最后，连该把花放在哪里都不知道。</blockquote>
         <div className="late-flowers-finale-actions">
-          <button type="button" className={routeRevealed?"":"is-mystery"} disabled={!routeRevealed} onClick={continueAsLiuHan}>{routeRevealed?"扮演刘涵，继续调查全部真相　→":"？？？"}</button>
+          <button type="button" className="late-flowers-secret-route" aria-label="扮演刘涵，继续调查全部真相" onClick={continueAsLiuHan}><span aria-hidden="true">扮演刘涵，继续调查全部真相　→</span></button>
           <button type="button" className="secondary" onClick={replay}>重播结局</button>
           <button type="button" className="secondary" onClick={returnToChoice}>回到选择</button>
         </div>

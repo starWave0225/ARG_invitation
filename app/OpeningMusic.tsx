@@ -12,6 +12,7 @@ const DEFAULT_MASTER_VOLUME = 0.45;
 const VOLUME_STORAGE_KEY = "arg-music-volume";
 const MUTED_STORAGE_KEY = "arg-music-muted";
 const PLAYBACK_CHANNEL = "arg-bgm-playback-owner";
+const ENDING_PRIORITY_EVENT = "jia-ending-music-priority";
 
 const tracks = {
   investigation: {
@@ -248,13 +249,43 @@ export default function OpeningMusic() {
     [clearRouteTimer, startTrack]
   );
 
+  const suspendForEnding = useCallback(() => {
+    clearCue();
+    clearOpeningFade();
+    clearBgmFade();
+    clearRouteTimer();
+    desiredTrackRef.current = null;
+
+    const currentKey = currentTrackRef.current;
+    const active = decks()[activeDeckRef.current];
+    if (currentKey && active) playheadRef.current[currentKey] = active.currentTime;
+    decks().forEach((deck) => deck?.pause());
+    currentTrackRef.current = null;
+    setCurrentTrack(null);
+
+    const opening = openingRef.current;
+    if (opening) opening.pause();
+    openingPhaseRef.current = "idle";
+    setOpeningActive(false);
+    setPlayerVisible(false);
+  }, [
+    clearBgmFade,
+    clearCue,
+    clearOpeningFade,
+    clearRouteTimer,
+    decks,
+  ]);
+
   useEffect(() => {
     tabIdRef.current = window.crypto.randomUUID();
     const channel = "BroadcastChannel" in window ? new BroadcastChannel(PLAYBACK_CHANNEL) : null;
     playbackChannelRef.current = channel;
     if (channel) {
       channel.onmessage = (event: MessageEvent<{ type?: string; tabId?: string }>) => {
-        if (event.data?.type !== "claim" || event.data.tabId === tabIdRef.current) return;
+        if (
+          !["claim", "ending-claim"].includes(event.data?.type ?? "") ||
+          event.data.tabId === tabIdRef.current
+        ) return;
         clearBgmFade();
         const currentKey = currentTrackRef.current;
         const active = decks()[activeDeckRef.current];
@@ -301,12 +332,14 @@ export default function OpeningMusic() {
 
     window.addEventListener("jia-opening-music-play", playOpening);
     window.addEventListener("jia-opening-music-menu", enterMenu);
+    window.addEventListener(ENDING_PRIORITY_EVENT, suspendForEnding);
     window.addEventListener("focus", resumeAudio);
     document.addEventListener("pointerdown", resumeAudio);
     document.addEventListener("keydown", resumeAudio);
     return () => {
       window.removeEventListener("jia-opening-music-play", playOpening);
       window.removeEventListener("jia-opening-music-menu", enterMenu);
+      window.removeEventListener(ENDING_PRIORITY_EVENT, suspendForEnding);
       window.removeEventListener("focus", resumeAudio);
       document.removeEventListener("pointerdown", resumeAudio);
       document.removeEventListener("keydown", resumeAudio);
@@ -327,10 +360,15 @@ export default function OpeningMusic() {
     openingVolume,
     startTrack,
     stopBgm,
+    suspendForEnding,
   ]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
+      if (pathname.startsWith("/ending/")) {
+        suspendForEnding();
+        return;
+      }
       const routeTrack = trackForPath(pathname);
       if (!routeTrack) {
         stopBgm();
@@ -341,7 +379,7 @@ export default function OpeningMusic() {
       queueTrack(routeTrack, delay);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [pathname, queueTrack, stopBgm]);
+  }, [pathname, queueTrack, stopBgm, suspendForEnding]);
 
   useEffect(() => {
     if (!pathname.startsWith("/computer/")) return;
@@ -398,7 +436,7 @@ export default function OpeningMusic() {
       <audio ref={openingRef} src="/audio/opening-theme.mp3" preload="auto" />
       <audio ref={deckARef} preload="none" />
       <audio ref={deckBRef} preload="none" />
-      {playerVisible && !pathname.startsWith("/ending/hidden") && !pathname.startsWith("/ending/xi") && (
+      {playerVisible && !pathname.startsWith("/ending/") && (
         <aside className={`bgm-player ${panelOpen ? "open" : ""}`} aria-label="背景音乐控制">
           {panelOpen && (
             <section className="bgm-panel">

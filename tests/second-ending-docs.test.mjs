@@ -15,6 +15,6 @@ test("documents the complete late-flowers branch and Liu Han rewind",async()=>{
   }
   assert.match(guide,/第二结局：明日黄花[\s\S]*扮演刘涵/);
   assert.match(guide,/原有的刘涵聊天不会被替换/);
-  assert.match(guide,/沈望端与刘涵端均保留此前的完整聊天记录/);
+  assert.match(guide,/沈望与刘涵此前的聊天记录都会保留/);
   assert.match(outline,/第二结局后，扮演刘涵继续调查/);
 });

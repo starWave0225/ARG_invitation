@@ -118,6 +118,15 @@ test("documents every secret archive query and enlarges emotional narration", as
   assert.match(guide, /郝倩秘密档案查询[\s\S]*YF-HQ-0214/);
   assert.match(guide, /顾盼秘密档案查询[\s\S]*SD-8845127[\s\S]*HM-2217/);
   assert.match(guide, /秘密档案网站入口[\s\S]*womandriver/);
+  assert.match(guide, /顾盼医疗记录<\/td><td><code>GU PAN<\/code><br><code>GP-221109<\/code><br><code>20221109<\/code><br><code>7304<\/code>/);
+  assert.match(guide, /郝倩医疗记录<\/td><td><code>HAO QIAN<\/code><br><code>HQ-220214<\/code><br><code>20220214<\/code><br><code>0214<\/code>/);
+  assert.match(guide, /郝倩好友验证<\/td><td><code>郝倩<\/code>/);
+  assert.match(guide, /郝倩对质日期<\/td><td><code>2022\/10\/27<\/code>/);
+  assert.match(guide, /韩铎微信<\/td><td><code>hd_047_abroad<\/code>/);
+  assert.match(guide, /韩铎好友验证<\/td><td><code>Northbridge University<\/code><br>或 <code>北桥大学<\/code>/);
+  assert.match(guide, /虚构学生身份<\/td><td><code>Lin Chuan<\/code><br><code>2025<\/code><br><code>DS<\/code><br><code>2025-DS-LC-184206<\/code>/);
+  assert.match(guide, /晴川公寓门牌<\/td><td><code>4栋<\/code><br><code>1单元<\/code><br><code>402室<\/code>/);
+  assert.match(guide, /旧文字原型迁移密码[\s\S]*非正式主线[\s\S]*<code>1021<\/code>/);
   assert.ok(
     guide.indexOf("从H.Q.微博确认真实姓名") < guide.indexOf("查询郝倩康复记录"),
     "H.Q.微博应当排在郝倩康复记录查询之前",
@@ -149,6 +158,7 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
   assert.match(desktop, /NIGHTDRIVE 隐藏站记录/);
   assert.match(desktop, /两组记录相关联并互相印证。/);
   assert.match(ending, /const ENDING_DURATION=40/);
+  assert.doesNotMatch(ending, /const startFilm=\(\)=>\{[\s\S]*?audio\.currentTime=0;[\s\S]*?setStatus\("film"\)/);
   assert.match(ending, /from:38,to:40[\s\S]*刘涵扭过头去。天已经亮了。/);
   assert.match(ending, /XX公寓。路上再说。/);
   assert.doesNotMatch(ending, /晴川公寓/);
@@ -156,7 +166,9 @@ test("ships the late-flowers ending and Liu Han continuation handoff", async () 
   assert.match(ending, /……顾盼可能已经不在了。/);
   assert.match(ending, /明日黄花/);
   assert.match(ending, /late-flowers-finale-actions/);
-  assert.match(ending, /routeRevealed\?"扮演刘涵，继续调查全部真相　→":"？？？"/);
+  assert.doesNotMatch(ending, /routeRevealed|？？？/);
+  assert.match(ending, /className="late-flowers-secret-route"[\s\S]*?<span aria-hidden="true">扮演刘涵，继续调查全部真相　→<\/span>/);
+  assert.match(ending, /aria-label="扮演刘涵，继续调查全部真相"/);
   assert.match(ending, />重播结局<\/button>/);
   assert.match(ending, />回到选择<\/button>/);
   assert.match(ending, /扮演刘涵，继续调查全部真相/);
@@ -308,7 +320,7 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
 });
 
 test("keeps the November incident, ending routes, and three-day rewind on one timeline", async () => {
-  const [desktop, nightdrive, hengmu, ending, xiEnding, hiddenEnding, prototype, guide] = await Promise.all([
+  const [desktop, nightdrive, hengmu, ending, xiEnding, hiddenEnding, prototype, guide, styles] = await Promise.all([
     readFile(new URL("../app/computer/DesktopRoute.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/nightdrive/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/hengmu/page.tsx", import.meta.url), "utf8"),
@@ -317,6 +329,7 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
     readFile(new URL("../app/ending/hidden/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/FullInvestigation.tsx", import.meta.url), "utf8"),
     readFile(new URL("../public/story-guide.html", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
 
   assert.match(nightdrive, /2022-11-08 23:48—2022-11-09 04:11/);
@@ -362,6 +375,8 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.match(desktop, /normalized\.includes\("永安仪式园"\)/);
   assert.match(desktop, /apartmentValid&&reached/);
   assert.match(desktop, /勇闯永安仪式园 - 第三结局/);
+  assert.match(desktop, /重返永安仪式园 - 第三结局/);
+  assert.match(desktop, /disabled=\{!valid\|\|\(!ceremonyValid&&resultReached\)\}/);
   assert.doesNotMatch(desktop, /闯入永安礼仪园 → 第三结局 · 嫁/);
   assert.match(desktop, /jia-hengmu-confrontation-complete/);
   assert.match(desktop, /jia-ending-xi-source","hengmu-map/);
@@ -370,16 +385,36 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.match(guide, /临川地图 → 搜索“永安仪式园” → 勇闯永安仪式园 - 第三结局/);
   assert.match(desktop, /进入隐藏结局 · 镜花水月/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/hidden"\)/);
+  assert.match(hiddenEnding, /const filmAudioOffsetRef=useRef\(0\)/);
+  assert.match(hiddenEnding, /const next=Math\.max\(0,audio\.currentTime-filmAudioOffsetRef\.current\)/);
+  assert.match(hiddenEnding, /filmAudioOffsetRef\.current=audio\.currentTime;\s*audio\.volume=baseVolumeRef\.current/);
+  assert.match(hiddenEnding, /const replay=\(\)=>\{[\s\S]*?audio\.currentTime=0;[\s\S]*?filmAudioOffsetRef\.current=0/);
+  assert.match(hiddenEnding, /onClick=\{replay\}>重新播放/);
   assert.match(xiEnding, /BGM · 葛东琪《囍》/);
   assert.doesNotMatch(xiEnding, /const start=\(\)=>\{[\s\S]*?audio\.currentTime=0[\s\S]*?setStatus\("playing"\)/);
   assert.match(xiEnding, /父母收走了她的护照和手机/);
   assert.match(xiEnding, /警方控制现场并封存证据/);
   assert.match(xiEnding, /红纸写下婚约，尘缘落定/);
   assert.match(xiEnding, /chapter:"第三结局",\s*title:"嫁"/);
-  assert.match(xiEnding, /顾盼就是那个新的新娘，数十万元，一桩圆满/);
+  assert.match(xiEnding, /顾盼成为那个新娘，六十万元，一桩圆满/);
   assert.match(xiEnding, /刘涵：叫警察来！快！/);
-  assert.match(xiEnding, /沈望的拳头如雨点般，打在每一个看客的身上/);
-  assert.match(xiEnding, /他们挽救了最后的尊严/);
+  assert.match(xiEnding, /沈望的拳头如雨点般，打在每一个阻拦他的人身上/);
+  assert.match(xiEnding, /他们挽救了顾盼最后的尊严/);
+  assert.match(xiEnding, /警灯的红，喜宴的红，双眼的红/);
+  assert.match(xiEnding, /顾盼成为那个新娘，六十万元，一桩圆满/);
+  assert.match(xiEnding, /className="xi-ending-gate">\s*<div className="xi-opening-blink"/);
+  const xiCinemaBlock = xiEnding.slice(
+    xiEnding.indexOf('status==="playing"'),
+    xiEnding.indexOf('status==="complete"'),
+  );
+  assert.doesNotMatch(xiCinemaBlock, /xi-opening-blink/);
+  assert.match(xiEnding, /void audio\.play\(\)\.catch\(\(\)=>setPaused\(true\)\);\s*setStatus\("playing"\)/);
+  assert.match(styles, /@keyframes xi-eyelid-top/);
+  assert.match(styles, /@keyframes xi-eyelid-bottom/);
+  assert.match(styles, /animation:xi-eyelid-top 2\.85s \.4s/);
+  assert.doesNotMatch(guide, /音乐先行|模拟眨眼帧|黑屏保持约0\.4秒/);
+  assert.match(styles, /\.xi-ending-finale\{min-width:0;min-height:0;overflow-x:hidden;[^}]*scrollbar-width:none/);
+  assert.match(styles, /\.xi-ending-finale::\-webkit-scrollbar\{display:none\}/);
   assert.doesNotMatch(xiEnding, /沈望：先把门打开/);
   assert.match(xiEnding, /把门严严锁上。\\n他们说/);
   assert.match(xiEnding, /换来的只有忠告：\\n经历过那些事/);
@@ -395,7 +430,7 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.match(guide, /隐藏结局只能从这封信的底部进入/);
   assert.match(guide, /调查接力与四个结局/);
   assert.match(guide, /01\/04[\s\S]*02\/04[\s\S]*03\/04[\s\S]*04\/04/);
-  assert.match(guide, /音乐沿用当前播放进度/);
+  assert.doesNotMatch(guide, /音乐沿用当前播放进度|92秒像素风演出|108秒梦境/);
   assert.doesNotMatch(guide, /真结局：向阳而生/);
   assert.match(guide, /YQ-730419<\/code> 或 <code>YQ730419/);
   assert.match(hengmu, /11:42完成现场处置|现场处置结束后/);

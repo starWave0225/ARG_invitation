@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
+import EndingMusicControl from "../EndingMusicControl";
 
 const ENDING_DURATION=92;
 const ENDING_TRACK="/audio/bgm/ending-xi.mp3";
@@ -27,7 +28,7 @@ const endingBeats:EndingBeat[]=[
     from:7,
     to:18,
     chapter:"壹 · 囍字未干",
-    text:"回国以后，顾盼的父母收走了她的护照和手机，把门严严锁上。\n他们说，这是一门能让全家重新体面的婚事。"
+    text:"回家乡后，顾盼的父母收走了她的护照和手机，把门严严锁上。\n他们说，这是一门能让全家重新体面的婚事。"
   },
   {
     from:18,
@@ -38,39 +39,39 @@ const endingBeats:EndingBeat[]=[
   {
     from:29,
     to:39,
-    chapter:"贰 · 人已不在",
-    text:"长期的拘禁与逼迫最终夺走了她求生的意识。\n可死亡没有终止婚姻的买卖，反而让另一份更加荒诞的委托得以开始。"
+    chapter:"贰 · 赴死得脱",
+    text:"拘禁与逼迫最终夺走了她求生的意志。\n可死亡没有终止婚姻的买卖，反而让另一份更加荒诞的委托得以开始。"
   },
   {
     from:39,
     to:50,
     chapter:"贰 · 阴契",
-    text:"红线、纸人、牌位、花轿。\n顾盼就是那个新的新娘，数十万元，一桩圆满。"
+    text:"红线、纸人、牌位、花轿。\n顾盼成为那个新娘，六十万元，一桩圆满。"
   },
   {
     from:50,
     to:61,
-    chapter:"叁 · 赶到",
+    chapter:"叁 · 喜",
     text:"沈望和刘涵循着请柬赶到永安仪式园。\n喜乐已经响起，东区静安厅的门正在合上。",
     quote:"刘涵：叫警察来！快！"
   },
   {
     from:61,
     to:72,
-    chapter:"叁 · 破门",
-    text:"他们掀翻拦在门前的桌椅，和守在现场的人扭打在一起。\n沈望的拳头如雨点般，打在每一个看客的身上。"
+    chapter:"叁 · 破",
+    text:"他们掀翻拦在门前的桌椅，和守在现场的人扭打在一起。\n沈望的拳头如雨点般，打在每一个阻拦他的人身上。"
   },
   {
     from:72,
     to:83,
-    chapter:"肆 · 收网",
-    text:"警灯照进礼仪厅。合同、账本、硬盘所有证据被逐一封存。\n父母、恒慕人员与参与交易的中间人被带离现场。"
+    chapter:"肆 · 收",
+    text:"警灯照进礼仪厅，警灯的红，喜宴的红，双眼的红。\n所有证据被逐一封存，涉案人员被带离现场。"
   },
   {
     from:83,
     to:92,
     chapter:"终 · 天亮",
-    text:"那一晚，他们挽救了最后的尊严。\n被当作婚约商品的顾盼，重新以自己的名字进入了案卷。"
+    text:"那一晚，他们挽救了顾盼最后的尊严。\n被当作婚契商品的她，终于以自己的名字进入了案卷。"
   }
 ];
 
@@ -173,8 +174,8 @@ export default function XiEndingPage(){
     elapsedBeforePauseRef.current=0;
     setTime(0);
     setPaused(false);
-    setStatus("playing");
     void audio.play().catch(()=>setPaused(true));
+    setStatus("playing");
   };
 
   const togglePause=()=>{
@@ -216,10 +217,20 @@ export default function XiEndingPage(){
   if(!unlocked)return <main className="xi-ending xi-ending-locked"><section><small>ENDING LOCKED</small><h1>喜乐还没有响起。</h1><p>取得警方调查档案后，回到刘涵微信，冒充女方家属套取电子请柬，再从临川地图前往仪式地点。</p><a href="/computer/liuhan?app=wechat&chat=hengmu-plan">返回刘涵微信</a></section></main>;
 
   return <main className={`xi-ending is-${status} ${paused?"is-paused":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
+    <audio
+      ref={audioRef}
+      src={ENDING_TRACK}
+      preload="auto"
+      autoPlay
+      onPlay={()=>setPaused(false)}
+      onPause={()=>setPaused(true)}
+      onEnded={()=>setPaused(true)}
+    />
+    <EndingMusicControl paused={paused} onToggle={togglePause}/>
     <div className="xi-ending-grain" aria-hidden="true"/>
 
     {status==="gate"&&<section className="xi-ending-gate">
+      <div className="xi-opening-blink" aria-hidden="true"/>
       <small>03/04 · REGULAR ENDING</small>
       <h1>第三结局 · 嫁</h1>
       <p>一纸红喜，盖不住她自己的名字。</p>
@@ -238,7 +249,6 @@ export default function XiEndingPage(){
         </figure>)}
         <div className="xi-ending-shade"/>
       </div>
-
       <header className="xi-ending-topline">
         <b>嫁</b>
         <span>ENDING 03 / DOUBLE HAPPINESS</span>
@@ -252,7 +262,6 @@ export default function XiEndingPage(){
       </article>
 
       <footer className="xi-ending-controls">
-        <button type="button" onClick={togglePause}>{paused?"继续":"暂停"}</button>
         <div><i style={{width:`${progress}%`}}/></div>
         <time>{formatTime(time)} / {formatTime(ENDING_DURATION)}</time>
         <button type="button" onClick={finish}>跳过演出</button>

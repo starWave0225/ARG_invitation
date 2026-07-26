@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
+import EndingMusicControl from "../EndingMusicControl";
 
 const ENDING_TRACK="/audio/bgm/ending-one-sun-earth.ogg";
 
@@ -37,16 +38,8 @@ export default function LetGoEndingPage(){
   },[unlocked]);
 
   const startReading=()=>{
-    const audio=audioRef.current;
-    if(!audio)return;
     setStatus("reading");
     localStorage.setItem("jia-ending-one-complete","true");
-    if(audio.paused){
-      audio.currentTime=0;
-      audio.volume=baseVolumeRef.current;
-      setPaused(false);
-      void audio.play().catch(()=>setPaused(true));
-    }
   };
 
   const togglePause=()=>{
@@ -72,7 +65,15 @@ export default function LetGoEndingPage(){
   if(!unlocked)return <main className="let-go-ending let-go-locked"><section><small>ENDING LOCKED</small><h1>还没有人决定放手。</h1><p>这条结局来自郝倩最终对质中的选择。</p><a href="/computer/shen?app=wechat&chat=haoqian">返回沈望的微信</a></section></main>;
 
   return <main className={`let-go-ending let-go-text-ending ${status==="reading"?"is-reading":""}`}>
-    <audio ref={audioRef} src={ENDING_TRACK} preload="metadata"/>
+    <audio
+      ref={audioRef}
+      src={ENDING_TRACK}
+      preload="metadata"
+      onPlay={()=>setPaused(false)}
+      onPause={()=>setPaused(true)}
+      onEnded={()=>setPaused(true)}
+    />
+    <EndingMusicControl paused={paused} onToggle={togglePause}/>
 
     {status==="gate"&&<section className="let-go-gate">
       <small>01/04</small>
@@ -134,12 +135,6 @@ export default function LetGoEndingPage(){
           </div>
         </footer>
       </article>
-
-      <aside className="let-go-reading-music" aria-label="结局背景音乐">
-        <span>♪</span>
-        <p><small>正在播放</small><b>太阳与地球</b></p>
-        <button type="button" onClick={togglePause}>{paused?"继续播放":"暂停音乐"}</button>
-      </aside>
     </>}
   </main>;
 }
