@@ -747,11 +747,15 @@ function EdgeBrowser({owner}:{owner:Owner}){
   const hospital=/(north[\s-]*harbor|northharbor|mynorthharbor|medical\s*center|patient\s*portal|医院|医疗|患者门户)/i.test(searched);
   const hengmu=/(恒慕|hengmu|婚姻家庭|婚介)/i.test(searched);
   const police=/(临川公安|公安档案|警方档案|警情档案|档案查询|ip\s*节点|网络节点|线索协查)/i.test(searched);
+  const shaoMinghui=/(邵明辉|邵氏实业|shao\s*ming\s*hui|shao\s*minghui)/i.test(searched);
+  const liangYu=/(梁昱|liang\s*yu|梁家|死亡简讯|讣告)/i.test(searched);
   const results:EdgeResult[]=[
     ...(owner==="shen"&&/(顾盼|gu\s*pan|gupan|向阳处|向阳生长)/i.test(searched)?[{domain:"weibo.com/u/gpan_sunward",title:"向阳生长的微博",snippet:"顾盼的公开微博主页、相册与近期动态。",url:"/weibo/gupan"}]:[]),
     ...(school?[{domain:"www.northbridge.example",title:"Northbridge University｜北桥大学",snippet:"课程、学生服务、校园目录与学生社区系统。",url:"/university"}]:[]),
     ...(owner==="shen"&&/(远帆|互助会|yuanfan|yf\s*connect)/i.test(searched)?[{domain:"yuanfan-community.example",title:"远帆社区互助会",snippet:"为留学生提供生活互助、危机转介与志愿者服务。",url:"/yuanfan"}]:[]),
     ...((owner==="shen"||owner==="liuhan")&&hengmu?[{domain:"www.hengmu-family.example",title:"恒慕婚姻家庭服务集团",snippet:"婚姻咨询、家庭协调与定制礼仪服务。",url:"/hengmu"}]:[]),
+    ...(owner==="liuhan"&&shaoMinghui?[{domain:"临川人物志 · 企业家族公开资料",title:"邵明辉｜邵氏实业家族成员",snippet:"公开资料显示，邵明辉是邵氏实业创始人独子，曾参与家族公益项目。2019年事故后长期接受康复照护，此后很少公开露面。旧采访形容他性格安静，喜欢园艺和老电影；近年的生活与婚姻安排多由父母代为处理。",local:true}]:[]),
+    ...(owner==="liuhan"&&liangYu?[{domain:"临川晚报 · 2025年11月27日 · 死亡简讯",title:"梁昱先生因病去世，终年31岁",snippet:"梁昱，临川梁家独子。大学毕业后经营一间小型摄影工作室，朋友称他寡言，喜欢拍摄旧建筑。2025年11月26日凌晨，他因突发心源性疾病去世，生前未婚；治丧与安葬事宜由永安仪式园承办，家属谢绝采访。",local:true}]:[]),
     ...(owner==="liuhan"&&police?[{domain:"xz.linchuan-police.example",title:"临川公安｜线索协查与档案查询",snippet:"查询公共网络节点一览；已登记线索提供人可查看经审核开放的脱敏警情档案。",url:"/police"}]:[]),
     ...(hospital?[{domain:"portal.northharbor-med.example",title:"MyNorthHarbor Medical Network",snippet:"北港（海外）医疗集团患者服务、历史病例与检验结果门户。",url:"/hospital"}]:[]),
     ...(owner==="shen"&&/(北港寄存|寄存中心|north\s*harbor\s*storage|b-?17|临港大道|harborfront)/i.test(searched)?[{domain:"North Harbor City Guide · OVERSEAS",title:"North Harbor Storage Center｜北港寄存中心",snippet:"17 Harborfront Avenue, Seabreeze District, North Harbor。营业时间 09:00—18:00；具体仓位与授权信息不对外公开。",hint:"可在桌面“地图”中搜索英文地址或机构名",local:true}]:[])

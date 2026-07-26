@@ -245,6 +245,14 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.match(desktop, /05_请柬\.jpg/);
   assert.match(desktop, /"05_请柬\.jpg":\{[\s\S]*?imageHotspotHref:"\/hengmu"/);
   assert.doesNotMatch(desktop, /扫描请柬上的二维码|打开恒慕官网 ↗/);
+  assert.match(desktop, /邵明辉\|邵氏实业\|shao\\s\*ming\\s\*hui/);
+  assert.match(desktop, /邵明辉｜邵氏实业家族成员/);
+  assert.match(desktop, /喜欢园艺和老电影；近年的生活与婚姻安排多由父母代为处理/);
+  assert.match(guide, /浏览器搜索“邵明辉”/);
+  assert.match(desktop, /梁昱\|liang\\s\*yu\|梁家\|死亡简讯\|讣告/);
+  assert.match(desktop, /梁昱先生因病去世，终年31岁/);
+  assert.match(desktop, /喜欢拍摄旧建筑[\s\S]*?治丧与安葬事宜由永安仪式园承办/);
+  assert.match(guide, /浏览器搜索“梁昱”/);
   assert.match(desktop, /06_婚庆合同\.jpg/);
   assert.match(desktop, /"06_婚庆合同\.jpg":\{[\s\S]*?hideCaption:true/);
   assert.doesNotMatch(desktop, /现场恢复件|合同编号位于抬头信息区|纸张底部的窄封边残留一串点划符号/);

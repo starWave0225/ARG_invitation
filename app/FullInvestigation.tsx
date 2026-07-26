@@ -86,8 +86,8 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button onClick={()=>go(8)}>调查请柬</button>
       </Scene>}
       {step===8 && <Scene eyebrow="旧请柬" title="原来的新郎">
-        <p>搜索显示邵明辉是当地富豪独子，长期需要照护；邵家公开寻找“温顺、能够照顾家庭”的伴侣。云庭酒店则确认原定宴席已经取消。</p>
-        <div className="source-grid"><Card title="搜索结果" text="邵家愿支付高额彩礼\n本人很少公开露面"/><Card title="酒店档期" text="2025.12.06 锦华厅\n原预约已取消 / 当前空档"/><Card title="二维码" text="恒慕婚姻家庭服务集团\n状态：方案变更"/></div>
+        <p>搜索显示邵明辉是邵氏实业创始人独子。2019年事故后，他长期接受康复照护，此后很少公开露面；旧采访说他性格安静，喜欢园艺和老电影，近年的生活与婚姻安排多由父母代为处理。邵家曾公开寻找“温顺、能够照顾家庭”的伴侣，云庭酒店则确认原定宴席已经取消。</p>
+        <div className="source-grid"><Card title="人物搜索" text="事故后长期康复照护\n生活与婚姻多由父母安排"/><Card title="酒店档期" text="2025.12.06 锦华厅\n原预约已取消 / 当前空档"/><Card title="二维码" text="恒慕婚姻家庭服务集团\n状态：方案变更"/></div>
         <div className="route-launcher"><small>二维码识别结果 · hengmu-family.cn</small><h2>恒慕婚姻家庭服务集团</h2><p>婚恋服务、家庭顾问与会员专属服务中心。</p><a href="/hengmu" target="_blank" rel="noopener noreferrer">在新标签页打开恒慕官网 ↗</a></div>
         <button onClick={()=>go(9)}>查看婚介合同残页</button>
       </Scene>}
@@ -108,7 +108,7 @@ export function FullInvestigation({ onClose }: { onClose: () => void }) {
         <button onClick={()=>{addProof(3);go(12)}}>锁定永安仪式园</button>
       </Scene>}
       {step===12 && <Scene eyebrow="转运倒计时 03:00:00" title="最后的证据链">
-        <p>梁家支付60万元购买顾盼遗体；恒慕与顾家五五分成。选择所有必须提交的证据，再要求郝倩作证。</p>
+        <p>搜索结果中的死亡简讯显示，31岁的梁昱于2025年11月26日因突发心源性疾病去世，生前未婚，治丧事宜由永安仪式园承办。梁家随后支付60万元购买顾盼遗体；恒慕与顾家五五分成。选择所有必须提交的证据，再要求郝倩作证。</p>
         <div className="checklist">{evidenceNames.map((x,i)=><button key={x} disabled={i===5} className={proof.includes(i)?"selected":""} onClick={()=>i<5&&addProof(i)}>{proof.includes(i)?"✓":i===5?"锁":"○"} {x}</button>)}</div>
         {proof.filter(i=>i<5).length>=5 && <button onClick={()=>go(13)}>向郝倩展示完整证据</button>}
       </Scene>}
