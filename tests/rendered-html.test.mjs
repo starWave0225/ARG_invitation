@@ -50,6 +50,16 @@ test("enters the first computer without applying the Pages base path twice", asy
 
   assert.match(home, /window\.location\.assign\("\/computer\/shen"\)/);
   assert.doesNotMatch(home, /router\.push\("\/computer\/shen"\)/);
+  assert.match(home, /localStorage\.getItem\("jia-ending-xi-complete"\) === "true"/);
+  assert.doesNotMatch(home, /localStorage\.getItem\("jia-full-step"\)/);
+  assert.match(home, /完成第三结局后解锁/);
+  assert.match(home, /主线 · 北港调查/);
+  assert.match(home, /第一结局 · 终于放手/);
+  assert.match(home, /第二结局 · 明日黄花/);
+  assert.match(home, /三天前 · 刘涵调查线/);
+  assert.match(home, /第三结局 · 嫁/);
+  assert.match(home, /隐藏结局 · 镜花水月/);
+  assert.doesNotMatch(home, /第二周目 · 双线|真结局 · 向阳而生/);
 });
 
 test("server-renders the game opening screen", async () => {
@@ -279,6 +289,8 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.match(styles, /\.pc-file-preview>article\{[^}]*height:100%[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
   assert.match(styles, /\.police-route\{[^}]*height:100dvh[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
   assert.match(styles, /\.qz-route\{[^}]*height:100dvh[^}]*overflow-y:auto[^}]*touch-action:pan-y/);
+  assert.match(styles, /\.pc-wallpaper:after\{[^}]*xiangyangchu\.png[^}]*opacity:0[^}]*transition:opacity 1\.35s ease/);
+  assert.match(styles, /\.pc-liuhan:has\(\.pc-map-ending-entry:is\(:hover,:focus-visible\)\) \.pc-wallpaper:after\{opacity:1\}/);
 
   await Promise.all([
     access(new URL("../public/characters/qq-class-group.svg", import.meta.url)),
@@ -287,6 +299,7 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
     access(new URL("../public/evidence/liuhan-scene/04-cracked-phone.png", import.meta.url)),
     access(new URL("../public/evidence/liuhan-scene/05-invitation.png", import.meta.url)),
     access(new URL("../public/evidence/liuhan-scene/06-plan-fragment.png", import.meta.url)),
+    access(new URL("../public/evidence/hengmu-ghost-marriage-invitation.png", import.meta.url)),
     access(new URL("../public/qzone/cooking-together.png", import.meta.url)),
     access(new URL("../public/qzone/lakeside-map-picnic.png", import.meta.url)),
     access(new URL("../public/qzone/campus-night-walk.png", import.meta.url)),
@@ -332,12 +345,29 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.doesNotMatch(hiddenEnding, /if\(next>=ENDING_DURATION\)\{\s*audio\.pause\(\)/);
   assert.doesNotMatch(hiddenEnding, /const finish=\(\)=>\{\s*audioRef\.current\?\.pause\(\)/);
   assert.match(hiddenEnding, /if\(status!==\"complete\"\)return;[\s\S]*audio&&!audio\.ended&&audio\.paused/);
-  assert.match(desktop, /不管你们在做什么，都立即终止！把顾盼现在的准确位置发给我，停止仪式，否则你们会知道/);
-  assert.match(desktop, /永安礼仪园[\s\S]*东区静安厅 · 转运登记处/);
-  assert.match(desktop, /闯入永安礼仪园 → 第三结局 · 嫁/);
+  assert.match(desktop, /我是女方家属，临时替家里人前往仪式/);
+  assert.match(desktop, /回答与方案登记内容不符/);
+  assert.match(desktop, /撤回回答，重新选择/);
+  assert.match(desktop, /normalized!==\"YQ730419\"/);
+  assert.match(desktop, /确认。我会独自前往/);
+  assert.match(desktop, /如无其他问题，本次服务结束/);
+  assert.doesNotMatch(desktop, /警方调查档案、现场移交记录和你们的订单数据/);
+  assert.match(desktop, /hengmu-ghost-marriage-invitation\.png/);
+  assert.match(desktop, /data-image-preview/);
+  assert.match(desktop, /target\.closest\("\.wx-app"\)&&!target\.closest\("\[data-image-preview\]"\)/);
+  assert.match(desktop, /梁昱与顾盼的阴婚请柬，地点为永安仪式园/);
+  assert.match(guide, /新郎 梁昱 \/ 新娘 顾盼/);
+  assert.match(desktop, /jia-hengmu-invitation-received/);
+  assert.match(desktop, /jia-hengmu-confrontation-complete"\)==="true"/);
+  assert.match(desktop, /normalized\.includes\("永安仪式园"\)/);
+  assert.match(desktop, /apartmentValid&&reached/);
+  assert.match(desktop, /勇闯永安仪式园 - 第三结局/);
+  assert.doesNotMatch(desktop, /闯入永安礼仪园 → 第三结局 · 嫁/);
   assert.match(desktop, /jia-hengmu-confrontation-complete/);
-  assert.match(desktop, /jia-ending-xi-source","hengmu-confrontation/);
+  assert.match(desktop, /jia-ending-xi-source","hengmu-map/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/xi"\)/);
+  assert.match(xiEnding, /jia-ending-xi-source"\)==="hengmu-map"/);
+  assert.match(guide, /临川地图 → 搜索“永安仪式园” → 勇闯永安仪式园 - 第三结局/);
   assert.match(desktop, /进入隐藏结局 · 镜花水月/);
   assert.match(desktop, /window\.location\.assign\("\/ending\/hidden"\)/);
   assert.match(xiEnding, /BGM · 葛东琪《囍》/);
@@ -360,7 +390,7 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
   assert.doesNotMatch(desktop, /HengMu-FamilyPlan|企业微信：/);
   assert.match(guide, /恒慕特别委托组[\s\S]*不对应韩铎或其他具体员工/);
   assert.match(guide, /不需要搜索或输入账号/);
-  assert.match(guide, /与恒慕机构完成最终对质/);
+  assert.match(guide, /伪装家属，套取电子请柬/);
   assert.match(guide, /第三结局：嫁/);
   assert.match(guide, /隐藏结局只能从这封信的底部进入/);
   assert.match(guide, /调查接力与四个结局/);

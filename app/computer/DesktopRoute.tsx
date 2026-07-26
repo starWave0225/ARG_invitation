@@ -151,9 +151,10 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-hengmu-contact")!=="true"?"在圆满方案页面添加恒慕特别委托组的企业微信。":
     localStorage.getItem("jia-police-investigation-id-downloaded")!=="true"?"打开现场物品登记表，下载档案编号附件。":
     localStorage.getItem("jia-liuhan-line-complete")!=="true"?"返回临川公安档案查询网站，输入档案编号并查看两条关联警情记录。":
-    localStorage.getItem("jia-gp-final-letter-read")!=="true"&&localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"此处出现两条路：阅读顾盼的信可以进入隐藏结局；返回刘涵微信完成机构对质可以进入第三结局《嫁》。":
+    localStorage.getItem("jia-gp-final-letter-read")!=="true"&&localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"此处出现两条路：阅读顾盼的信可以进入隐藏结局；返回刘涵微信套取电子请柬，可以取得第三结局的地点线索。":
     localStorage.getItem("jia-gp-final-letter-read")!=="true"?"返回顾盼旧电脑，阅读《希望_未寄出.txt》，从信末进入隐藏结局。":
-    localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"返回刘涵微信，与恒慕特别委托组完成最终对质，进入第三结局《嫁》。":
+    localStorage.getItem("jia-hengmu-confrontation-complete")!=="true"?"返回刘涵微信，冒充女方家属，从恒慕特别委托组套取电子请柬。":
+    localStorage.getItem("jia-ending-xi-unlocked")!=="true"?"查看微信收到的阴婚请柬，在临川地图中搜索“永安仪式园”。":
     "常规结局与隐藏结局均已开启。";
 }
 
@@ -350,7 +351,7 @@ function PcWindow({owner,app,gameMode,close}:{owner:Owner;app:string;gameMode:Ga
   useEffect(()=>{if(!previewImage)return;const onKeyDown=(event:KeyboardEvent)=>{if(event.key==="Escape")setPreviewImage(null)};window.addEventListener("keydown",onKeyDown);return()=>window.removeEventListener("keydown",onKeyDown)},[previewImage]);
   const openImage=(event:React.MouseEvent<HTMLDivElement>)=>{
     const target=event.target as HTMLElement;
-    if(target.tagName!=="IMG"||target.closest(".wx-app"))return;
+    if(target.tagName!=="IMG"||(target.closest(".wx-app")&&!target.closest("[data-image-preview]")))return;
     const image=target as HTMLImageElement;
     setImageFlipped(false);
     setPreviewImage({src:image.currentSrc||image.src,alt:image.alt||"图片预览"});
@@ -552,11 +553,16 @@ function ChenFangChat(){
 function HengmuCaseConfrontation(){
   const [step,setStep]=useState(0);
   const [policeReady,setPoliceReady]=useState(false);
+  const [branch,setBranch]=useState<"none"|"ceremony-wrong"|"guest-wrong">("none");
+  const [serviceCode,setServiceCode]=useState("");
+  const [serviceError,setServiceError]=useState("");
   const threadRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     const sync=()=>{
-      setStep(Math.max(0,Math.min(4,Number(localStorage.getItem("jia-hengmu-confrontation-step")||0))));
+      setStep(Math.max(0,Math.min(5,Number(localStorage.getItem("jia-hengmu-confrontation-step")||0))));
       setPoliceReady(localStorage.getItem("jia-liuhan-line-complete")==="true");
+      const savedBranch=localStorage.getItem("jia-hengmu-confrontation-branch");
+      setBranch(savedBranch==="ceremony-wrong"||savedBranch==="guest-wrong"?savedBranch:"none");
     };
     sync();
     window.addEventListener("storage",sync);
@@ -569,39 +575,60 @@ function HengmuCaseConfrontation(){
       if(panel)panel.scrollTo({top:panel.scrollHeight,behavior:"smooth"});
     });
     return()=>window.cancelAnimationFrame(frame);
-  },[step,policeReady]);
-  const advance=()=>{
-    const next=Math.min(4,step+1);
+  },[step,policeReady,branch,serviceError]);
+  const go=(next:number)=>{
     localStorage.setItem("jia-hengmu-confrontation-step",String(next));
+    localStorage.removeItem("jia-hengmu-confrontation-branch");
+    setBranch("none");
+    if(next===5){
+      localStorage.setItem("jia-hengmu-confrontation-complete","true");
+      localStorage.setItem("jia-hengmu-invitation-received","true");
+    }
     setStep(next);
     window.dispatchEvent(new Event("jia-progress"));
   };
-  const enterEnding=()=>{
-    localStorage.setItem("jia-hengmu-confrontation-complete","true");
-    localStorage.setItem("jia-ending-xi-unlocked","true");
-    localStorage.setItem("jia-ending-xi-source","hengmu-confrontation");
-    window.dispatchEvent(new Event("jia-progress"));
-    window.location.assign("/ending/xi");
+  const chooseWrong=(nextBranch:"ceremony-wrong"|"guest-wrong")=>{
+    localStorage.setItem("jia-hengmu-confrontation-branch",nextBranch);
+    setBranch(nextBranch);
+  };
+  const rewind=()=>{
+    localStorage.removeItem("jia-hengmu-confrontation-branch");
+    setBranch("none");
+  };
+  const verifyServiceCode=()=>{
+    const normalized=serviceCode.trim().replaceAll("-","").toUpperCase();
+    if(normalized!=="YQ730419"){
+      setServiceError("服务码不正确。请核对婚庆合同中的方案信息。");
+      return;
+    }
+    setServiceError("");
+    go(3);
   };
   return <section className="wx-hd-check wx-hm-confrontation">
     <header><img src="/characters/hengmu-case-manager.svg" alt="恒慕特别委托组"/><span><b>恒慕特别委托组</b><small>圆满方案 · 官方企业服务账号</small></span></header>
     <div className="wx-hd-thread" ref={threadRef}>
       <div className="wx-system">你已添加恒慕婚姻家庭服务集团的企业服务账号</div>
       <WxBubble src="/characters/hengmu-case-manager.svg" text="您好。这里是恒慕特别委托组。为保护委托家庭隐私，本账号仅处理已经核验的圆满方案。"/>
-      {!policeReady&&<div className="wx-hm-lock"><b>当前证据不足</b><p>请先使用现场物品登记表中的警方调查ID，查阅两份关联警情记录。</p></div>}
+      {!policeReady&&<div className="wx-hm-lock"><b>当前信息不足</b><p>请先查阅关联警情记录，确认圆满方案目前的状态。</p></div>}
       {policeReady&&<>
-        {step>=1&&<><WxBubble src="/characters/liu-han.png" mine text="我需要知道圆满方案 HM-W-251206-117，以及顾盼的去向。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="您并非合同当事人。恒慕无法向无关人员披露会员家庭资料。"/></>}
-        {step>=2&&<><WxBubble src="/characters/liu-han.png" mine text="顾盼已经死亡。我已经掌握相关警方记录，随时可以证明你们的非法勾当。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="请注意措辞。“圆满方案”属于家属合法委托，系统中的“标的”和“匹配”仅为内部业务术语。"/></>}
-        {step>=3&&<><WxBubble src="/characters/liu-han.png" mine text="不管你们在做什么，都立即终止！把顾盼现在的准确位置发给我，停止仪式，否则你们会知道"/><WxBubble src="/characters/hengmu-case-manager.svg" text="您无权要求恒慕终止已生效的家庭委托。"/></>}
-        {step>=4&&<><WxBubble src="/characters/liu-han.png" mine text="警方调查档案、现场移交记录和你们的订单数据，我都已经保存。你们可以现在停下，或者等警方在现场将你们抓捕。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="…… 恒慕将保留追究责任的权利。"/><div className="wx-hm-location"><small>圆满方案 · 紧急处置位置</small><b>永安礼仪园</b><p>东区静安厅 · 转运登记处</p><em>仪式尚未开始</em></div><WxBubble src="/characters/hengmu-case-manager.svg" text="位置已经发给你。不要再通过这个账号联系恒慕。"/></>}
+        {step>=1&&<><WxBubble src="/characters/liu-han.png" mine text="我需要确认圆满方案 HM-W-251206-117。我是女方家属，临时替家里人前往仪式。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="方案编号存在。再次确认：你是否独自前来？是否清楚本次仪式的性质？"/></>}
+        {step===1&&branch==="ceremony-wrong"&&<><WxBubble src="/characters/liu-han.png" mine text="正常婚礼。我一个人前来。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="回答与方案登记内容不符。为保护委托家庭隐私，暂时无法继续为你办理。"/><div className="wx-system">恒慕特别委托组停止了回复</div></>}
+        {step>=2&&<><WxBubble src="/characters/liu-han.png" mine text="特殊流程。我一个人前来。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="基本信息一致。本次仪式不设置公开观礼，不接受拍摄。入场后，通讯设备需要统一保管。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="请提供该方案的八位服务码。"/></>}
+        {step>=3&&<><WxBubble src="/characters/liu-han.png" mine text="YQ-730419"/><WxBubble src="/characters/hengmu-case-manager.svg" text="验证通过。该方案目前处于“仪式待执行”状态，双方家属已经完成交接。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="你当前使用的微信账号不在原始接收名单中。请问需要补发电子请柬吗？"/></>}
+        {step>=4&&<><WxBubble src="/characters/liu-han.png" mine text="需要。请把电子请柬重新发给我。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="可以。请确认你不会携带未登记人员前往，也不会拍摄或传播相关内容。"/></>}
+        {step===4&&branch==="guest-wrong"&&<><WxBubble src="/characters/liu-han.png" mine text="我可能会带一位朋友。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="本次仪式不接受临时增加来宾。请柬暂不补发。"/></>}
+        {step>=5&&<><WxBubble src="/characters/liu-han.png" mine text="确认。我会独自前往。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="已登记。请按照请柬标注时间抵达，不要提前进入仪式区域。"/><div className="wx-system">恒慕特别委托组发送了一张图片</div><div className="wx-hm-invitation" data-image-preview><img src="/evidence/hengmu-ghost-marriage-invitation.png" alt="梁昱与顾盼的阴婚请柬，地点为永安仪式园"/><small>阴婚请柬 · 点击查看大图</small></div><WxBubble src="/characters/hengmu-case-manager.svg" text="请柬已经补发。出示请柬入场，现场请保持安静，请勿向其他来宾询问委托细节。"/><WxBubble src="/characters/hengmu-case-manager.svg" text="如无其他问题，本次服务结束。"/><div className="wx-system">已取得永安仪式园电子请柬</div></>}
       </>}
     </div>
     {policeReady&&<footer>
-      {step===0&&<button type="button" onClick={advance}>发送：我要确认圆满方案</button>}
-      {step===1&&<button type="button" onClick={advance}>展示警方档案与圆满方案记录</button>}
-      {step===2&&<button type="button" onClick={advance}>要求立即终止圆满方案</button>}
-      {step===3&&<button type="button" onClick={advance}>发送最后通牒</button>}
-      {step===4&&<button type="button" className="wx-hm-ending-entry" onClick={enterEnding}>闯入永安礼仪园 → 第三结局 · 嫁</button>}
+      {step===0&&<button type="button" onClick={()=>go(1)}>发送：我要确认圆满方案</button>}
+      {step===1&&branch==="none"&&<div className="wx-hm-options"><button type="button" onClick={()=>chooseWrong("ceremony-wrong")}>正常婚礼</button><button type="button" onClick={()=>go(2)}>特殊流程</button></div>}
+      {step===1&&branch==="ceremony-wrong"&&<button type="button" className="wx-hm-rewind" onClick={rewind}>撤回回答，重新选择</button>}
+      {step===2&&<form className="wx-hm-code-form" onSubmit={event=>{event.preventDefault();verifyServiceCode()}}><label htmlFor="hengmu-service-code">请输入八位服务码</label><div><input id="hengmu-service-code" value={serviceCode} onChange={event=>{setServiceCode(event.target.value);setServiceError("")}} placeholder="输入服务码" autoComplete="off"/><button type="submit">发送</button></div>{serviceError&&<p role="alert">{serviceError}</p>}</form>}
+      {step===3&&<button type="button" onClick={()=>go(4)}>需要，请补发电子请柬</button>}
+      {step===4&&branch==="none"&&<div className="wx-hm-options"><button type="button" onClick={()=>go(5)}>确认，我会独自前往</button><button type="button" onClick={()=>chooseWrong("guest-wrong")}>我可能会带一位朋友</button></div>}
+      {step===4&&branch==="guest-wrong"&&<button type="button" className="wx-hm-rewind" onClick={rewind}>撤回回答，重新选择</button>}
+      {step===5&&<span className="wx-hm-map-hint">当前目标：在临川地图中搜索请柬上的仪式地点。</span>}
     </footer>}
   </section>;
 }
@@ -779,10 +806,10 @@ function CaseArchive({mode}:{mode:GameMode|null}){
     {ready:localStorage.getItem("jia-sealed-evidence-unlocked")==="true",title:"NIGHTDRIVE 隐藏站记录",detail:"YF-HQ-0214指向郝倩的遭遇，汇款单编号SD-8845127指向顾盼；两组记录相关联并互相印证。"},
     {ready:localStorage.getItem("jia-liuhan-address-reached")==="true",title:"晴川公寓4栋1单元402室",detail:"残缺求救、IP节点和地址候选交叉指向同一地点。"},
     {ready:localStorage.getItem("jia-liuhan-phone-obtained")==="true",title:"顾盼的旧手机",detail:"手机保留了旧电脑微信密码，并提示沈望仍拥有情侣空间主人权限。"},
-    {ready:localStorage.getItem("jia-hengmu-unlocked")==="true",title:"恒慕“圆满方案”",detail:"原婚礼已转为特殊家庭委托，委托标的被送往永安礼仪园。"},
+    {ready:localStorage.getItem("jia-hengmu-unlocked")==="true",title:"恒慕“圆满方案”",detail:"原婚礼已转为特殊家庭委托，委托标的被送往永安仪式园。"},
     {ready:localStorage.getItem("jia-liuhan-line-complete")==="true",title:"死亡警情与遗体移交记录",detail:"两条警情记录证实顾盼死亡、房门存在外锁痕迹，遗体随后由家属委托的礼仪单位接走。"},
     {ready:localStorage.getItem("jia-gp-final-letter-read")==="true",title:"希望_未寄出.txt",detail:"顾盼回国疗养期间写下的最后一封信，补全了她隐瞒真相、被家人控制以及仍在等待沈望的原因。"},
-    {ready:localStorage.getItem("jia-hengmu-confrontation-complete")==="true",title:"恒慕特别委托组的交代",detail:"恒慕在证据压力下终止圆满方案，并交出永安礼仪园的准确处置位置。"}
+    {ready:localStorage.getItem("jia-hengmu-confrontation-complete")==="true",title:"恒慕发来的阴婚请柬",detail:"请柬写明仪式地点为永安仪式园；需要在临川地图中搜索该地点。"}
   ];
   const confirmed=facts.filter(item=>item.ready);
   const nextHint=getInvestigationNextHint();
@@ -840,23 +867,45 @@ function MapApp({owner}:{owner:Owner}){
   const [query,setQuery]=useState("");
   const [searched,setSearched]=useState("");
   const [reached,setReached]=useState(false);
+  const [invitationReceived,setInvitationReceived]=useState(false);
+  const [ceremonyReached,setCeremonyReached]=useState(false);
   const [destinationOpen,setDestinationOpen]=useState(false);
   const [building,setBuilding]=useState("");
   const [unit,setUnit]=useState("");
   const [room,setRoom]=useState("");
   const [destinationError,setDestinationError]=useState(false);
   useEffect(()=>{
-    const frame=window.requestAnimationFrame(()=>{
+    const sync=()=>{
       const wasReached=localStorage.getItem(owner==="shen"?"jia-storage-reached":"jia-liuhan-address-reached")==="true";
       setReached(wasReached);
+      const hasHengmuInvitation=
+        localStorage.getItem("jia-hengmu-invitation-received")==="true"||
+        localStorage.getItem("jia-hengmu-confrontation-complete")==="true";
+      setInvitationReceived(owner==="liuhan"&&hasHengmuInvitation);
+      if(owner==="liuhan"&&hasHengmuInvitation)localStorage.setItem("jia-hengmu-invitation-received","true");
+      setCeremonyReached(owner==="liuhan"&&localStorage.getItem("jia-hengmu-ceremony-reached")==="true");
       if(wasReached)setSearched(owner==="shen"?"北港寄存中心":"晴川公寓");
-    });
-    return()=>window.cancelAnimationFrame(frame);
+    };
+    const frame=window.requestAnimationFrame(sync);
+    window.addEventListener("storage",sync);
+    window.addEventListener("jia-progress",sync);
+    return()=>{
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("storage",sync);
+      window.removeEventListener("jia-progress",sync);
+    };
   },[owner]);
   const normalized=searched.replace(/\s/g,"").toLowerCase();
+  const apartmentValid=owner==="liuhan"&&(normalized.includes("晴川公寓")||normalized.includes("青槐区长宁路117号")||normalized.includes("长宁路117号"));
+  const ceremonyValid=owner==="liuhan"&&invitationReceived&&normalized.includes("永安仪式园");
   const valid=owner==="shen"
     ?(normalized.includes("临港大道17号")||normalized.includes("17harborfrontavenue")||normalized.includes("北港寄存中心")||normalized.includes("northharborstoragecenter"))
-    :(normalized.includes("晴川公寓")||normalized.includes("青槐区长宁路117号")||normalized.includes("长宁路117号"));
+    :(apartmentValid||ceremonyValid);
+  const resultReached=owner==="shen"
+    ?valid&&reached
+    :ceremonyValid
+      ?ceremonyReached
+      :apartmentValid&&reached;
   const normalizePart=(value:string)=>value.replace(/\s/g,"").replace(/号楼|栋|单元|室/g,"");
   const destinationValid=
     ["4","四"].includes(normalizePart(building))&&
@@ -869,7 +918,16 @@ function MapApp({owner}:{owner:Owner}){
   };
   const go=()=>{
     if(!valid)return;
-    if(owner==="liuhan"&&!destinationValid){
+    if(ceremonyValid){
+      localStorage.setItem("jia-hengmu-ceremony-reached","true");
+      localStorage.setItem("jia-ending-xi-unlocked","true");
+      localStorage.setItem("jia-ending-xi-source","hengmu-map");
+      setCeremonyReached(true);
+      window.dispatchEvent(new Event("jia-progress"));
+      window.location.assign("/ending/xi");
+      return;
+    }
+    if(owner==="liuhan"&&apartmentValid&&!destinationValid){
       setDestinationError(true);
       return;
     }
@@ -881,7 +939,7 @@ function MapApp({owner}:{owner:Owner}){
   return <div className="pc-map-search">
     <header><b>{owner==="shen"?"North Harbor Map · 海外":"临川地图 · 国内"}</b><div><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()} placeholder="搜索地点、道路或完整地址"/><button onClick={search}>搜索</button></div></header>
     <section className="pc-map-canvas"><span className="map-road a"/><span className="map-road b"/><span className="map-water"/>{searched&&<i className={`map-result-pin ${valid?"useful":""}`}>●</i>}</section>
-    <aside>{searched?<><small>搜索结果</small><h2>{valid?(owner==="shen"?"North Harbor Storage Center · Zone B":reached?"晴川公寓 · 4栋1单元402室":"晴川公寓"):searched}</h2><p>{valid?(owner==="shen"?"17 Harborfront Avenue, Seabreeze District, North Harbor · OVERSEAS":"临川市青槐区长宁路117号"):"已在地图上显示该地点。当前任务与此地点没有关联。"}</p><button disabled={!valid||reached} onClick={()=>owner==="liuhan"?(setDestinationOpen(true),setDestinationError(false)):go()}>{reached?"已到达，剧情已更新":"前往这里"}</button>{destinationOpen&&!reached&&<div className="pc-map-destination-check"><b>补充具体门牌</b><p>请输入楼栋、单元和房号，确认要前往的具体位置。</p><div><label>楼栋<input value={building} onChange={event=>{setBuilding(event.target.value);setDestinationError(false)}} placeholder="几栋" inputMode="numeric"/></label><label>单元<input value={unit} onChange={event=>{setUnit(event.target.value);setDestinationError(false)}} placeholder="几单元" inputMode="numeric"/></label><label>房号<input value={room} onChange={event=>{setRoom(event.target.value);setDestinationError(false)}} onKeyDown={event=>event.key==="Enter"&&go()} placeholder="几零几" inputMode="numeric"/></label></div><button type="button" onClick={go}>确认门牌并前往</button>{destinationError&&<em>门牌信息不正确，请重新核对残缺留言。</em>}</div>}{reached&&<strong>{owner==="shen"?"海外到访身份核验完成。新的邮件已送达。":"现场已经封锁。警方补充资料已发送到刘涵邮箱。"}</strong>}</>:<div className="map-placeholder"><b>搜索任意地点</b><p>地图会显示结果；只有与当前线索相关的地址可以前往。</p></div>}</aside>
+    <aside>{searched?<><small>搜索结果</small><h2>{valid?(owner==="shen"?"North Harbor Storage Center · Zone B":ceremonyValid?"永安仪式园":reached?"晴川公寓 · 4栋1单元402室":"晴川公寓"):searched}</h2><p>{valid?(owner==="shen"?"17 Harborfront Avenue, Seabreeze District, North Harbor · OVERSEAS":ceremonyValid?"临川市青槐区永安路19号 · 东区静安厅":"临川市青槐区长宁路117号"):"已在地图上显示该地点。当前任务与此地点没有关联。"}</p><button className={ceremonyValid?"pc-map-ending-entry":undefined} disabled={!valid||resultReached} onClick={()=>ceremonyValid?go():owner==="liuhan"?(setDestinationOpen(true),setDestinationError(false)):go()}>{resultReached?"已到达，剧情已更新":ceremonyValid?"勇闯永安仪式园 - 第三结局":"前往这里"}</button>{destinationOpen&&!reached&&apartmentValid&&<div className="pc-map-destination-check"><b>补充具体门牌</b><p>请输入楼栋、单元和房号，确认要前往的具体位置。</p><div><label>楼栋<input value={building} onChange={event=>{setBuilding(event.target.value);setDestinationError(false)}} placeholder="几栋" inputMode="numeric"/></label><label>单元<input value={unit} onChange={event=>{setUnit(event.target.value);setDestinationError(false)}} placeholder="几单元" inputMode="numeric"/></label><label>房号<input value={room} onChange={event=>{setRoom(event.target.value);setDestinationError(false)}} onKeyDown={event=>event.key==="Enter"&&go()} placeholder="几零几" inputMode="numeric"/></label></div><button type="button" onClick={go}>确认门牌并前往</button>{destinationError&&<em>门牌信息不正确，请重新核对残缺留言。</em>}</div>}{resultReached&&<strong>{owner==="shen"?"海外到访身份核验完成。新的邮件已送达。":ceremonyValid?"已定位仪式现场，第三结局已经开启。":"现场已经封锁。警方补充资料已发送到刘涵邮箱。"}</strong>}</>:<div className="map-placeholder"><b>搜索任意地点</b><p>地图会显示结果；只有与当前线索相关的地址可以前往。</p></div>}</aside>
   </div>
 }
 

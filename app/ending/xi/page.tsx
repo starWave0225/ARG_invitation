@@ -51,7 +51,7 @@ const endingBeats:EndingBeat[]=[
     from:50,
     to:61,
     chapter:"叁 · 赶到",
-    text:"沈望和刘涵循着记录赶到永安礼仪园。\n喜乐已经响起，东区静安厅的门正在合上。",
+    text:"沈望和刘涵循着请柬赶到永安仪式园。\n喜乐已经响起，东区静安厅的门正在合上。",
     quote:"刘涵：叫警察来！快！"
   },
   {
@@ -109,7 +109,7 @@ export default function XiEndingPage(){
       const localPreview=preview&&["localhost","127.0.0.1"].includes(window.location.hostname);
       setUnlocked(localPreview||(
         localStorage.getItem("jia-ending-xi-unlocked")==="true"&&
-        localStorage.getItem("jia-ending-xi-source")==="hengmu-confrontation"
+        localStorage.getItem("jia-ending-xi-source")==="hengmu-map"
       ));
     });
     return()=>window.cancelAnimationFrame(frame);
@@ -212,8 +212,8 @@ export default function XiEndingPage(){
   const beat=endingBeats.find(item=>time>=item.from&&time<item.to)??endingBeats.at(-1)!;
   const progress=Math.min(100,time/ENDING_DURATION*100);
 
-  if(unlocked===null)return <main className="xi-ending xi-ending-locked">正在确认永安礼仪园的位置……</main>;
-  if(!unlocked)return <main className="xi-ending xi-ending-locked"><section><small>ENDING LOCKED</small><h1>喜乐还没有响起。</h1><p>取得警方调查档案后，回到刘涵微信，与恒慕特别委托组完成最终对质。</p><a href="/computer/liuhan?app=wechat&chat=hengmu-plan">返回刘涵微信</a></section></main>;
+  if(unlocked===null)return <main className="xi-ending xi-ending-locked">正在确认永安仪式园的位置……</main>;
+  if(!unlocked)return <main className="xi-ending xi-ending-locked"><section><small>ENDING LOCKED</small><h1>喜乐还没有响起。</h1><p>取得警方调查档案后，回到刘涵微信，冒充女方家属套取电子请柬，再从临川地图前往仪式地点。</p><a href="/computer/liuhan?app=wechat&chat=hengmu-plan">返回刘涵微信</a></section></main>;
 
   return <main className={`xi-ending is-${status} ${paused?"is-paused":""}`}>
     <audio ref={audioRef} src={ENDING_TRACK} preload="auto" autoPlay/>
@@ -223,7 +223,7 @@ export default function XiEndingPage(){
       <small>03/04 · REGULAR ENDING</small>
       <h1>第三结局 · 嫁</h1>
       <p>一纸红喜，盖不住她自己的名字。</p>
-      <button type="button" onClick={start}>进入永安礼仪园　→</button>
+      <button type="button" onClick={start}>进入永安仪式园　→</button>
       <em>BGM · 葛东琪《囍》</em>
     </section>}
 
