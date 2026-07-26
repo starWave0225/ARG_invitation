@@ -6,6 +6,7 @@ const internalRoots = [
   "downloads",
   "ending",
   "evidence",
+  "external",
   "hengmu",
   "hospital",
   "memories",

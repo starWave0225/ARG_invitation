@@ -5,8 +5,8 @@ import {useEffect,useState} from "react";
 type WeiboImageKind="map"|"snow"|"wedding"|"lab"|"photo";
 
 const imageSources:Partial<Record<WeiboImageKind,string>>={
-  map:"https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1600&q=90",
-  snow:"https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1600&q=90",
+  map:"/external/weibo-map.jpg",
+  snow:"/external/weibo-snow.jpg",
   lab:"/evidence/gupan-patient-portal-slip.png",
 };
 

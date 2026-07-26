@@ -29,6 +29,7 @@ test("rewrites GitHub Pages paths without corrupting framework root literals", (
     'const frameworkRoot = "/";',
     'const route = "/computer/shen";',
     'const asset = "/opening/evidence-table.png";',
+    'const localImage = "/external/desktop-shen.jpg";',
     '<a href="/">返回主选单</a>',
     'const wakeButton = jsx("a", {href:"/", children:"醒来"});',
     'window.location.assign("/");',
@@ -39,6 +40,7 @@ test("rewrites GitHub Pages paths without corrupting framework root literals", (
   assert.match(rewritten, /frameworkRoot = "\/";/);
   assert.match(rewritten, /route = "\/ARG_invitation\/computer\/shen";/);
   assert.match(rewritten, /asset = "\/ARG_invitation\/opening\/evidence-table\.png";/);
+  assert.match(rewritten, /localImage = "\/ARG_invitation\/external\/desktop-shen\.jpg";/);
   assert.match(rewritten, /href="\/ARG_invitation\/"/);
   assert.match(rewritten, /href:"\/ARG_invitation\/"/);
   assert.match(rewritten, /window\.location\.assign\("\/ARG_invitation\/"\)/);

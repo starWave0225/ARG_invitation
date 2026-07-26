@@ -1427,21 +1427,21 @@ function OldDriverGroup(){
     <div className="wx-hd-thread">
       <div className="wx-content-warning">⚠ 以下内容可能引起不适，请酌情观看。解密内容可以关注最下方几则。</div>
       <div className="wx-system">你已通过群验证。“Old Driver”邀请你加入了群聊</div>
-      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="新来的先把路书背熟。别一进群就问什么车好开。"/>
-      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="昨晚那辆新车很难驾驭啊，好在我开车够稳当，油加够了，发动机熄火，谁还听它叫唤。"/>
-      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="今晚的路线摸清了。我去solo，老规矩，晚一点原片车库。"/>
-      <DriverBubble name="我是采花大盗" src="https://picsum.photos/seed/flower-thief/96/96" text="记录仪放好点，别没头没尾的不像样。上回那个蠢货只顾开车，出来连修理费都卖不上。"/>
-      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="都别在群里装纯。车已经开了，事后哭两声就说自己是受害者？修理费照旧，谁没弄干净自己倒霉。"/>
-      <DriverBubble name="我是采花大盗" src="https://picsum.photos/seed/flower-thief/96/96" text="片先发来验货。车型不够正没关系，配件顶也可以，关了灯都一个样。"/>
-      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="别他妈一看见新车就牛b。先把路线确认好，真出事了没人替你擦屁股。"/>
-      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="上次那辆很难搞啊，开一半没油了，车祸现场！还好我反应快，门一锁，外面音乐开大，哈哈，这出来读书真的值了。"/>
-      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="没油了就按回去。记录仪里能看就行。"/>
-      <DriverBubble name="我德脚你莱文" src="https://picsum.photos/seed/german-foot-lewin/96/96" text="当司机的要讲规矩，盗亦有道。车库只留编号，修理费到账就该让她们闭嘴。"/>
-      <DriverBubble name="印尼杰克" src="https://picsum.photos/seed/indonesia-jack/96/96" text="是“它们”，你再用什么“她”就可以退群了。"/>
-      <DriverBubble name="AAA建材王总" src="https://picsum.photos/seed/aaa-building-materials/96/96" text="看不懂的，右键点一下网站的新生指南，学习使人进步。"/>
-      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="谁三天两头更新网站啊，搜索框怎么跑下面去了，现在看个车库片子还得滚两下鼠标，纯反人类。"/>
-      <DriverBubble name="我德脚你莱文" src="https://picsum.photos/seed/german-foot-lewin/96/96" text="少他妈叽歪，群里还有好多人不知道这个事！"/>
-      <DriverBubble name="孤独的狼" src="https://picsum.photos/seed/lonely-wolf-cn/96/96" text="我就他妈说，一个破日历就能猜出来密码，搞得多稀奇似的，不聊了，看今晚的路线去咯！"/>
+      <DriverBubble name="AAA建材王总" src="/external/driver-aaa.svg" text="新来的先把路书背熟。别一进群就问什么车好开。"/>
+      <DriverBubble name="印尼杰克" src="/external/driver-jack.svg" text="昨晚那辆新车很难驾驭啊，好在我开车够稳当，油加够了，发动机熄火，谁还听它叫唤。"/>
+      <DriverBubble name="孤独的狼" src="/external/driver-wolf.svg" text="今晚的路线摸清了。我去solo，老规矩，晚一点原片车库。"/>
+      <DriverBubble name="我是采花大盗" src="/external/driver-flower.svg" text="记录仪放好点，别没头没尾的不像样。上回那个蠢货只顾开车，出来连修理费都卖不上。"/>
+      <DriverBubble name="AAA建材王总" src="/external/driver-aaa.svg" text="都别在群里装纯。车已经开了，事后哭两声就说自己是受害者？修理费照旧，谁没弄干净自己倒霉。"/>
+      <DriverBubble name="我是采花大盗" src="/external/driver-flower.svg" text="片先发来验货。车型不够正没关系，配件顶也可以，关了灯都一个样。"/>
+      <DriverBubble name="AAA建材王总" src="/external/driver-aaa.svg" text="别他妈一看见新车就牛b。先把路线确认好，真出事了没人替你擦屁股。"/>
+      <DriverBubble name="印尼杰克" src="/external/driver-jack.svg" text="上次那辆很难搞啊，开一半没油了，车祸现场！还好我反应快，门一锁，外面音乐开大，哈哈，这出来读书真的值了。"/>
+      <DriverBubble name="孤独的狼" src="/external/driver-wolf.svg" text="没油了就按回去。记录仪里能看就行。"/>
+      <DriverBubble name="我德脚你莱文" src="/external/driver-german.svg" text="当司机的要讲规矩，盗亦有道。车库只留编号，修理费到账就该让她们闭嘴。"/>
+      <DriverBubble name="印尼杰克" src="/external/driver-jack.svg" text="是“它们”，你再用什么“她”就可以退群了。"/>
+      <DriverBubble name="AAA建材王总" src="/external/driver-aaa.svg" text="看不懂的，右键点一下网站的新生指南，学习使人进步。"/>
+      <DriverBubble name="孤独的狼" src="/external/driver-wolf.svg" text="谁三天两头更新网站啊，搜索框怎么跑下面去了，现在看个车库片子还得滚两下鼠标，纯反人类。"/>
+      <DriverBubble name="我德脚你莱文" src="/external/driver-german.svg" text="少他妈叽歪，群里还有好多人不知道这个事！"/>
+      <DriverBubble name="孤独的狼" src="/external/driver-wolf.svg" text="我就他妈说，一个破日历就能猜出来密码，搞得多稀奇似的，不聊了，看今晚的路线去咯！"/>
     </div>
   </section>
 }
