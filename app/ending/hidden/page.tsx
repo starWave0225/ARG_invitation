@@ -199,7 +199,6 @@ export default function HiddenEndingPage(){
             <h2>{scene.title}</h2>
             <p>{scene.body}</p>
             {scene.id==="arrival"&&<blockquote>“你怎么会在这里？”<br/>“别说话，抱紧我。”</blockquote>}
-            {scene.id==="ordinary"&&<div className="hidden-ending-tickets"><span>错车纪念</span><span>又一个太阳</span><span>重新出发</span></div>}
           </div>
         </article>
       })}
