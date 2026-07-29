@@ -133,7 +133,7 @@ function getInvestigationNextHint(){
     localStorage.getItem("jia-storage-reached")!=="true"?"读取寄存仓到期邮件，在地图中搜索寄存中心地址。":
     localStorage.getItem("jia-gupan-pc-unlocked")!=="true"?"查看抵达后的新邮件，将附件解压到桌面。":
     localStorage.getItem("jia-gupan-computer-unlocked")!=="true"?"尝试登录顾盼旧电脑。":
-    !hqTreatmentSeen&&!hqFirstRoundComplete?"查询遗留的治疗记录和账单；看看旧电脑上还有无可用信息。":
+    !hqTreatmentSeen&&!hqFirstRoundComplete?"此阶段与学校官网无关。切换到【顾盼旧电脑】→【个人文件】，打开《医院回执单.jpg》和《账单.pdf》，记下姓名、病历号、日期和4位文件码；再回到沈望电脑，用 Edge 搜索“医院”，进入患者门户查询两份历史记录。":
     !hqFirstRoundComplete?"使用相关证据和郝倩完成首轮对质，获悉当年事件的相关组织。":
     localStorage.getItem("jia-hd-added")!=="true"?"与远帆取得联系。":
     localStorage.getItem("jia-yuanfan-site-access")!=="true"?"利用大学官网建立可验证的学生身份，提交给韩铎以开通远帆网站权限。":

@@ -9,7 +9,9 @@ test("merges medical evidence and advances after the Hao Qian confrontation", as
   assert.match(desktop,/ready:medicalSeen\|\|hqTreatmentSeen/);
   assert.doesNotMatch(desktop,/title:"顾盼的医疗记录"/);
   assert.doesNotMatch(desktop,/title:"郝倩的治疗与远帆转介"/);
-  assert.match(desktop,/!hqTreatmentSeen&&!hqFirstRoundComplete\?"查询遗留的治疗记录和账单/);
+  assert.match(desktop,/!hqTreatmentSeen&&!hqFirstRoundComplete\?"此阶段与学校官网无关。切换到【顾盼旧电脑】→【个人文件】/);
+  assert.match(desktop,/打开《医院回执单\.jpg》和《账单\.pdf》/);
+  assert.match(desktop,/用 Edge 搜索“医院”，进入患者门户查询两份历史记录/);
   assert.match(desktop,/!hqFirstRoundComplete\?"使用相关证据和郝倩完成首轮对质/);
   assert.doesNotMatch(desktop,/!prototypeSeen\.includes\("medical"\)\|\|!prototypeSeen\.includes\("hq-treatment"\)/);
 });
