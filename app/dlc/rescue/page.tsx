@@ -181,14 +181,14 @@ export default function RescueDlcPage(){
     <div className="rescue-noise" aria-hidden="true"/>
     <header className="rescue-topbar">
       <a href="/" aria-label="返回《嫁》主选单">嫁</a>
-      <div><span>DLC · 还来得及</span><small>2025.11.26 — 2026.03.21</small></div>
+      <div><span>DLC · 希。望</span><small>2025.11.26 — 2026.03.21</small></div>
       <b>{stage==="ending"?"SAVED":`${String(Math.max(0,stages.indexOf(stage))).padStart(2,"0")} / 04`}</b>
     </header>
 
     {stage==="briefing"&&<section className="rescue-briefing">
       <div className="rescue-briefing-copy">
         <small>DOWNLOADABLE STORY · STANDALONE ROUTE</small>
-        <h1>还来得及</h1>
+        <h1>希。望</h1>
         <p>你已经知道求救留言会在哪里出现，知道门牌、IP、外锁和那通迟到了三天的报警。</p>
         <blockquote>这一次，不去挽回一具遗体。<br/>这一次，让顾盼自己走出那扇门。</blockquote>
         <button type="button" onClick={begin}>带着真相，回到三天前　→</button>
