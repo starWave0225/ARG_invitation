@@ -114,6 +114,13 @@
   line-height: 2;
 }
 
+.rescue-briefing-copy > p.rescue-title-subtitle {
+  margin: 0 0 18px;
+  color: #e0c790;
+  font: clamp(21px, 2.6vw, 36px) / 1.4 "KaiTi", "STKaiti", "Songti SC", serif;
+  letter-spacing: 0.12em;
+}
+
 .rescue-briefing blockquote {
   margin: 29px 0;
   padding: 17px 0 17px 24px;
@@ -353,6 +360,20 @@
   object-fit: cover;
   object-position: center 15%;
   filter: saturate(0.72);
+}
+
+.rescue-emergency-avatar {
+  display: grid !important;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  place-items: center;
+  border: 1px solid #7fae94;
+  border-radius: 50%;
+  background: #183329;
+  color: #b8dfc8;
+  font: 13px monospace;
+  letter-spacing: 0.08em;
 }
 
 .rescue-phone b,
