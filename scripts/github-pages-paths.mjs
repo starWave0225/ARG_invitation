@@ -36,6 +36,10 @@ const escapedRoots = internalRoots
   .map(value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   .join("|");
 const quotedRootPath = new RegExp(`(["'])/(${escapedRoots})(?=[/"'?&#]|$)`, "g");
+const htmlEscapedQuotedRootPath = new RegExp(
+  `(&(?:quot|#34|#x22|apos|#39|#x27);)/(${escapedRoots})(?=[/?#&]|$)`,
+  "gi",
+);
 const unquotedCssPath = new RegExp(`(url\\(\\s*)/(${escapedRoots})(?=[/)'"]|$)`, "g");
 const rootNavigationAttribute = /(\b(?:href|action)=)(["'])\/\2/g;
 const rootNavigationProperty = /(\b(?:href|action):)(["'])\/\2/g;
@@ -45,6 +49,7 @@ const rootLocationAssignment = /(\b(?:window\.)?location\.href=)(["'])\/\2/g;
 export function rewriteGitHubPagesPaths(original) {
   return original
     .replace(quotedRootPath, `$1${basePath}/$2`)
+    .replace(htmlEscapedQuotedRootPath, `$1${basePath}/$2`)
     .replace(unquotedCssPath, `$1${basePath}/$2`)
     .replace(rootNavigationAttribute, `$1$2${basePath}/$2`)
     .replace(rootNavigationProperty, `$1$2${basePath}/$2`)
