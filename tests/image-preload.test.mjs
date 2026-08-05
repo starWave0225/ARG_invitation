@@ -5,6 +5,7 @@ import test from "node:test";
 test("preloads every referenced game image before a difficulty can launch", async () => {
   const page = await readFile("app/page.tsx", "utf8");
   const hook = await readFile("app/useGameImagePreloader.ts", "utf8");
+  const styles = await readFile("app/globals.css", "utf8");
   const manifest = JSON.parse(await readFile("public/game-image-manifest.json", "utf8"));
 
   assert.match(page, /useGameImagePreloader\(\)/);
@@ -12,6 +13,8 @@ test("preloads every referenced game image before a difficulty can launch", asyn
   assert.match(page, /全部图片资源已就绪/);
   assert.match(hook, /PRELOAD_CONCURRENCY = 6/);
   assert.match(hook, /new URL\("\."\s*,\s*manifestUrl\)/);
+  assert.match(styles, /\.opening-gate>span:not\(\.image-preload-status\)/);
+  assert.doesNotMatch(styles, /\.opening-gate>span\{/);
   assert.equal(manifest.count, manifest.local.length + manifest.remote.length);
   assert.ok(manifest.count > 80, `expected the complete image set, got ${manifest.count}`);
   assert.ok(manifest.local.includes("opening/evidence-table.png"));

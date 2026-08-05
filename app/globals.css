@@ -85,7 +85,7 @@ button { cursor:pointer; }
 .opening-gate:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at center,transparent 0 15%,#8c20251f 15.2% 15.6%,transparent 15.8% 30%,#eee7d50b 30.2% 30.5%,transparent 30.7%),linear-gradient(90deg,transparent 49.85%,#9d2228 49.9% 50.1%,transparent 50.15%);animation:openingGateDrift 8s ease-in-out infinite alternate}
 .opening-gate:after{content:"";position:absolute;inset:0;opacity:.2;background-image:radial-gradient(#fff .55px,transparent .7px);background-size:6px 6px}
 .opening-gate>span,.opening-gate>b,.opening-gate>small{position:relative;z-index:1}
-.opening-gate>span{margin-bottom:25px;color:#efe7d2;font:400 clamp(130px,22vw,300px)/.75 Georgia,"Songti SC",serif;text-shadow:10px 10px 0 #7f1d22;animation:openingGatePulse 2.4s ease-in-out infinite}
+.opening-gate>span:not(.image-preload-status){margin-bottom:25px;color:#efe7d2;font:400 clamp(130px,22vw,300px)/.75 Georgia,"Songti SC",serif;text-shadow:10px 10px 0 #7f1d22;animation:openingGatePulse 2.4s ease-in-out infinite}
 .opening-gate>b{font:16px Georgia,"Songti SC",serif;letter-spacing:.42em}
 .opening-gate>small{color:#80786b;font:9px ui-monospace,monospace;letter-spacing:.22em}
 .opening-gate:hover>small,.opening-gate:focus-visible>small{color:#c4b9a2}
