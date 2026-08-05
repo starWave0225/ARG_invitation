@@ -15,6 +15,11 @@ test("ships a post-ending DLC route that genuinely saves Gu Pan",async()=>{
   assert.doesNotMatch(guide,/DLC《希·望》|救援结局：人间向阳/);
   assert.match(layout,/import "\.\/rescue\.css"/);
   assert.match(layout,/希·望｜《嫁》DLC/);
+  assert.match(layout,/process\.env\.NODE_ENV==="development"\|\|process\.env\.DLC_RESCUE_ENABLED==="true"/);
+  assert.match(layout,/metadata:Metadata=isDlcEnabled\?dlcMetadata/);
+  assert.match(layout,/title:"页面不存在｜嫁"/);
+  assert.match(layout,/if\(!isDlcEnabled\)notFound\(\)/);
+  assert.doesNotMatch(layout,/next\/headers|headers\(\)/);
   assert.match(dlc,/我想活下去！/);
   assert.doesNotMatch(dlc,/jia-ending-xi-complete/);
   assert.match(dlc,/STANDALONE ROUTE/);
