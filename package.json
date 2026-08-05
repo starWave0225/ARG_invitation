@@ -6,6 +6,10 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "assets:manifest": "node scripts/generate-image-preload-manifest.mjs",
+    "predev": "npm run assets:manifest",
+    "prebuild": "npm run assets:manifest",
+    "prebuild:pages": "npm run assets:manifest",
     "dev": "vinext dev",
     "build": "vinext build",
     "build:pages": "next build && node scripts/prepare-github-pages.mjs",

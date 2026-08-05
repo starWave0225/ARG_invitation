@@ -25,6 +25,7 @@ const internalRoots = [
   "family-mother.svg",
   "favicon.svg",
   "file.svg",
+  "game-image-manifest.json",
   "globe.svg",
   "olddriver-group.svg",
   "story-guide.html",

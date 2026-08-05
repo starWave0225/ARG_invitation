@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FullInvestigation } from "./FullInvestigation";
+import { useGameImagePreloader } from "./useGameImagePreloader";
 
 type AppId = "wechat" | "mail" | "memo" | "files" | "browser" | "archive" | "guFiles" | "guWechat" | "full";
 type Evidence = "letter" | "draft" | "laptop" | "invoice" | "drug" | "betrayal" | "breakup" | "medical";
@@ -35,6 +36,7 @@ const storyMap = [
 ];
 
 export default function Home() {
+  const imagePreload = useGameImagePreloader();
   const [started, setStarted] = useState(false);
   const [choosingMode, setChoosingMode] = useState(false);
   const [openingPlaying, setOpeningPlaying] = useState(false);
@@ -73,7 +75,10 @@ export default function Home() {
     window.dispatchEvent(new Event("jia-opening-music-play"));
   };
 
-  const startGame = (mode: GameMode) => enterGame(mode);
+  const startGame = (mode: GameMode) => {
+    if(!imagePreload.ready)return;
+    enterGame(mode);
+  };
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -154,6 +159,7 @@ export default function Home() {
             <span>嫁</span>
             <b>点击进入</b>
             <small>CLICK TO BEGIN · 建议使用耳机</small>
+            <ImagePreloadStatus state={imagePreload}/>
           </button>
         )}
         {openingPlaying&&<OpeningSequence onSkip={finishOpening}/>}
@@ -164,14 +170,15 @@ export default function Home() {
             本作涉及所有违法情节均为虚构和游戏创作。<br/>
             敏感内容以文字和证据呈现，不展示实际画面。
           </div>
+          <ImagePreloadStatus state={imagePreload}/>
           {!choosingMode ? <>
             <button className="primary" onClick={()=>setChoosingMode(true)}>开始游戏</button>
             <button className="text-button" disabled={!gameCleared} title={gameCleared?"打开文字逻辑初稿":"完成第三结局后解锁"} onClick={() => { if(gameCleared){setStarted(true);setShowMap(true)} }}>查看文字逻辑初稿（只在通关后可用）</button>
           </> : <section className="game-mode-select" aria-label="选择游戏模式">
             <header><button type="button" onClick={()=>setChoosingMode(false)}>← 返回</button><span>选择游戏模式</span></header>
             <div>
-              <button type="button" className="normal" onClick={()=>startGame("normal")}><small>NORMAL</small><b>通灵模式</b><p>桌面会显示提示，指引当前目标与调查方向。</p></button>
-              <button type="button" className="hardcore" onClick={()=>startGame("hardcore")}><small>HARDCORE</small><b>真实模式</b><p>无额外提示。真实模拟主角面对的调查困境，并展示你的推理能力。</p><em>别紧张，你随时可以回到主选单再次选择</em></button>
+              <button type="button" className="normal" disabled={!imagePreload.ready} onClick={()=>startGame("normal")}><small>NORMAL</small><b>通灵模式</b><p>桌面会显示提示，指引当前目标与调查方向。</p></button>
+              <button type="button" className="hardcore" disabled={!imagePreload.ready} onClick={()=>startGame("hardcore")}><small>HARDCORE</small><b>真实模式</b><p>无额外提示。真实模拟主角面对的调查困境，并展示你的推理能力。</p><em>别紧张，你随时可以回到主选单再次选择</em></button>
             </div>
             <p>两种模式的剧情、谜题和结局分叉完全相同。</p>
           </section>}
@@ -294,6 +301,22 @@ export default function Home() {
       )}
     </main>
   );
+}
+
+function ImagePreloadStatus({state}:{state:ReturnType<typeof useGameImagePreloader>}) {
+  const settled = state.loaded + state.failed;
+  const label = state.ready
+    ? state.failed
+      ? `图片预载完成 · ${state.failed} 项将在打开时重试`
+      : "全部图片资源已就绪"
+    : state.total
+      ? `正在预载图片资源 ${settled} / ${state.total}`
+      : "正在整理图片资源";
+
+  return <span className={`image-preload-status ${state.ready?"ready":""}`} role="status" aria-live="polite">
+    <i><b style={{width:`${state.progress}%`}}/></i>
+    <em>{label}</em>
+  </span>;
 }
 
 function OpeningSequence({onSkip}:{onSkip:()=>void}){
