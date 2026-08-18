@@ -6,6 +6,12 @@ html,body { margin:0; min-height:100%; background:#0e1515; color:var(--paper); }
 body { font-family: Arial,"PingFang SC","Microsoft YaHei",sans-serif; overflow:hidden; }
 button,input { font:inherit; }
 button { cursor:pointer; }
+.global-translation-toggle { position:fixed;z-index:2147483000;right:18px;top:18px;display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 12px 7px 8px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(17,25,25,.9);box-shadow:0 8px 28px rgba(0,0,0,.28);backdrop-filter:blur(10px);color:#fff;font-size:13px;font-weight:700;letter-spacing:.02em;line-height:1;transition:background .18s,border-color .18s,transform .18s; }
+.global-translation-toggle:hover { transform:translateY(-1px);border-color:rgba(255,255,255,.62);background:rgba(27,39,38,.96); }
+.global-translation-toggle:focus-visible { outline:3px solid #f1cc75;outline-offset:3px; }
+.global-translation-toggle>span { display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#f1cc75;color:#241b0e;font-size:12px; }
+.global-translation-toggle.active { border-color:rgba(241,204,117,.72); }
+@media (max-width:640px) { .global-translation-toggle { right:10px;top:10px;min-height:34px;padding:5px 10px 5px 6px;font-size:12px; } .global-translation-toggle>span { width:22px;height:22px; } }
 .wx-bubble p { white-space:pre-line; }
 .gp-mailbox,.gp-mailbox *,.pc-mail,.pc-mail * { -webkit-user-select:text;user-select:text; }
 .gp-mailbox article,.pc-mail article { cursor:text; }
