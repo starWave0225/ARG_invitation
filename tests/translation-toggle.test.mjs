@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const [layout, toggle, translations] = await Promise.all([
+const [layout, toggle, translations, styles] = await Promise.all([
   readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
   readFile(new URL("../app/TranslationToggle.tsx", import.meta.url), "utf8"),
   readFile(new URL("../app/translation-map.ts", import.meta.url), "utf8"),
+  readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
 ]);
 
 test("root layout exposes the translation control on every route", () => {
@@ -15,6 +16,11 @@ test("root layout exposes the translation control on every route", () => {
   assert.match(toggle, /MutationObserver/);
   assert.match(toggle, /placeholder/);
   assert.match(toggle, /data-no-translate/);
+});
+
+test("hides the translation control throughout the opening presentation", () => {
+  assert.match(styles, /body:has\(\.opening-gate\) \.global-translation-toggle/);
+  assert.match(styles, /body:has\(\.opening-sequence\) \.global-translation-toggle\s*\{\s*display:none;/);
 });
 
 test("translation map covers every major English content surface", () => {

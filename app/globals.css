@@ -11,6 +11,8 @@ button { cursor:pointer; }
 .global-translation-toggle:focus-visible { outline:3px solid #f1cc75;outline-offset:3px; }
 .global-translation-toggle>span { display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#f1cc75;color:#241b0e;font-size:12px; }
 .global-translation-toggle.active { border-color:rgba(241,204,117,.72); }
+body:has(.opening-gate) .global-translation-toggle,
+body:has(.opening-sequence) .global-translation-toggle { display:none; }
 @media (max-width:640px) { .global-translation-toggle { right:10px;top:10px;min-height:34px;padding:5px 10px 5px 6px;font-size:12px; } .global-translation-toggle>span { width:22px;height:22px; } }
 .wx-bubble p { white-space:pre-line; }
 .gp-mailbox,.gp-mailbox *,.pc-mail,.pc-mail * { -webkit-user-select:text;user-select:text; }
