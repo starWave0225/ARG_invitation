@@ -226,6 +226,11 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   assert.doesNotMatch(desktop, /2025年12月3日　02:51|节点表里对应的是长宁路117号|现场资料收到了|我已经把你固定的原始页面/);
   assert.match(desktop, /我昨晚在酒吧出了一些事情，身体很不舒服/);
   assert.match(gupanWeibo, /2022-10-28 04:18[\s\S]*我记不得昨晚/);
+  assert.match(gupanWeibo, /post\.private\?<footer className="wb-draft-meta"><span>本地缓存<\/span><span>未发布<\/span><\/footer>:/);
+  assert.match(desktop, /酒红色长围巾/);
+  assert.doesNotMatch(desktop, /浅色长围巾/);
+  assert.match(guide, /酒红色长围巾/);
+  assert.doesNotMatch(guide, /浅色长围巾/);
   assert.match(desktop, /我不知道你们的爱到底是什么/);
   assert.match(desktop, /顾盼退出了群聊/);
   assert.match(desktop, /这里面一定有误会，顾盼，你好几天没有来学校上课/);
