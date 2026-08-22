@@ -330,7 +330,7 @@ test("opens Liu Han's Qzone and police archive investigation through browser sea
   ]);
 });
 
-test("keeps the November incident, ending routes, and three-day rewind on one timeline", async () => {
+test("keeps the incident, ending routes, and three-day rewind on one timeline", async () => {
   const [desktop, nightdrive, hengmu, ending, xiEnding, hiddenEnding, prototype, guide, styles] = await Promise.all([
     readFile(new URL("../app/computer/DesktopRoute.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/nightdrive/page.tsx", import.meta.url), "utf8"),
@@ -343,9 +343,11 @@ test("keeps the November incident, ending routes, and three-day rewind on one ti
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
 
-  assert.match(nightdrive, /2022-11-08 23:48—2022-11-09 04:11/);
+  assert.match(nightdrive, /2022-10-27 23:48—2022-10-28 04:11/);
+  assert.match(nightdrive, /2022年10月27日晚/);
+  assert.match(nightdrive, /10月28日03:57/);
   assert.match(nightdrive, /2022-11-13 · USD 20,000 · VOID/);
-  assert.doesNotMatch(nightdrive, /2022-10-27|2022-10-28|2022-11-02|10月27日|10月30日|11月2日/);
+  assert.doesNotMatch(nightdrive, /2022-11-08 23:48—2022-11-09 04:11|2022年11月8日晚|11月9日03:57/);
   assert.match(desktop, /2022年10月27日。/);
   assert.match(hengmu, /最近更新：2025-11-29 12:26/);
   assert.match(hengmu, /replaceAll\("-",""\)/);
