@@ -351,8 +351,11 @@ test("keeps the incident, ending routes, and three-day rewind on one timeline", 
   assert.match(nightdrive, /2022-10-27 23:48—2022-10-28 04:11/);
   assert.match(nightdrive, /2022年10月27日晚/);
   assert.match(nightdrive, /10月28日03:57/);
-  assert.match(nightdrive, /2022-11-13 · USD 20,000 · VOID/);
-  assert.doesNotMatch(nightdrive, /2022-11-08 23:48—2022-11-09 04:11|2022年11月8日晚|11月9日03:57/);
+  assert.match(nightdrive, /2022-11-02 · USD 20,000 · VOID/);
+  assert.match(nightdrive, /2022-02-13 22:16—2022-02-14 03:20/);
+  assert.match(nightdrive, /10月27日，郝倩将“毕业前聚会”的邀请转发给顾盼/);
+  assert.match(nightdrive, /10月30日，H\.Q\.关联账户收到/);
+  assert.doesNotMatch(nightdrive, /2022-11-08 23:48—2022-11-09 04:11|2022年11月8日晚|11月9日03:57|ARCHIVED 2022-11-13|2022-11-13 · USD 20,000|11月8日，郝倩|11月11日|11月13日/);
   assert.match(desktop, /2022年10月27日。/);
   assert.match(hengmu, /最近更新：2025-11-29 12:26/);
   assert.match(hengmu, /replaceAll\("-",""\)/);
