@@ -1,12 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./opening-walk.css";
+import "./mobile.css";
 import OpeningMusic from "./OpeningMusic";
 import TranslationToggle from "./TranslationToggle";
 
 export const metadata: Metadata = {
   title: "嫁｜网页调查叙事",
   description: "沈望一直在等顾盼回首。现在，请替她找回被夺走的真相。",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

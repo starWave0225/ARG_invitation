@@ -165,6 +165,8 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const [active,setActive]=useState<string|null>(null);
   const [selected,setSelected]=useState<string|null>(null);
   const [start,setStart]=useState(false);
+  const [mobileDevicesOpen,setMobileDevicesOpen]=useState(false);
+  const [mobileHintOpen,setMobileHintOpen]=useState(false);
   const [notice,setNotice]=useState(false);
   const [scenePackageNotice,setScenePackageNotice]=useState(false);
   const [wechatNotices,setWechatNotices]=useState<Array<{seen:string;title:string;body:string}>>([]);
@@ -177,6 +179,8 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   const wechatNotice=wechatNotices[0]??null;
   const dismissWechatNotice=()=>setWechatNotices(current=>current.slice(1));
   const openDesktopApp=(id:string)=>{
+    setMobileDevicesOpen(false);
+    setMobileHintOpen(false);
     if(owner==="gupan"&&id==="weibo"){
       window.open("/weibo/gupan","_blank","noopener,noreferrer");
       return;
@@ -301,7 +305,7 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     return()=>{window.removeEventListener("storage",check);window.removeEventListener("jia-progress",check)};
   },[owner]);
   useEffect(()=>{if(recoveredLetterNotice)void playNotificationSound("mail")},[recoveredLetterNotice]);
-  useEffect(()=>{if(gameMode==="hardcore"&&active==="case")setActive(null)},[gameMode,active]);
+  useEffect(()=>{if(gameMode==="hardcore"){if(active==="case")setActive(null);setMobileHintOpen(false)}},[gameMode,active]);
   useEffect(()=>{
     const refreshProgress=()=>{
       setProgressRevision(value=>value+1);
@@ -321,10 +325,10 @@ export default function DesktopRoute({owner}:{owner:Owner}){
   return <main className={`pc-desktop pc-${owner}`}>
     <div className="pc-wallpaper"/>
     <section className="pc-icons" aria-label={`${cfg.owner}的桌面`}>
-      {cfg.apps.map(([label,icon,id])=><button key={id} className={selected===id?"selected":""} onClick={()=>setSelected(id)} onDoubleClick={()=>openDesktopApp(id)}><i>{icon}</i><span>{label}</span></button>)}
-      {owner==="shen"&&extracted&&<button className={selected==="storage"?"selected":""} onClick={()=>setSelected("storage")} onDoubleClick={()=>setActive("storage")}><i>📁</i><span>B-17 寄存仓</span></button>}
-      {owner==="shen"&&extracted&&<button className={selected==="gupan-pc"?"selected":""} onClick={()=>setSelected("gupan-pc")} onDoubleClick={()=>window.open("/computer/gupan","_blank","noopener,noreferrer")}><i className="device-icon">▰</i><span>顾盼的旧电脑</span></button>}
-      {owner==="liuhan"&&scenePackageExtracted&&<button className={selected==="scene"?"selected":""} onClick={()=>setSelected("scene")} onDoubleClick={()=>setActive("scene")}><i>📁</i><span>晴川公寓_现场证据</span></button>}
+      {cfg.apps.map(([label,icon,id])=><button key={id} className={selected===id?"selected":""} onClick={()=>window.matchMedia("(hover: none) and (pointer: coarse)").matches?openDesktopApp(id):setSelected(id)} onDoubleClick={()=>openDesktopApp(id)}><i>{icon}</i><span>{label}</span></button>)}
+      {owner==="shen"&&extracted&&<button className={selected==="storage"?"selected":""} onClick={()=>window.matchMedia("(hover: none) and (pointer: coarse)").matches?setActive("storage"):setSelected("storage")} onDoubleClick={()=>setActive("storage")}><i>📁</i><span>B-17 寄存仓</span></button>}
+      {owner==="shen"&&extracted&&<button className={selected==="gupan-pc"?"selected":""} onClick={()=>window.matchMedia("(hover: none) and (pointer: coarse)").matches?window.open("/computer/gupan","_blank","noopener,noreferrer"):setSelected("gupan-pc")} onDoubleClick={()=>window.open("/computer/gupan","_blank","noopener,noreferrer")}><i className="device-icon">▰</i><span>顾盼的旧电脑</span></button>}
+      {owner==="liuhan"&&scenePackageExtracted&&<button className={selected==="scene"?"selected":""} onClick={()=>window.matchMedia("(hover: none) and (pointer: coarse)").matches?setActive("scene"):setSelected("scene")} onDoubleClick={()=>setActive("scene")}><i>📁</i><span>晴川公寓_现场证据</span></button>}
     </section>
     {gameMode==="normal"&&<aside className="pc-sticky"><small>当前目标</small><b>{currentObjective}</b><span>与调查档案同步 · 线索确认后自动更新</span><button type="button" className="pc-sticky-case" onClick={()=>setActive("case")}><i>◫</i><strong>调查档案</strong><em>查看已经收集的证据</em></button></aside>}
     {wechatNotice&&<div className="pc-toast pc-wechat-toast"><button className="pc-toast-open" onClick={()=>{dismissWechatNotice();setActive("wechat")}}><i>微</i><span><small>微信 · 现在</small><b>{wechatNotice.title}</b><em>{wechatNotice.body}</em></span></button><button className="pc-toast-close" aria-label="关闭微信通知" onClick={dismissWechatNotice}>×</button></div>}
@@ -333,11 +337,24 @@ export default function DesktopRoute({owner}:{owner:Owner}){
     {recoveredLetterNotice&&<div className="pc-toast pc-file-toast"><button className="pc-toast-open" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false);setActive("trash")}}><i>♲</i><span><small>文件恢复 · 现在</small><b>回收站中出现一个恢复文件</b><em>希望_未寄出.txt · 来自手机同步缓存</em></span></button><button className="pc-toast-close" aria-label="关闭文件恢复通知" onClick={()=>{localStorage.setItem("jia-notified-gp-final-letter","true");setRecoveredLetterNotice(false)}}>×</button></div>}
     {active&&<PcWindow owner={owner} app={active} gameMode={gameMode} close={()=>setActive(null)}/>}
     <footer className="pc-taskbar">
-      <button className="pc-start" onClick={()=>setStart(!start)}>田</button>
+      <button className="pc-start" onClick={()=>{setStart(!start);setMobileDevicesOpen(false);setMobileHintOpen(false)}}>田</button>
       <button className="pc-search">⌕　搜索</button>
-      {cfg.apps.slice(0,4).map(([label,icon,id])=><button key={id} className={active===id?"running":""} title={label} onClick={()=>setActive(id)}>{icon}</button>)}
+      {gameMode==="normal"&&<button type="button" className={`pc-mobile-hint-button ${mobileHintOpen?"active":""}`} aria-label="查看当前提示" aria-expanded={mobileHintOpen} onClick={()=>{setStart(false);setMobileDevicesOpen(false);setMobileHintOpen(open=>!open)}}><span aria-hidden="true">?</span><small>提示</small></button>}
+      <button type="button" className={`pc-mobile-device-button ${mobileDevicesOpen?"active":""}`} aria-label="切换电脑" aria-expanded={mobileDevicesOpen} onClick={()=>{setStart(false);setMobileHintOpen(false);setMobileDevicesOpen(open=>!open)}}><span aria-hidden="true">▣</span><small>设备</small></button>
+      {cfg.apps.slice(0,4).map(([label,icon,id])=><button key={id} className={active===id?"running":""} title={label} onClick={()=>{setActive(id);setMobileHintOpen(false);setMobileDevicesOpen(false)}}>{icon}</button>)}
       <span className="pc-tray">⌃　⌨　◉　⌁　🔊　 <b>{systemTime}<small>{cfg.date.replace(" 星期三","").replace(" 星期四","")}</small></b></span>
     </footer>
+    {mobileHintOpen&&gameMode==="normal"&&<aside className="pc-mobile-hint-panel" aria-label="当前调查提示">
+      <header><span><small>调查提示</small><b>当前目标</b></span><button type="button" aria-label="关闭当前提示" onClick={()=>setMobileHintOpen(false)}>×</button></header>
+      <p>{currentObjective}</p>
+      <button type="button" className="pc-mobile-hint-case" onClick={()=>{setActive("case");setMobileHintOpen(false)}}><span>查看调查档案</span><small>核对已经收集的证据　›</small></button>
+    </aside>}
+    {mobileDevicesOpen&&<nav className="pc-mobile-device-menu" aria-label="切换电脑">
+      <header><span><small>当前设备</small><b>{cfg.owner}的电脑</b></span><button type="button" aria-label="关闭设备列表" onClick={()=>setMobileDevicesOpen(false)}>×</button></header>
+      <a className={owner==="shen"?"active":""} aria-current={owner==="shen"?"page":undefined} href="/computer/shen"><span>沈望</span><small>{owner==="shen"?"当前使用":"切换至此电脑"}</small></a>
+      {(gupanComputerAvailable||owner==="gupan")&&<a className={owner==="gupan"?"active":""} aria-current={owner==="gupan"?"page":undefined} href="/computer/gupan"><span>顾盼</span><small>{owner==="gupan"?"当前使用":"切换至此电脑"}</small></a>}
+      {(liuHanComputerAvailable||owner==="liuhan")&&<a className={owner==="liuhan"?"active":""} aria-current={owner==="liuhan"?"page":undefined} href="/computer/liuhan"><span>刘涵</span><small>{owner==="liuhan"?"当前使用":"切换至此电脑"}</small></a>}
+    </nav>}
     {start&&<div className="pc-startmenu"><div className="pc-start-search">⌕　在应用、设置和文档中搜索</div><header><b>已固定</b><span>所有应用　›</span></header><div>{cfg.apps.map(([label,icon,id])=><button key={id} onClick={()=>{openDesktopApp(id);setStart(false)}}><i>{icon}</i><span>{label}</span></button>)}</div><footer><span>●　{cfg.owner}</span><button onClick={()=>{location.href="/"}}>关机</button></footer></div>}
     <div className="pc-route-switch"><span>{cfg.owner}的电脑</span>{gameMode&&<button type="button" className={`pc-mode-label ${gameMode}`} onClick={toggleGameMode} aria-label={`当前为${gameMode==="normal"?"通灵模式":"真实模式"}，点击切换为${gameMode==="normal"?"真实模式":"通灵模式"}`} title="点击切换游戏模式">{gameMode==="normal"?"通灵模式":"真实模式"} <small>⇄</small></button>}<a href="/computer/shen" target="_blank" rel="noopener noreferrer">沈望</a>{gupanComputerAvailable&&<a href="/computer/gupan" target="_blank" rel="noopener noreferrer">顾盼</a>}{liuHanComputerAvailable&&<a href="/computer/liuhan" target="_blank" rel="noopener noreferrer">刘涵</a>}<a href="/" target="_blank" rel="noopener noreferrer">返回主选单</a><button type="button" onClick={resetGame}>↻ 重置进度</button></div>
   </main>
@@ -422,6 +439,7 @@ type QQChat="classmates"|"files";
 function QQDesktop(){
   const [view,setView]=useState<QQView>("messages");
   const [chat,setChat]=useState<QQChat>("classmates");
+  const [mobileChatOpen,setMobileChatOpen]=useState(false);
   const chats:{id:QQChat;name:string;preview:string;time:string;avatar:string;muted?:boolean}[]=[
     {id:"classmates",name:"临川理工 · 计科16级",preview:"李晨：周末球赛还差一个",time:"周一",avatar:"/characters/qq-class-group.svg",muted:true},
     {id:"files",name:"我的手机",preview:"已接收：QQ空间截图.png",time:"11/30",avatar:"/characters/qq-device.svg"},
@@ -430,20 +448,25 @@ function QQDesktop(){
   const openChat=(next:QQChat)=>{
     setChat(next);
     setView("messages");
+    setMobileChatOpen(true);
   };
-  return <div className={`qq-app qq-view-${view}`}>
+  const changeView=(next:QQView)=>{
+    setView(next);
+    setMobileChatOpen(false);
+  };
+  return <div className={`qq-app qq-view-${view} ${mobileChatOpen?"qq-mobile-chat-open":""}`}>
     <nav className="qq-rail" aria-label="QQ功能栏">
       <button type="button" className="qq-self" aria-label="刘涵的QQ资料">
         <img src="/characters/liu-han.png" alt="刘涵"/>
         <i/>
       </button>
-      <button type="button" className={view==="messages"?"active":""} onClick={()=>setView("messages")} aria-label="消息">
+      <button type="button" className={view==="messages"?"active":""} onClick={()=>changeView("messages")} aria-label="消息">
         <span>◉</span><small>消息</small>
       </button>
-      <button type="button" className={view==="contacts"?"active":""} onClick={()=>setView("contacts")} aria-label="联系人">
+      <button type="button" className={view==="contacts"?"active":""} onClick={()=>changeView("contacts")} aria-label="联系人">
         <span>♙</span><small>联系人</small>
       </button>
-      <button type="button" className={`qq-space-entry ${view==="space"?"active":""}`} onClick={()=>setView("space")} aria-label="QQ空间">
+      <button type="button" className={`qq-space-entry ${view==="space"?"active":""}`} onClick={()=>changeView("space")} aria-label="QQ空间">
         <span>★</span><small>空间</small><em>1</em>
       </button>
       <div className="qq-rail-spacer"/>
@@ -502,6 +525,7 @@ function QQDesktop(){
 
       <section className="qq-conversation">
         <header>
+          <button type="button" className="qq-mobile-back" onClick={()=>setMobileChatOpen(false)} aria-label="返回会话列表">‹</button>
           <div><b>{activeChat.name}</b><small>{chat==="classmates"?"45人":"手机在线"}</small></div>
           <nav><button type="button" aria-label="语音通话">♩</button><button type="button" aria-label="视频通话">▣</button><button type="button" aria-label="聊天设置">···</button></nav>
         </header>
@@ -681,6 +705,7 @@ function RecycleBin({owner,letterAvailable}:{owner:Owner;letterAvailable:boolean
 
 function LiuHanMailbox({addressReached}:{addressReached:boolean}){
   const [selected,setSelected]=useState(0);
+  const [mobileMessageOpen,setMobileMessageOpen]=useState(false);
   const [extracted,setExtracted]=useState(false);
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>setExtracted(localStorage.getItem("jia-liuhan-scene-package-extracted")==="true"));
@@ -700,11 +725,12 @@ function LiuHanMailbox({addressReached}:{addressReached:boolean}){
   ];
   const mails=addressReached?[sceneMail,...ordinaryMails]:ordinaryMails;
   const current=mails[Math.min(selected,mails.length-1)] as {body:ReactNode};
-  return <div className="gp-mailbox liuhan-mailbox"><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　{mails.length}</span><span>草稿　1</span><span>已发送邮件</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>setSelected(index)}><b>{mail.from}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article>{current.body}</article></section></div>;
+  return <div className={`gp-mailbox liuhan-mailbox ${mobileMessageOpen?"mobile-mail-open":""}`}><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　{mails.length}</span><span>草稿　1</span><span>已发送邮件</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>{setSelected(index);setMobileMessageOpen(true)}}><b>{mail.from}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article><button type="button" className="gp-mail-mobile-back" onClick={()=>setMobileMessageOpen(false)}>‹　返回收件箱</button>{current.body}</article></section></div>;
 }
 
 function ShenMailbox({storageReached}:{storageReached:boolean}){
   const [selected,setSelected]=useState(0);
+  const [mobileMessageOpen,setMobileMessageOpen]=useState(false);
   const [addressCopied,setAddressCopied]=useState(false);
   const storageAddress="North Harbor Storage Center, Zone B · 17 Harborfront Avenue, Seabreeze District, North Harbor (OVERSEAS)";
   const copyStorageAddress=async()=>{
@@ -724,18 +750,19 @@ function ShenMailbox({storageReached}:{storageReached:boolean}){
   const arrivalMail={from:"北港寄存中心（海外）",date:"刚刚",subject:"B-17现场物品清单.zip",preview:"身份核验已完成，请下载现场物品清单",body:<><small>North Harbor Storage Center（北港寄存中心 · 海外） &lt;archive@northharbor-storage.example&gt;</small><h2>B-17现场物品清单.zip</h2><p>您已完成海外现场身份核验。物品清单与设备唤醒记录见附件。</p><button className="pc-zip" onClick={()=>{localStorage.setItem("jia-gupan-pc-unlocked","true");window.dispatchEvent(new Event("jia-progress"))}}>▣　解压到桌面</button><p className="pc-mail-hint">解压后，“文件资源管理器”中会出现顾盼的旧电脑。</p></>};
   const mails=storageReached?[arrivalMail,expiryMail,...adMails]:[adMails[0],expiryMail,...adMails.slice(1)];
   const current=mails[Math.min(selected,mails.length-1)] as {body:ReactNode};
-  return <div className="gp-mailbox shen-mailbox"><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　{mails.length}</span><span>垃圾邮件　3</span><span>已发送邮件</span><span>草稿　2</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>setSelected(index)}><b>{mail.from}{Boolean((mail as {ad?:boolean}).ad)&&<em>广告</em>}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article>{current.body}</article></section></div>
+  return <div className={`gp-mailbox shen-mailbox ${mobileMessageOpen?"mobile-mail-open":""}`}><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　{mails.length}</span><span>垃圾邮件　3</span><span>已发送邮件</span><span>草稿　2</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>{setSelected(index);setMobileMessageOpen(true)}}><b>{mail.from}{Boolean((mail as {ad?:boolean}).ad)&&<em>广告</em>}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article><button type="button" className="gp-mail-mobile-back" onClick={()=>setMobileMessageOpen(false)}>‹　返回收件箱</button>{current.body}</article></section></div>
 }
 
 function GupanMailbox(){
   const [selected,setSelected]=useState(0);
+  const [mobileMessageOpen,setMobileMessageOpen]=useState(false);
   const mails=[
     {from:"Northbridge Student Services",date:"2022/11/12",subject:"Your temporary leave request has been received",preview:"Your request remains under review.",body:<><small>Student Services &lt;services@northbridge.example&gt;</small><h2>Temporary leave request received</h2><p>Dear Gu Pan, your request has been received. Your university account and mailbox will remain available during the review period.</p><p>Reference: LOA-GP-221112</p></>},
     {from:"NB Community Forum",date:"2022/11/07",subject:"Weekly digest: 14 discussions you may have missed",preview:"Housing exchange · International student board…",body:<><small>Northbridge Community Forum &lt;digest@forum.northbridge.example&gt;</small><h2>Your weekly forum digest</h2><p>Housing exchange, international student welcome board, campus safety discussion and fourteen other threads received new replies this week.</p><p className="gp-mail-muted">You receive this automated digest because your university community account is active.</p><a className="gp-hidden-school-link" href="/university" target="_blank" rel="noopener noreferrer">Manage forum account at Northbridge University ↗</a></>},
     {from:"Campus Arts Newsletter",date:"2022/10/31",subject:"November exhibitions and open studios",preview:"Three student exhibitions open this month.",body:<><small>College of Arts & Media</small><h2>November exhibitions</h2><p>Open studios, visiting artist talks and student exhibitions will continue throughout November.</p><p>Events are open to registered students and alumni.</p></>},
     {from:"Library Notices",date:"2022/10/28",subject:"Automatic renewal confirmation",preview:"2 borrowed items renewed until December.",body:<><small>Northbridge Libraries</small><h2>Automatic renewal confirmation</h2><p>Two borrowed items have been renewed. No action is required.</p></>}
   ];
-  return <div className="gp-mailbox"><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　4</span><span>草稿　1</span><span>已发送邮件</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>setSelected(index)}><b>{mail.from}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article>{mails[selected].body}</article></section></div>
+  return <div className={`gp-mailbox ${mobileMessageOpen?"mobile-mail-open":""}`}><aside><b>Outlook</b><button>新邮件</button><span className="active">收件箱　4</span><span>草稿　1</span><span>已发送邮件</span><span>存档</span></aside><section><div className="gp-mail-list">{mails.map((mail,index)=><button className={selected===index?"active":""} key={mail.subject} onClick={()=>{setSelected(index);setMobileMessageOpen(true)}}><b>{mail.from}</b><small>{mail.date}</small><strong>{mail.subject}</strong><span>{mail.preview}</span></button>)}</div><article><button type="button" className="gp-mail-mobile-back" onClick={()=>setMobileMessageOpen(false)}>‹　返回收件箱</button>{mails[selected].body}</article></section></div>
 }
 
 function EdgeBrowser({owner}:{owner:Owner}){
@@ -839,7 +866,7 @@ function ShenDiary(){
     {date:"2022年11月18日",title:"那封信",text:"最近好多事发生，可能是我忽视了她，也可能是上次纪念日没来得及把礼物寄到她手上，她最近像是变了一个人，不再跟我分享日常，连视频也不开...\n\n凌晨醒来，看见她在发来的长消息。她说她累了，说我们不适合继续，也说不要再找她。我很着急，太着急了，一下子乱了方寸，给她打电话，已经无法接通。我彻夜难眠，寻找共友，他们却只告诉我都拉黑了，为什么，为什么会如此决绝。\n\n我感觉我所有的力气，都被留在了这一天。",image:"/memories/breakup-message-2022.png",caption:"2022年11月18日凌晨"}
   ];
   const x=entries[entry];
-  return <div className="pc-diary"><aside><h3>我的日记</h3>{entries.map((e,i)=><button className={entry===i?"active":""} onClick={()=>setEntry(i)} key={e.date}><small>{e.date}</small><b>{e.title}</b></button>)}</aside><article><small>{x.date}</small><h1>{x.title}</h1><p>{x.text}</p>{"faded" in x&&x.faded&&<p className="pc-diary-faded">{x.faded}</p>}{x.image&&<figure><img src={x.image} alt={x.caption}/><figcaption>{x.caption}</figcaption></figure>}</article></div>
+  return <div className="pc-diary"><label className="pc-diary-mobile-select"><span>选择日记</span><select value={entry} onChange={event=>setEntry(Number(event.target.value))}>{entries.map((e,i)=><option value={i} key={e.date}>{e.date} · {e.title}</option>)}</select></label><aside><h3>我的日记</h3>{entries.map((e,i)=><button className={entry===i?"active":""} onClick={()=>setEntry(i)} key={e.date}><small>{e.date}</small><b>{e.title}</b></button>)}</aside><article><small>{x.date}</small><h1>{x.title}</h1><p>{x.text}</p>{"faded" in x&&x.faded&&<p className="pc-diary-faded">{x.faded}</p>}{x.image&&<figure><img src={x.image} alt={x.caption}/><figcaption>{x.caption}</figcaption></figure>}</article></div>
 }
 
 function GupanWeChatArchive(){
@@ -959,6 +986,7 @@ type PersonalMoment={text:string;time:string;wedding?:boolean;pinned?:boolean;ga
 
 function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const [section,setSection]=useState<"chats"|"contacts"|"moments"|"add">("chats");
+  const [mobileChatOpen,setMobileChatOpen]=useState(false);
   const [query,setQuery]=useState("");
   const [added,setAdded]=useState(false);
   const [hdAdded,setHdAdded]=useState(false);
@@ -986,7 +1014,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     if(owner!=="shen"||!added)return;
     const frame=window.requestAnimationFrame(()=>{
       const params=new URLSearchParams(window.location.search);
-      if(params.get("chat")==="haoqian"){setSection("chats");setChat("郝倩")}
+      if(params.get("chat")==="haoqian"){setSection("chats");setChat("郝倩");setMobileChatOpen(true)}
     });
     return()=>window.cancelAnimationFrame(frame);
   },[owner,added]);
@@ -994,7 +1022,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     if(owner!=="liuhan"||!hmContactAdded)return;
     const frame=window.requestAnimationFrame(()=>{
       const params=new URLSearchParams(window.location.search);
-      if(params.get("chat")==="hengmu-plan"){setSection("chats");setChat("恒慕特别委托组")}
+      if(params.get("chat")==="hengmu-plan"){setSection("chats");setChat("恒慕特别委托组");setMobileChatOpen(true)}
     });
     return()=>window.cancelAnimationFrame(frame);
   },[owner,hmContactAdded]);
@@ -1007,7 +1035,7 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   ]:owner==="gupan"?[{name:"一家人",src:"/family-group.svg",note:"顾盼退出了群聊"},{name:"郝倩",src:"/characters/wechat-hao-qian-wedding.png",note:"找个地方，我们见一面吧。"},{name:"沈望",src:"/characters/wechat-shen-wang.png",note:"语音通话 02:17"}]:[{name:"沈望",src:"/characters/wechat-shen-wang.png",note:openingStep>=liuHanOpeningExchanges.length?"嗯。机票定了告诉我。":"还没休息？"},{name:"陈放",src:"/characters/chen-fang.png",note:"有实证再找我"},...(hmContactAdded?[{name:"恒慕特别委托组",src:"/characters/hengmu-case-manager.svg",note:"圆满方案 · 企业服务账号"}]:[])];
   const current=people.find(p=>p.name===chat)||people[0];
   const specialized=(owner==="shen"&&["刘涵","郝倩","韩铎","老司机夜航群"].includes(current.name))||(owner==="liuhan"&&["沈望","陈放","恒慕特别委托组"].includes(current.name));
-  const addFriend=()=>{if(offline)return;localStorage.setItem("jia-hq-added","true");setAdded(true);setChat("郝倩");setSection("chats");window.dispatchEvent(new Event("jia-wechat-notification"))};
+  const addFriend=()=>{if(offline)return;localStorage.setItem("jia-hq-added","true");setAdded(true);setChat("郝倩");setSection("chats");setMobileChatOpen(true);window.dispatchEvent(new Event("jia-wechat-notification"))};
   const searchContact=()=>{
     if(offline)return;
     const normalized=query.toLowerCase().replace(/^wx\s*:\s*/,"").trim();
@@ -1025,14 +1053,14 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
     const answer=hdAnswer.toLowerCase().replace(/[\s·•（）()]/g,"");
     if(!["northbridgeuniversity","北桥大学","northbridgeuniversity北桥大学"].includes(answer)){setHdError(true);return}
     localStorage.setItem("jia-hd-added","true");
-    setHdAdded(true);setHdError(false);setChat("韩铎");setSection("chats");
+    setHdAdded(true);setHdError(false);setChat("韩铎");setSection("chats");setMobileChatOpen(true);
     window.dispatchEvent(new Event("jia-wechat-notification"));
     window.dispatchEvent(new Event("jia-progress"));
   };
   const joinDriverGroup=()=>{
     if(driverAnswer.replace(/\s/g,"")!=="孤独帅哥"){setDriverError(true);return}
     localStorage.setItem("jia-olddriver-group","true");
-    setDriverJoined(true);setDriverError(false);setChat("老司机夜航群");setSection("chats");
+    setDriverJoined(true);setDriverError(false);setChat("老司机夜航群");setSection("chats");setMobileChatOpen(true);
     window.dispatchEvent(new Event("jia-progress"));
   };
   const send=(value?:string)=>{if(offline)return;const text=(value??draft).trim();if(!text)return;setSent(v=>[...v,{who:current.name,text}]);setDraft("")};
@@ -1060,9 +1088,10 @@ function WeChatDesktop({owner,offline=false}:{owner:Owner;offline?:boolean}){
   const selfName=owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵";
   const momentName=momentProfile||selfName;
   const momentAvatar=profileData[momentName]?.src||profileData[selfName].src;
-  return <div className={`wx-app ${offline?"wx-app-offline":""}`} onClick={e=>{const el=e.target as HTMLElement;const profileTarget=el.closest<HTMLElement>("[data-profile]");const name=profileTarget?.dataset.profile||(el.tagName==="IMG"?el.getAttribute("alt"):null);if(name&&name!=="本人"&&profileData[name])setProfile(name)}} onKeyDown={e=>{if(!offline&&e.key==="Enter"&&!e.shiftKey&&(e.target as HTMLElement).tagName==="TEXTAREA"){e.preventDefault();const textarea=e.target as HTMLTextAreaElement;send(textarea.value);textarea.value=""}}}>
-    <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/wechat-shen-wang.png":owner==="gupan"?"/characters/wechat-gu-pan.png":"/characters/wechat-liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>setSection("chats")}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>setSection("contacts")}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments")}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>setSection("add")}>＋<small>添加</small></button></nav>
-    {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>setChat(p.name)}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/><WxBubble src="/characters/hao-qian.png" text="这里面一定有误会，顾盼，你好几天没有来学校上课，找个地方，我们见一面吧。"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
+  return <div className={`wx-app ${offline?"wx-app-offline":""} ${mobileChatOpen?"wx-mobile-chat-open":""}`} onClick={e=>{const el=e.target as HTMLElement;const profileTarget=el.closest<HTMLElement>("[data-profile]");const name=profileTarget?.dataset.profile||(el.tagName==="IMG"?el.getAttribute("alt"):null);if(name&&name!=="本人"&&profileData[name])setProfile(name)}} onKeyDown={e=>{if(!offline&&e.key==="Enter"&&!e.shiftKey&&(e.target as HTMLElement).tagName==="TEXTAREA"){e.preventDefault();const textarea=e.target as HTMLTextAreaElement;send(textarea.value);textarea.value=""}}}>
+    <nav><button className="wx-self-avatar" onClick={()=>setProfile(owner==="shen"?"沈望":owner==="gupan"?"顾盼":"刘涵")}><img src={owner==="shen"?"/characters/wechat-shen-wang.png":owner==="gupan"?"/characters/wechat-gu-pan.png":"/characters/wechat-liu-han.png"} alt="本人"/></button><button className={section==="chats"?"active":""} onClick={()=>{setSection("chats");setMobileChatOpen(false)}}>◉<small>聊天</small></button><button className={section==="contacts"?"active":""} onClick={()=>{setSection("contacts");setMobileChatOpen(false)}}>♙<small>通讯录</small></button><button className={section==="moments"?"active":""} onClick={()=>{setMomentProfile(null);setSection("moments");setMobileChatOpen(false)}}>◎<small>朋友圈</small></button><button className={section==="add"?"active":""} onClick={()=>{setSection("add");setMobileChatOpen(false)}}>＋<small>添加</small></button></nav>
+    {section==="chats"&&<><aside className="wx-list"><header>⌕ 搜索　 <button onClick={()=>setSection("add")}>＋</button></header>{people.map(p=><button className={chat===p.name?"active":""} key={p.name} onClick={()=>{setChat(p.name);setMobileChatOpen(true)}}><img src={p.src} alt={p.name}/><span><b>{p.name}</b><small>{p.note}</small></span></button>)}</aside>{!specialized&&<section className="wx-conversation"><header>{current.name}</header><div className="wx-messages" ref={messagesRef}>{current.name==="一家人"&&owner==="gupan"?<GupanFamilyChat/>:current.name==="沈望"&&owner==="gupan"?<GupanShenBreakupChat/>:<><WxBubble src="/characters/hao-qian.png" text="我提前走了。应该是酒吧的人送你的。"/><WxBubble src="/characters/gu-pan.png" mine text="他们怎么知道地址？除了你，还有谁有我的钥匙？"/><WxBubble src="/characters/hao-qian.png" text="这里面一定有误会，顾盼，你好几天没有来学校上课，找个地方，我们见一面吧。"/></>}</div><footer><span>☺　📁　✂</span><textarea placeholder="输入消息"/><button>发送</button></footer></section>}</>}
+    {section==="chats"&&mobileChatOpen&&<button type="button" className="wx-mobile-back" onClick={()=>setMobileChatOpen(false)} aria-label="返回会话列表">‹</button>}
     {section==="contacts"&&<section className="wx-contacts"><header>通讯录</header><button onClick={()=>setSection("add")}>＋　新的朋友</button>{people.map(p=><div key={p.name}><img src={p.src} alt={p.name}/><b>{p.name}</b><small>{p.note}</small></div>)}</section>}
     {section==="add"&&<section className="wx-add"><h2>添加朋友</h2><p>输入微信号、手机号或QQ号</p><div><input value={query} onChange={e=>{setQuery(e.target.value);setResult(null);setHqRequest(false);setHqAnswer("");setHqError(false);setHdRequest(false);setHdAnswer("");setHdError(false);setDriverRequest(false);setDriverError(false)}} onKeyDown={e=>e.key==="Enter"&&searchContact()} placeholder="微信号"/><button onClick={searchContact}>搜索</button></div>
       {result==="hq"&&<article className="wx-driver-result"><img src="/characters/wechat-hao-qian-wedding.png" alt="H.Q."/><span><b>H.Q.</b><small>微信号：hqian_17　地区：海外</small></span>{added?<em>已添加</em>:!hqRequest?<button onClick={()=>setHqRequest(true)}>添加到通讯录</button>:<div className="wx-driver-challenge"><small>好友验证</small><b>我是谁？</b><input value={hqAnswer} onChange={e=>{setHqAnswer(e.target.value);setHqError(false)}} onKeyDown={e=>e.key==="Enter"&&verifyHqFriend()} placeholder="回复问题答案"/><button onClick={verifyHqFriend}>提交答案</button>{hqError&&<p>回答不正确。请输入她的真实姓名。</p>}<em>回答正确后才能添加好友</em></div>}</article>}
