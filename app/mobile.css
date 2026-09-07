@@ -43,6 +43,30 @@ canvas {
   display: none;
 }
 
+.pc-image-lightbox > .pc-image-zoom {
+  left: 12px;
+  right: auto;
+  width: auto;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  z-index: 2;
+}
+
+.pc-image-lightbox-scroll {
+  overflow: auto;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.police-route {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.pc-image-lightbox.is-zoomed figure {
+  width: max(100%, 760px);
+}
+
 @media (hover: none) and (pointer: coarse) {
   button,
   a,
@@ -590,8 +614,13 @@ canvas {
   }
 
   .pc-image-scroll-hint {
-    width: calc(100% - 100px);
+    top: 60px;
+    width: calc(100% - 24px);
     text-align: center;
+  }
+
+  .pc-image-lightbox-scroll {
+    padding-top: 90px;
   }
 
   .pc-image-lightbox-notes {
@@ -675,8 +704,7 @@ canvas {
     padding: 8px 8px 14px;
   }
 
-  .pc-mail > aside,
-  .pc-explorer > aside,
+  /* Diary has an equivalent, complete date selector above its article. */
   .pc-diary > aside {
     display: none;
   }
@@ -732,15 +760,28 @@ canvas {
   }
 
   .pc-device-link > em {
-    display: none;
+    display: block;
+    white-space: normal;
   }
 
   .gp-mailbox {
     grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .gp-mailbox > aside {
-    display: none;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    align-items: center;
+    padding: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .gp-mailbox > aside > * {
+    flex: 0 0 auto;
+    margin: 0;
   }
 
   .gp-mailbox > section {
@@ -1287,8 +1328,9 @@ canvas {
     margin: 12px;
   }
 
+  .wb-layout > aside,
   .wb-left {
-    display: none;
+    display: block;
   }
 
   /* Keep character navigation ahead of the feed, including embedded profiles. */
@@ -1296,11 +1338,6 @@ canvas {
   .pc-weibo-app .wb-layout > .wb-right {
     display: block;
     order: -1;
-  }
-
-  .wb-right > section:not(.wb-people-card),
-  .wb-right .wb-people-card > .wb-celebrity-follows.compact {
-    display: none !important;
   }
 
   .wb-layout .wb-people-card {
@@ -1351,11 +1388,6 @@ canvas {
   .medical-utility {
     height: auto;
     padding: 7px 12px;
-  }
-
-  .medical-utility span:last-child,
-  .medical-site > header nav {
-    display: none;
   }
 
   .medical-site > header {
@@ -1467,7 +1499,11 @@ canvas {
   /* University */
   .uni-utility,
   .hm-utility {
-    display: none;
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    gap: 6px 12px;
+    padding: 8px 12px;
   }
 
   .uni-header,
@@ -1496,7 +1532,7 @@ canvas {
 
   .uni-brand small,
   .hm-brand small {
-    display: none;
+    display: block;
   }
 
   .uni-hub-button,
@@ -1594,7 +1630,14 @@ canvas {
   }
 
   .uni-hub > aside {
-    display: none;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .uni-hub > aside > :is(b, small, footer) {
+    width: 100%;
   }
 
   .uni-hub > section {
@@ -1681,7 +1724,7 @@ canvas {
   }
 
   .police-header nav {
-    display: none;
+    display: flex;
   }
 
   .police-emblem {
@@ -1703,7 +1746,7 @@ canvas {
   }
 
   .police-workbench > aside {
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     align-items: center;
     gap: 4px;
     padding: 10px;
@@ -1717,7 +1760,14 @@ canvas {
   .police-workbench > aside > b,
   .police-workbench > aside > small,
   .police-workbench > aside > span {
-    display: none;
+    display: block;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .police-workbench > aside > .police-access-state {
+    flex: 1 1 100%;
+    min-width: 0;
   }
 
   .police-main {
@@ -1991,6 +2041,322 @@ canvas {
   .late-flowers-gate,
   .hidden-ending-gate {
     overflow-y: auto;
+  }
+}
+
+/* Content parity: narrow screens reflow information; they must not remove it.
+   Cover the older 800/900/1000/1050px breakpoints as well as portrait phones.
+   List/detail panels and game unlock conditions intentionally remain unchanged. */
+@media (max-width: 1050px), (max-height: 520px) and (pointer: coarse) {
+  .uni-content-grid,
+  .uni-hub,
+  .police-workbench {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .uni-content-grid > *,
+  .uni-hub > *,
+  .uni-directory,
+  .police-main,
+  .hm-service-grid > *,
+  .hm-case > * {
+    min-width: 0;
+  }
+
+  .uni-hub > aside {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .uni-hub > aside > :is(small, footer) {
+    flex: 1 1 100%;
+  }
+
+  .uni-brand {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .wb-search {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .wb-search input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .aid-team article {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .aid-team article span,
+  .aid-team > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .qz-couple {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .wb-layout,
+  .pc-weibo-app .wb-layout,
+  .qz-layout,
+  .qq-own-space-layout,
+  .nightdrive-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wb-layout > aside,
+  .pc-weibo-app .wb-layout > .wb-right,
+  .qz-layout > aside,
+  .qq-own-space-layout aside,
+  .nightdrive-layout > aside:first-child,
+  .nightdrive-right,
+  .desktop-pane.left,
+  .actor-card,
+  .police-collaboration > aside {
+    display: block;
+    min-width: 0;
+  }
+
+  .actor-card {
+    position: static;
+    width: auto;
+    margin-bottom: 16px;
+  }
+
+  .split-stage {
+    grid-template-rows: auto auto auto;
+    overflow-y: auto;
+  }
+
+  .sync-line {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .sync-line span {
+    writing-mode: horizontal-tb;
+  }
+
+  .wb-top,
+  .medical-site > header,
+  .medical-utility,
+  .uni-header,
+  .hm-header,
+  .police-header,
+  .aid-public nav {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wb-top nav,
+  .medical-site > header nav,
+  .uni-header nav,
+  .hm-header nav,
+  .police-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1 100%;
+    height: auto;
+    gap: 8px 14px;
+    white-space: normal;
+  }
+
+  .medical-site > header nav > *,
+  .uni-header nav button,
+  .hm-header nav button,
+  .police-header nav > *,
+  .aid-public nav button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    white-space: normal;
+  }
+
+  .medical-utility span:last-child,
+  .aid-public nav span,
+  .system-bar time,
+  .police-results em,
+  .gp-final-letter > header small,
+  .hidden-ending-memory > span,
+  .hidden-ending-film-top em,
+  .hidden-ending-controls time,
+  .let-go-top em,
+  .let-go-controls time,
+  .late-flowers-film-top em,
+  .late-flowers-controls time,
+  .xi-ending-topline span,
+  .xi-ending-controls time,
+  .qz-archive > header > span,
+  .qz-archive-brand > small,
+  .rescue-topbar div small,
+  .rescue-topbar > b {
+    display: block;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .nightdrive-header > span {
+    display: block;
+    justify-self: start;
+  }
+
+  .nightdrive-main {
+    grid-row: 1;
+  }
+
+  .nightdrive-ticker {
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .nightdrive-grid article > b,
+  .wb-layout :is(p, dd, small, a),
+  .pc-device-link {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .wb-layout > aside :is(p, dd, small, button, a),
+  .qq-own-space-layout aside :is(p, small),
+  .nightdrive-layout aside :is(p, small, a) {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .wb-layout > aside section,
+  .wb-layout .wb-people-card {
+    margin-bottom: 12px;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1050px) {
+  .pc-route-switch,
+  .pc-sticky {
+    display: flex;
+  }
+
+  .pc-route-switch {
+    max-width: calc(100% - 24px);
+    flex-wrap: wrap;
+  }
+
+  .pc-tray > b {
+    display: block;
+  }
+}
+
+@media (max-width: 700px), (max-height: 520px) and (pointer: coarse) {
+  .nightdrive-header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nightdrive-header form {
+    min-width: 0;
+  }
+
+  .wb-profile-nav {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 0 12px 8px;
+    gap: 8px;
+  }
+
+  .wb-profile-nav > span {
+    flex: 1 1 100%;
+    white-space: normal;
+  }
+
+  .pc-mobile-device-menu {
+    max-height: calc(100dvh - 90px - var(--mobile-safe-top) - var(--mobile-safe-bottom));
+    overflow-y: auto;
+  }
+
+  .pc-mobile-device-menu > button {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 50px;
+    padding: 8px 12px;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 9px;
+    background: transparent;
+    color: #f8fbff;
+    text-align: left;
+  }
+
+  .pc-mobile-device-menu > button small {
+    color: rgba(255,255,255,.65);
+    font-size: 11px;
+  }
+
+  .pc-mobile-system-time {
+    margin: 8px 12px;
+    color: #c9d3df;
+    font-size: 12px;
+  }
+
+  .pc-explorer,
+  .pc-mail {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .pc-explorer > aside,
+  .pc-mail > aside {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 8px;
+    white-space: nowrap;
+  }
+
+  .pc-explorer > aside > *,
+  .pc-mail > aside > * {
+    flex: 0 0 auto;
+  }
+
+  .pc-explorer > section,
+  .gp-mailbox > section {
+    min-height: 0;
+  }
+
+  .qz-archive > header,
+  .qz-couple,
+  .gp-final-letter > header,
+  .hidden-ending-film-top,
+  .hidden-ending-controls,
+  .let-go-top,
+  .let-go-controls,
+  .late-flowers-film-top,
+  .late-flowers-controls,
+  .xi-ending-topline,
+  .xi-ending-controls,
+  .rescue-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pc-file-preview > article {
+    overflow: auto;
   }
 }
 

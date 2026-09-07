@@ -17,7 +17,7 @@ export default function YuanfanNav({hasAccess}:{hasAccess:boolean}){
     <a className="aid-brand" href="/yuanfan" title="返回远帆主页" aria-label="远帆社区互助会，返回主页"><i>远</i> 远帆社区互助会</a>
     <button type="button" disabled={!hasAccess} title={hasAccess?"查看成员公告":"需要学生网站权限"} onClick={()=>open("/yuanfan/notices",true)}>成员公告</button>
     <button type="button" disabled={!hasAccess} title={hasAccess?"查看活动日历":"需要学生网站权限"} onClick={()=>open("/yuanfan/calendar",true)}>活动日历</button>
-    <button type="button" className="aid-guide-download" disabled={!hasAccess} title={hasAccess?"新生指南":"需要学生网站权限"} onContextMenu={event=>{event.preventDefault();if(hasAccess)downloadGuide()}}>新生指南</button>
+    <button type="button" className="aid-guide-download" disabled={!hasAccess} title={hasAccess?"点击下载新生指南":"需要学生网站权限"} onClick={()=>{if(hasAccess)downloadGuide()}} onContextMenu={event=>{event.preventDefault();if(hasAccess)downloadGuide()}}>新生指南</button>
     <button type="button" onClick={()=>open("/yuanfan/contact")}>联系我们</button>
     <em className={hasAccess?"unlocked":""}>{hasAccess?"学生访问已开通":"访客模式"}</em>
   </nav>;

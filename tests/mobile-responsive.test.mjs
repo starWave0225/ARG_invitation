@@ -1,9 +1,60 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import postcss from "postcss";
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
+
+test("content-parity overrides restore sidebars and metadata across every narrow breakpoint", async () => {
+  const css = postcss.parse(await read("app/mobile.css"));
+  const displays = new Map();
+  css.walkRules(rule => {
+    if (rule.parent.type !== "atrule" || !rule.parent.params.includes("max-width: 1050px")) return;
+    rule.walkDecls("display", declaration => {
+      for (const selector of rule.selectors) displays.set(selector, declaration.value);
+    });
+  });
+  for (const selector of [
+    ".wb-layout > aside", ".pc-weibo-app .wb-layout > .wb-right",
+    ".qz-layout > aside", ".qq-own-space-layout aside", ".nightdrive-right",
+    ".nightdrive-layout > aside:first-child", ".nightdrive-header > span",
+    ".medical-utility span:last-child", ".qz-archive > header > span",
+    ".gp-final-letter > header small", ".hidden-ending-controls time",
+    ".let-go-controls time", ".late-flowers-controls time", ".xi-ending-controls time",
+  ]) assert.equal(displays.get(selector), "block", `${selector} must not disappear on narrow screens`);
+  for (const selector of [".wb-top nav", ".medical-site > header nav", ".uni-header nav", ".hm-header nav", ".police-header nav"])
+    assert.equal(displays.get(selector), "flex", `${selector} must remain available`);
+  const text = css.toString();
+  assert.doesNotMatch(text, /\.wb-right[^{}]*\{\s*display:\s*none\s*!important/);
+  assert.match(text, /\.uni-content-grid > \*[\s\S]*?min-width: 0/);
+  assert.match(text, /\.uni-program-table,[\s\S]*?overflow-x: auto/);
+});
+
+test("phone device menu preserves mode, main menu, reset and date without bypassing unlocks", async () => {
+  const desktop = await read("app/computer/DesktopRoute.tsx");
+  const menu = desktop.slice(desktop.indexOf('{mobileDevicesOpen&&<nav'), desktop.indexOf('{start&&<div'));
+  assert.match(menu, /onClick={toggleGameMode}/);
+  assert.match(menu, /href="\/"/);
+  assert.match(menu, /onClick={resetGame}/);
+  assert.match(menu, /cfg\.date/);
+  assert.match(menu, /systemTime/);
+  assert.match(desktop, /if\(!window\.confirm\(/, "reset still requires confirmation");
+});
+
+test("guide download supports taps while retaining its student access requirement", async () => {
+  const nav = await read("app/yuanfan/YuanfanNav.tsx");
+  assert.match(nav, /className="aid-guide-download" disabled={!hasAccess}/);
+  assert.match(nav, /onClick={\(\)=>{if\(hasAccess\)downloadGuide\(\)}}/);
+});
+
+test("evidence viewer offers readable zoom and two-axis touch scrolling", async () => {
+  const [desktop, css] = await Promise.all([read("app/computer/DesktopRoute.tsx"), read("app/mobile.css")]);
+  assert.match(desktop, /className="pc-image-zoom" aria-pressed={imageZoomed}/);
+  assert.match(desktop, /setImageZoomed\(false\),\[previewImage\]/);
+  assert.match(css, /touch-action: pan-x pan-y pinch-zoom/);
+  assert.match(css, /\.pc-image-lightbox\.is-zoomed figure\s*{\s*width: max\(100%, 760px\)/);
+});
 
 test("root layout enables device viewport and loads the mobile layer last", async () => {
   const layout = await read("app/layout.tsx");
