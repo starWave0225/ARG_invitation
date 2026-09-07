@@ -1279,15 +1279,47 @@ canvas {
   }
 
   .wb-layout,
-  .hq-layout {
-    display: block;
+  .hq-layout,
+  .pc-weibo-app .wb-layout {
+    display: flex;
+    flex-direction: column;
     width: auto;
     margin: 12px;
   }
 
-  .wb-left,
-  .wb-right {
+  .wb-left {
     display: none;
+  }
+
+  /* Keep character navigation ahead of the feed, including embedded profiles. */
+  .wb-layout > .wb-right,
+  .pc-weibo-app .wb-layout > .wb-right {
+    display: block;
+    order: -1;
+  }
+
+  .wb-right > section:not(.wb-people-card),
+  .wb-right .wb-people-card > .wb-celebrity-follows.compact {
+    display: none !important;
+  }
+
+  .wb-layout .wb-people-card {
+    margin-bottom: 0;
+  }
+
+  .wb-layout .wb-people-card h3 {
+    font-size: 16px;
+  }
+
+  .wb-people-card > .wb-person-link b,
+  .wb-people-card > div > span > b {
+    font-size: 14px;
+  }
+
+  .wb-people-card > .wb-person-link small,
+  .wb-people-card > div > span > small {
+    font-size: 12px;
+    line-height: 1.5;
   }
 
   .wb-card,
