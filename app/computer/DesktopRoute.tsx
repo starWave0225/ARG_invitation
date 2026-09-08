@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, useEffect, useRef, useState, type ReactNode } from "react";
+import {useYuanfanAccess} from "../yuanfan/useYuanfanAccess";
 
 type Owner = "shen" | "gupan" | "liuhan";
 type GameMode = "normal" | "hardcore";
@@ -1421,12 +1422,13 @@ function HaoQianConfrontation({onOpenLiuHan}:{onOpenLiuHan:()=>void}){
 }
 
 function HanDuoIdentityCheck(){
+  const hasAccess=useYuanfanAccess();
   const [name,setName]=useState("");
   const [year,setYear]=useState("");
   const [major,setMajor]=useState("");
   const [studentId,setStudentId]=useState("");
   const [status,setStatus]=useState<"idle"|"error"|"duplicate"|"success">("idle");
-  useEffect(()=>{const frame=window.requestAnimationFrame(()=>{if(localStorage.getItem("jia-hd-trusted")==="true")setStatus("success")});return()=>window.cancelAnimationFrame(frame)},[]);
+  useEffect(()=>{if(hasAccess!==null)setStatus(current=>hasAccess?"success":current==="success"?"idle":current)},[hasAccess]);
   const verify=()=>{
     const submitted={name:name.trim().toUpperCase(),year:year.trim(),major:major.trim().toUpperCase(),studentId:studentId.trim().toUpperCase()};
     const existingProfiles=[

@@ -2,15 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import {DEFAULT_MASTER_VOLUME, MUSIC_KEYS, readMusicSettings, changeMusicVolume, toggleMusicMuted} from "./music-settings";
 
 const MUSIC_CUT_AT_MS = 19600;
 const MUSIC_CUT_TARGET_SECONDS = 70.06;
 const DESKTOP_HOLD_MS = 4000;
 const DESKTOP_FADE_MS = 8000;
 const BGM_CROSSFADE_MS = 1800;
-const DEFAULT_MASTER_VOLUME = 0.45;
-const VOLUME_STORAGE_KEY = "arg-music-volume";
-const MUTED_STORAGE_KEY = "arg-music-muted";
 const PLAYBACK_CHANNEL = "arg-bgm-playback-owner";
 const ENDING_PRIORITY_EVENT = "jia-ending-music-priority";
 
@@ -55,16 +53,8 @@ export default function OpeningMusic() {
   const cueTimer = useRef<number | null>(null);
   const routeTimer = useRef<number | null>(null);
   const openingPhaseRef = useRef<"idle" | "opening" | "menu" | "fading">("idle");
-  const [masterVolume, setMasterVolume] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_MASTER_VOLUME;
-    const stored = window.localStorage.getItem(VOLUME_STORAGE_KEY);
-    if (stored === null) return DEFAULT_MASTER_VOLUME;
-    const saved = Number(stored);
-    return Number.isFinite(saved) ? Math.min(Math.max(saved, 0), 1) : DEFAULT_MASTER_VOLUME;
-  });
-  const [muted, setMuted] = useState(
-    () => typeof window !== "undefined" && window.localStorage.getItem(MUTED_STORAGE_KEY) === "true"
-  );
+  const [masterVolume, setMasterVolume] = useState(DEFAULT_MASTER_VOLUME);
+  const [muted, setMuted] = useState(false);
   const masterVolumeRef = useRef(masterVolume);
   const mutedRef = useRef(muted);
   const [currentTrack, setCurrentTrack] = useState<TrackKey | null>(null);
@@ -115,6 +105,42 @@ export default function OpeningMusic() {
     const gain = phase === "opening" ? 1.25 : 0.56;
     return Math.min(masterVolumeRef.current * gain, 1);
   }, []);
+
+  const applySettings = useCallback((settings: ReturnType<typeof readMusicSettings>) => {
+    masterVolumeRef.current = settings.volume;
+    mutedRef.current = settings.muted;
+    setMasterVolume(settings.volume);
+    setMuted(settings.muted);
+    [openingRef.current, ...decks()].forEach(audio => {
+      if (audio) audio.muted = settings.muted || settings.volume === 0;
+    });
+    const phase = openingPhaseRef.current;
+    if (openingRef.current && phase !== "idle" && phase !== "fading") {
+      openingRef.current.volume = openingVolume(phase);
+    }
+    const key = currentTrackRef.current;
+    const active = decks()[activeDeckRef.current];
+    if (key && active) active.volume = trackVolume(key);
+  }, [decks, openingVolume, trackVolume]);
+
+  useEffect(() => {
+    const sync = () => applySettings(readMusicSettings(window.localStorage));
+    const stored = (event: StorageEvent) => {
+      if (event.key === null || MUSIC_KEYS.includes(event.key)) sync();
+    };
+    const visible = () => { if (document.visibilityState === "visible") sync(); };
+    sync();
+    window.addEventListener("storage", stored);
+    window.addEventListener("focus", sync);
+    window.addEventListener("pageshow", sync);
+    document.addEventListener("visibilitychange", visible);
+    return () => {
+      window.removeEventListener("storage", stored);
+      window.removeEventListener("focus", sync);
+      window.removeEventListener("pageshow", sync);
+      document.removeEventListener("visibilitychange", visible);
+    };
+  }, [applySettings]);
 
   const claimPlayback = useCallback(() => {
     if (!tabIdRef.current) return;
@@ -398,34 +424,14 @@ export default function OpeningMusic() {
   }, [fadeOpeningTo, pathname]);
 
   const setVolume = (value: number) => {
-    const next = Math.min(Math.max(value, 0), 1);
-    masterVolumeRef.current = next;
-    setMasterVolume(next);
-    window.localStorage.setItem(VOLUME_STORAGE_KEY, String(next));
-    const opening = openingRef.current;
-    const phase = openingPhaseRef.current;
-    if (opening && phase !== "idle" && phase !== "fading") {
-      opening.volume = openingVolume(phase);
-    }
-    const key = currentTrackRef.current;
-    const active = decks()[activeDeckRef.current];
-    if (key && active) active.volume = trackVolume(key);
+    applySettings(changeMusicVolume(window.localStorage, value));
   };
 
   const toggleMuted = () => {
-    const next = !mutedRef.current;
-    mutedRef.current = next;
-    setMuted(next);
-    window.localStorage.setItem(MUTED_STORAGE_KEY, String(next));
-    const opening = openingRef.current;
-    const phase = openingPhaseRef.current;
-    if (opening && phase !== "idle" && phase !== "fading") {
-      opening.volume = openingVolume(phase);
-    }
-    const key = currentTrackRef.current;
-    const active = decks()[activeDeckRef.current];
-    if (key && active) active.volume = trackVolume(key);
+    applySettings(toggleMusicMuted(window.localStorage));
   };
+
+  const soundOff = muted || masterVolume === 0;
 
   const activeMeta = currentTrack ? tracks[currentTrack] : null;
   const displayTitle = activeMeta?.title ?? (openingActive ? "《嫁》片头主题" : "游戏配乐");
@@ -436,7 +442,7 @@ export default function OpeningMusic() {
       <audio ref={openingRef} src="/audio/opening-theme.mp3" preload="auto" />
       <audio ref={deckARef} preload="none" />
       <audio ref={deckBRef} preload="none" />
-      {playerVisible && !pathname.startsWith("/ending/") && (
+      {(playerVisible || pathname !== "/") && !pathname.startsWith("/ending/") && (
         <aside className={`bgm-player ${panelOpen ? "open" : ""}`} aria-label="背景音乐控制">
           {panelOpen && (
             <section className="bgm-panel">
@@ -471,18 +477,20 @@ export default function OpeningMusic() {
               type="button"
               className="bgm-mute"
               onClick={toggleMuted}
-              aria-label={muted ? "恢复背景音乐" : "静音背景音乐"}
-              title={muted ? "恢复背景音乐" : "静音背景音乐"}
+              aria-label={soundOff ? "恢复背景音乐" : "静音背景音乐"}
+              title={soundOff ? "恢复背景音乐" : "静音背景音乐"}
             >
-              {muted ? "×" : "♫"}
+              {soundOff ? "×" : "♫"}
             </button>
             <button
               type="button"
               className="bgm-current"
+              data-label={soundOff ? "声音已关闭" : "音乐"}
+              aria-label={soundOff ? "声音已关闭，打开音乐设置" : "打开音乐设置"}
               onClick={() => setPanelOpen((value) => !value)}
               aria-expanded={panelOpen}
             >
-              <span>{displayContext}</span>
+              <span>{soundOff ? "声音已关闭 · 点击调整" : `音乐设置 · ${displayContext}`}</span>
               <b>{displayTitle}</b>
             </button>
           </div>

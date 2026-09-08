@@ -1,6 +1,6 @@
 "use client";
 
-export default function YuanfanNav({hasAccess}:{hasAccess:boolean}){
+export default function YuanfanNav({hasAccess}:{hasAccess:boolean|null}){
   const open=(path:string,requiresAccess=false)=>{
     if(requiresAccess&&!hasAccess)return;
     window.open(path,"_blank","noopener,noreferrer");
@@ -19,6 +19,6 @@ export default function YuanfanNav({hasAccess}:{hasAccess:boolean}){
     <button type="button" disabled={!hasAccess} title={hasAccess?"查看活动日历":"需要学生网站权限"} onClick={()=>open("/yuanfan/calendar",true)}>活动日历</button>
     <button type="button" className="aid-guide-download" disabled={!hasAccess} title={hasAccess?"点击下载新生指南":"需要学生网站权限"} onClick={()=>{if(hasAccess)downloadGuide()}} onContextMenu={event=>{event.preventDefault();if(hasAccess)downloadGuide()}}>新生指南</button>
     <button type="button" onClick={()=>open("/yuanfan/contact")}>联系我们</button>
-    <em className={hasAccess?"unlocked":""}>{hasAccess?"学生访问已开通":"访客模式"}</em>
+    <em className={hasAccess?"unlocked":""} role="status">{hasAccess===null?"正在读取访问状态…":hasAccess?"学生访问已开通":"访客模式"}</em>
   </nav>;
 }

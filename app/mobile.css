@@ -142,11 +142,12 @@ canvas {
   .bgm-player {
     right: calc(8px + var(--mobile-safe-right));
     bottom: calc(60px + var(--mobile-safe-bottom));
-    width: 88px;
+    width: 136px;
   }
 
   .bgm-player > div {
-    grid-template-columns: 42px 46px;
+    grid-template-columns: 44px minmax(0, 1fr);
+    min-height: 44px;
   }
 
   .bgm-player:not(.open) .bgm-current {
@@ -161,9 +162,9 @@ canvas {
   }
 
   .bgm-player:not(.open) .bgm-current::after {
-    content: "♫";
+    content: attr(data-label);
     color: #dce5e1;
-    font-size: 18px;
+    font-size: 13px;
   }
 
   .bgm-player.open {

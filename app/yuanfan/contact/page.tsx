@@ -1,16 +1,10 @@
 "use client";
 
-import {useEffect,useState} from "react";
+import {useYuanfanAccess} from "../useYuanfanAccess";
 import YuanfanNav from "../YuanfanNav";
 
 export default function YuanfanContact(){
-  const [hasAccess,setHasAccess]=useState(false);
-  useEffect(()=>{
-    const sync=()=>setHasAccess(localStorage.getItem("jia-yuanfan-site-access")==="true");
-    sync();
-    window.addEventListener("storage",sync);
-    return()=>window.removeEventListener("storage",sync);
-  },[]);
+  const hasAccess=useYuanfanAccess();
   return <main className="route-page yuanfan-route"><div className="aid-public">
     <YuanfanNav hasAccess={hasAccess}/>
     <header className="aid-subpage-hero"><small>CONTACT & SUPPORT</small><h1>联系我们</h1><p>活动合作、校园社群与新生联络由志愿者共同维护。</p></header>

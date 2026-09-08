@@ -40,6 +40,6 @@ test("ending music claims priority over opening and desktop BGM",async()=>{
   assert.match(opening,/const suspendForEnding = useCallback/);
   assert.match(opening,/pathname\.startsWith\("\/ending\/"\)/);
   assert.match(opening,/\["claim", "ending-claim"\]\.includes/);
-  assert.match(opening,/playerVisible && !pathname\.startsWith\("\/ending\/"\)/);
+  assert.match(opening,/\(playerVisible \|\| pathname !== "\/"\) && !pathname\.startsWith\("\/ending\/"\)/);
   assert.match(styles,/\.ending-music-control\{/);
 });
