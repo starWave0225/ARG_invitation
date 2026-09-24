@@ -13,6 +13,8 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "build:pages": "next build && node scripts/prepare-github-pages.mjs",
+    "build:offline": "node scripts/build-offline.mjs",
+    "test:offline": "node --test tests/offline-server.test.mjs",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",

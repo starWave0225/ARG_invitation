@@ -5,6 +5,29 @@
 - [稳定托管版《嫁》](https://jia-investigation.bean-starmoon.chatgpt.site)
 - [GitHub Pages 公开镜像](https://starwave0225.github.io/ARG_invitation/)
 
+## 离线 ZIP
+
+在 macOS/Linux 构建机安装依赖后运行（需要 Node.js 22.13+、curl、tar、zip）：
+
+```bash
+npm run build:offline
+npm run test:offline
+```
+
+生成 `outputs/offline/JIA-Offline-Windows-x64.zip` 和 `outputs/offline/JIA-Offline-macOS.zip`。
+Windows 包内置 x64 Node.js；macOS 包同时内置 Apple 芯片和 Intel 版本。玩家完整解压后双击
+`开始游戏.bat` 或 `开始游戏.command` 即可，无需安装开发工具。启动窗口需保持打开。
+
+构建过程导出静态站点，将 Unsplash/Picsum 外链图片下载到离线包中，并校验官方 Node.js
+运行环境的 SHA-256。首次打包需要联网，下载缓存位于 `.offline-cache/`；清理对应缓存可重新下载。
+打包脚本只在导出副本中替换图片路径，在线版资源地址不变。每个包包含图片来源、构建信息、
+Node.js 授权和玩家说明；ZIP 校验值在同目录的 `SHA256SUMS.txt`。
+
+离线启动器只监听 `127.0.0.1:41739`，支持页面路由、附件下载和音频拖动。
+固定地址让同一浏览器的存档在重启和升级后继续有效。在线版存档不会自动迁移到离线版；
+清除浏览器网站数据、使用无痕模式或更换浏览器会影响存档。剧情资源全部本地化，
+音乐署名和明星微博等外部链接仍需联网。macOS 首次打开下载的脚本可能显示系统安全确认。
+
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
 Drizzle support.
