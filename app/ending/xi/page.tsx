@@ -279,6 +279,7 @@ export default function XiEndingPage(){
         <nav>
           <button type="button" onClick={replay}>重播结局</button>
           <a href="/computer/liuhan">回到刘涵的电脑</a>
+          <a href="/ending/perfect">爱可以 · 找到完美的时间线</a>
           <a href="/story-guide.html#endings">查看完整故事线</a>
         </nav>
         <em>BGM · 葛东琪《囍》</em>
